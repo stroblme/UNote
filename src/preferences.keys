@@ -1,0 +1,12 @@
+radioButtonDarkTheme
+lineEditRegisterMapFile
+lineEditRegConExecutablePath
+radioButtonConvertRegisterMapOnStartup
+lineEditRegisterAccessPath
+lineEditBoardControlPath
+lineEditDutScriptPath
+lineEditAvailableBaudRates
+port
+baud
+windowHeight
+windowWidth
