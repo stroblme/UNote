@@ -12,7 +12,7 @@ from PySide2.QtCore import QSettings, QFile, QTextStream
 
 from PySide2.QtWidgets import QApplication
 
-
+import style.BreezeStyleSheets.breeze_resources
 
 class GuiHelper(QWidget):
 

@@ -14,7 +14,6 @@ import json
 from preferences import Preferences
 
 from guiHelper import GuiHelper
-from logHelper import LogHelper
 
 class Receivers(QObject):
     '''

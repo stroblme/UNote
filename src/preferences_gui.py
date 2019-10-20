@@ -44,6 +44,7 @@ class PreferencesGUI(Ui_PreferencesDialog):
         self.ui = Ui_PreferencesDialog()
         self.ui.setupUi(self.MainWindow)
         self.MainWindow.setWindowIcon(QtGui.QIcon("icon.png"))
+        # self.MainWindow.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.FramelessWindowHint)
 
         # self.MainWindow.setAttribute(QtCore.Qt.WA_DeleteOnClose)
 
@@ -122,18 +123,12 @@ class PreferencesGUI(Ui_PreferencesDialog):
             Preferences.updateKeyValue(key, self.settings.value(key, defaultValue=None, type=str))
 
         self.ui.radioButtonDarkTheme.setChecked(bool(Preferences.data["radioButtonDarkTheme"]))
-        self.ui.lineEditRegisterMapFile.setText(Preferences.data["lineEditRegisterMapFile"])
-        self.ui.lineEditRegConExecutablePath.setText(Preferences.data["lineEditRegConExecutablePath"])
-        self.ui.radioButtonConvertRegisterMapOnStartup.setChecked(bool(Preferences.data["radioButtonConvertRegisterMapOnStartup"]))
-        self.ui.lineEditRegisterAccessPath.setText(Preferences.data["lineEditRegisterAccessPath"])
-        self.ui.lineEditBoardControlPath.setText(Preferences.data["lineEditBoardControlPath"])
-        self.ui.lineEditAvailableBaudRates.setText(Preferences.data["lineEditAvailableBaudRates"])
 
     def applySettings(self):
         '''
         Apply the settings from the local dict to the gui instance
         '''
-        if Preferences.data["radioButtonDarkTheme"]:
+        if bool(Preferences.data["radioButtonDarkTheme"]) == True:
             self.guiHelper.toggle_stylesheet(":/dark.qss")
         else:
             self.guiHelper.toggle_stylesheet(":/light.qss")

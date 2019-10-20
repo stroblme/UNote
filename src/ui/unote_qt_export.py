@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'X:\UNote\src\ui\unote_gui.ui',
 # licensing of 'X:\UNote\src\ui\unote_gui.ui' applies.
 #
-# Created: Sun Oct 20 20:47:22 2019
+# Created: Sun Oct 20 22:34:43 2019
 #      by: pyside2-uic  running on PySide2 5.13.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -25,24 +25,6 @@ class Ui_MainWindow(object):
         self.verticalLayout_6.addWidget(self.graphicsView)
         self.verticalLayout_2 = QtWidgets.QVBoxLayout()
         self.verticalLayout_2.setObjectName("verticalLayout_2")
-        self.horizontalLayout = QtWidgets.QHBoxLayout()
-        self.horizontalLayout.setObjectName("horizontalLayout")
-        self.plainTextEditConsoleLog = QtWidgets.QPlainTextEdit(self.centralwidget)
-        self.plainTextEditConsoleLog.setMaximumSize(QtCore.QSize(16777215, 155))
-        self.plainTextEditConsoleLog.setUndoRedoEnabled(False)
-        self.plainTextEditConsoleLog.setReadOnly(True)
-        self.plainTextEditConsoleLog.setObjectName("plainTextEditConsoleLog")
-        self.horizontalLayout.addWidget(self.plainTextEditConsoleLog)
-        self.verticalLayout = QtWidgets.QVBoxLayout()
-        self.verticalLayout.setObjectName("verticalLayout")
-        self.pushButtonClearLog = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButtonClearLog.setObjectName("pushButtonClearLog")
-        self.verticalLayout.addWidget(self.pushButtonClearLog)
-        self.pushButtonSaveLog = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButtonSaveLog.setObjectName("pushButtonSaveLog")
-        self.verticalLayout.addWidget(self.pushButtonSaveLog)
-        self.horizontalLayout.addLayout(self.verticalLayout)
-        self.verticalLayout_2.addLayout(self.horizontalLayout)
         self.verticalLayout_6.addLayout(self.verticalLayout_2)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
@@ -82,9 +64,7 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QtWidgets.QApplication.translate("MainWindow", "CXP Test GUI", None, -1))
-        self.pushButtonClearLog.setText(QtWidgets.QApplication.translate("MainWindow", "Clear Log", None, -1))
-        self.pushButtonSaveLog.setText(QtWidgets.QApplication.translate("MainWindow", "Save Log", None, -1))
+        MainWindow.setWindowTitle(QtWidgets.QApplication.translate("MainWindow", "UNote", None, -1))
         self.menuFile.setTitle(QtWidgets.QApplication.translate("MainWindow", "File", None, -1))
         self.actionLoad_Pattern.setText(QtWidgets.QApplication.translate("MainWindow", "Load Pattern", None, -1))
         self.actionExit.setText(QtWidgets.QApplication.translate("MainWindow", "Exit", None, -1))

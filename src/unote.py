@@ -13,6 +13,8 @@
 from util import readFile, writeFile
 from collections import OrderedDict
 from core import RegisterMapHandler, ConnectionHandler
+from pdfEngine import pdfEngine
+from imageHelper import imageHelper
 
 from PySide2 import QtCore, QtGui, QtWidgets
 from PySide2.QtGui import QPixmap
@@ -28,8 +30,6 @@ import sys  # exit script, file parsing
 import subprocess  # for running external cmds
 import atexit
 
-import fitz
-from PIL import Image, ImageQt
 
 
 # app = QApplication(sys.argv)
@@ -50,7 +50,6 @@ from ui.unote_qt_export import Ui_MainWindow
 from unote_receivers import Receivers
 from preferences_gui import PreferencesGUI
 from preferences import Preferences
-from logHelper import LogHelper
 
 class UNote(Ui_MainWindow):
     '''
@@ -67,17 +66,7 @@ class UNote(Ui_MainWindow):
         t = QtCore.QTimer()
         t.singleShot(0, self.onQApplicationStarted)
 
-        self.qimg = self.renderPdf('X:/UNote/src/test.pdf', 1)
-        self.pixImg = QPixmap()
-        self.pixImg.convertFromImage(self.qimg)
-        self.pixImgItem = QtWidgets.QGraphicsPixmapItem()
-        self.pixImgItem.setPixmap(self.pixImg)
-        self.scene = QGraphicsScene()
-        self.scene.addItem(self.pixImgItem)
-        self.ui.graphicsView.setScene(self.scene)
-        print('hi')
 
-        self.logHelper = LogHelper(self.ui.plainTextEditConsoleLog)
 
         self.preferencesGui = PreferencesGUI()
 
@@ -88,18 +77,13 @@ class UNote(Ui_MainWindow):
     def initUI(self):
         self.app = QtWidgets.QApplication(sys.argv)
         self.MainWindow = QtWidgets.QMainWindow()
+        # self.MainWindow.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.FramelessWindowHint)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self.MainWindow)
 
         self.MainWindow.setWindowIcon(QtGui.QIcon("icon.png"))
 
-    def renderPdf(self, filename, pageNumber):
-        doc = fitz.open(filename)
-        page = doc.loadPage(pageNumber)
-        pix = page.getPixmap()
-        mode = "RGBA" if pix.alpha else "RGB"
-        img = Image.frombytes(mode, [pix.width, pix.height], pix.samples)
-        return ImageQt.ImageQt(img)
+
 
     def run(self, args):
         '''
@@ -126,7 +110,15 @@ class UNote(Ui_MainWindow):
         if self.debugMode:
             self.logHelper.appendLog("GUI is in debug mode. Actual connection handling will be disabled")
 
+        self.pdfEngine = pdfEngine()
+        self.imageHelper = imageHelper()
 
+        self.qimg = self.pdfEngine.renderPdf('X:/UNote/src/test.pdf', 1)
+        self.pixImgItem = self.imageHelper.createImageItem(self.qimg)
+
+        self.scene = QGraphicsScene()
+        self.scene.addItem(self.pixImgItem)
+        self.ui.graphicsView.setScene(self.scene)
 
     def onQApplicationQuit(self):
         '''
@@ -146,6 +138,8 @@ class UNote(Ui_MainWindow):
 
         # Open Preferences
         self.ui.actionPreferences.triggered.connect(lambda:self.receiversInst.openPreferencesReceiver(self.preferencesGui))
+
+
 
 # ----------------------------------------------------------
 # User Parameter region

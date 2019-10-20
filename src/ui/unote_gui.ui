@@ -12,7 +12,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>CXP Test GUI</string>
+   <string>UNote</string>
   </property>
   <property name="toolTipDuration">
    <number>5</number>
@@ -29,46 +29,7 @@
      <widget class="QGraphicsView" name="graphicsView"/>
     </item>
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="QPlainTextEdit" name="plainTextEditConsoleLog">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>155</height>
-           </size>
-          </property>
-          <property name="undoRedoEnabled">
-           <bool>false</bool>
-          </property>
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <layout class="QVBoxLayout" name="verticalLayout">
-          <item>
-           <widget class="QPushButton" name="pushButtonClearLog">
-            <property name="text">
-             <string>Clear Log</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="pushButtonSaveLog">
-            <property name="text">
-             <string>Save Log</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </item>
-     </layout>
+     <layout class="QVBoxLayout" name="verticalLayout_2"/>
     </item>
    </layout>
   </widget>
