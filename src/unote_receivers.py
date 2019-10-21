@@ -12,7 +12,6 @@ from PySide2.QtCore import Signal, Qt, QObject, Slot
 import json
 
 from preferences import Preferences
-from core import GraphicsViewHandler
 from guiHelper import GuiHelper
 
 class Receivers(QObject):
@@ -28,7 +27,6 @@ class Receivers(QObject):
         self.uiInst = uiInst
         self.guiHelper = GuiHelper()
 
-        self.gvh = GraphicsViewHandler(self.uiInst)
 
 
     def setLogHelperInst(self, logHelper):
@@ -49,7 +47,7 @@ class Receivers(QObject):
         '''
         pdfFileName = self.guiHelper.openFileNameDialog("PDF File (*.pdf)")
 
-        self.gvh.loadPdfToCurrentView(pdfFileName)
+        self.uiInst.graphicsView.loadPdfToCurrentView(pdfFileName)
 
 
     @Slot(str)

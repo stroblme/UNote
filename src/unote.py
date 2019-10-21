@@ -27,7 +27,6 @@ import subprocess  # for running external cmds
 import atexit
 
 
-
 # app = QApplication(sys.argv)
 # file = QFile(":/dark.qss")
 # file.open(QFile.ReadOnly | QFile.Text)
@@ -46,6 +45,7 @@ from ui.unote_qt_export import Ui_MainWindow
 from unote_receivers import Receivers
 from preferences_gui import PreferencesGUI
 from preferences import Preferences
+from core import GraphicsViewHandler
 
 class UNote(Ui_MainWindow):
     '''
@@ -78,6 +78,11 @@ class UNote(Ui_MainWindow):
         self.ui.setupUi(self.MainWindow)
 
         self.MainWindow.setWindowIcon(QtGui.QIcon("icon.png"))
+        print(self.ui.centralwidget.resize(self.MainWindow.size()))
+        print(self.MainWindow.size())
+
+        self.ui.graphicsView = GraphicsViewHandler(self.ui.centralwidget)
+        self.ui.gridLayout.addWidget(self.ui.graphicsView, 0, 0, 1, 1)
 
 
 
@@ -131,7 +136,6 @@ class UNote(Ui_MainWindow):
 
         # Load PDF File
         self.ui.actionLoad_PDF.triggered.connect(lambda:self.receiversInst.loadPdf())
-
 
 
 # ----------------------------------------------------------

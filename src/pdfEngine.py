@@ -7,9 +7,18 @@ class pdfEngine():
     def __init__(self):
         super().__init__()
 
-    def renderPdf(self, filename, pageNumber):
-        doc = self.openPDF(filename)
-        page = self.extractPage(doc, pageNumber)
+
+
+    def openPdf(self, filename):
+        self.doc = fitz.open(filename)
+
+        return self.doc
+
+    def renderPage(self, pageNumber):
+        if not self.doc:
+            return None
+
+        page = self.extractPage(self.doc, pageNumber)
         pixmap = self.renderPixmap(page)
         image = self.getQImage(pixmap)
 
@@ -17,10 +26,6 @@ class pdfEngine():
 
         return qimage
 
-    def openPDF(self, filename):
-        doc = fitz.open(filename)
-
-        return doc
 
     def extractPage(self, doc, pageNumber):
         page = doc.loadPage(pageNumber)

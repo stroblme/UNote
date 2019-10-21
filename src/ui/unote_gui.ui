@@ -26,10 +26,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_6">
     <item>
-     <widget class="QGraphicsView" name="graphicsView"/>
-    </item>
-    <item>
-     <layout class="QVBoxLayout" name="verticalLayout_2"/>
+     <layout class="QGridLayout" name="gridLayout"/>
     </item>
    </layout>
   </widget>
@@ -54,11 +51,6 @@
    </widget>
    <addaction name="menuFile"/>
   </widget>
-  <action name="actionLoad_Pattern">
-   <property name="text">
-    <string>Load Pattern</string>
-   </property>
-  </action>
   <action name="actionExit">
    <property name="checkable">
     <bool>false</bool>
@@ -70,47 +62,12 @@
     <string>Esc</string>
    </property>
   </action>
-  <action name="actionOpen_Register_Map">
-   <property name="text">
-    <string>Open Register Map</string>
-   </property>
-  </action>
   <action name="actionPreferences">
    <property name="text">
     <string>Preferences</string>
    </property>
    <property name="shortcut">
     <string>P</string>
-   </property>
-  </action>
-  <action name="actionCOM">
-   <property name="text">
-    <string>port</string>
-   </property>
-  </action>
-  <action name="actionbaud">
-   <property name="text">
-    <string>baud</string>
-   </property>
-  </action>
-  <action name="dsfa">
-   <property name="text">
-    <string>Port</string>
-   </property>
-  </action>
-  <action name="actionport">
-   <property name="text">
-    <string>port</string>
-   </property>
-  </action>
-  <action name="actionbaud_2">
-   <property name="text">
-    <string>baud</string>
-   </property>
-  </action>
-  <action name="actionDUT_Test">
-   <property name="text">
-    <string>DUT Test</string>
    </property>
   </action>
   <action name="actionLoad_PDF">

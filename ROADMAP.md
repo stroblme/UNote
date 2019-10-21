@@ -2,7 +2,8 @@
 - [x] Initial pdf rendering
 - [x] Inverting pdf colors
 - [x] Implement file loading menu
-- [ ] Implement scrolling and full pdf load
+- [x] Implement scrolling and full pdf load
+- [ ] Implement zooming
 - [ ] Implement annotations
 - [ ] Implement basic forms
 - [ ] Implement free drawing
