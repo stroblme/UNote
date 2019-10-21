@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'X:\UNote\src\ui\unote_gui.ui',
 # licensing of 'X:\UNote\src\ui\unote_gui.ui' applies.
 #
-# Created: Tue Oct 22 00:22:45 2019
+# Created: Tue Oct 22 00:38:43 2019
 #      by: pyside2-uic  running on PySide2 5.13.1
 #
 # WARNING! All changes made in this file will be lost!

@@ -91,8 +91,9 @@ class GraphicsViewHandler(QGraphicsView):
         # print(w, h)
         # print(self.scene.sceneRect())
 
-        renderedItems = self.scene.items(rect)
+        renderedItems = self.scene.items(self.mapToScene(self.viewport().geometry()))
 
+        # print(renderedItems)
         print(renderedItems)
 
 
