@@ -6,7 +6,8 @@
 # Author: Melvin Strobl
 # ---------------------------------------------------------------
 
-from PySide2.QtWidgets import QSizePolicy, QFrame, QDialog, QGraphicsView, QGraphicsScene
+from PySide2.QtWidgets import QSizePolicy, QFrame, QDialog, QGraphicsView, QGraphicsScene, QApplication
+from PySide2.QtCore import Qt, QRectF
 
 from interfaces import IregCon, IcsrCtrl
 from preferences import Preferences
@@ -79,3 +80,54 @@ class GraphicsViewHandler(QGraphicsView):
             newPosY = posY
 
         return newPosX, newPosY
+
+    def getRenderedPages(self):
+        h = float(self.size().height())
+        w = float(self.size().width())
+        x = float(0)
+        y = float(0)
+
+        rect = QRectF(x,y,w,h)
+        # print(w, h)
+        # print(self.scene.sceneRect())
+
+        renderedItems = self.scene.items(rect)
+
+        print(renderedItems)
+
+
+    def wheelEvent(self, event):
+        """
+        Zoom in or out of the view.
+        """
+        if not self.scene:
+            return
+
+        modifiers = QApplication.keyboardModifiers()
+
+        Mmodo = QApplication.mouseButtons()
+        if bool(Mmodo == Qt.RightButton) or bool(modifiers == Qt.ControlModifier):
+
+            zoomInFactor = 1.2
+            zoomOutFactor = 1 / zoomInFactor
+
+            # Save the scene pos
+            oldPos = self.mapToScene(event.pos())
+
+            # Zoom
+            if event.angleDelta().y() > 0:
+                zoomFactor = zoomInFactor
+            else:
+                zoomFactor = zoomOutFactor
+            self.scale(zoomFactor, zoomFactor)
+
+            # Get the new position
+            newPos = self.mapToScene(event.pos())
+
+            # Move scene to old position
+            delta = newPos - oldPos
+            self.translate(delta.x(), delta.y())
+
+            self.getRenderedPages()
+        else:
+            QGraphicsView.wheelEvent(self, event)

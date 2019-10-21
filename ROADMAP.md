@@ -3,7 +3,7 @@
 - [x] Inverting pdf colors
 - [x] Implement file loading menu
 - [x] Implement scrolling and full pdf load
-- [ ] Implement zooming
+- [x] Implement zooming
 - [ ] Implement annotations
 - [ ] Implement basic forms
 - [ ] Implement free drawing
