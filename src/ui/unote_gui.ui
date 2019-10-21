@@ -46,6 +46,7 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionLoad_PDF"/>
     <addaction name="separator"/>
     <addaction name="actionPreferences"/>
     <addaction name="separator"/>
@@ -110,6 +111,14 @@
   <action name="actionDUT_Test">
    <property name="text">
     <string>DUT Test</string>
+   </property>
+  </action>
+  <action name="actionLoad_PDF">
+   <property name="text">
+    <string>Load PDF</string>
+   </property>
+   <property name="shortcut">
+    <string>O</string>
    </property>
   </action>
  </widget>

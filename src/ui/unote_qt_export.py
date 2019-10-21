@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'X:\UNote\src\ui\unote_gui.ui',
 # licensing of 'X:\UNote\src\ui\unote_gui.ui' applies.
 #
-# Created: Mon Oct 21 09:10:39 2019
+# Created: Mon Oct 21 20:47:44 2019
 #      by: pyside2-uic  running on PySide2 5.13.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -54,6 +54,9 @@ class Ui_MainWindow(object):
         self.actionbaud_2.setObjectName("actionbaud_2")
         self.actionDUT_Test = QtWidgets.QAction(MainWindow)
         self.actionDUT_Test.setObjectName("actionDUT_Test")
+        self.actionLoad_PDF = QtWidgets.QAction(MainWindow)
+        self.actionLoad_PDF.setObjectName("actionLoad_PDF")
+        self.menuFile.addAction(self.actionLoad_PDF)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionPreferences)
         self.menuFile.addSeparator()
@@ -78,6 +81,8 @@ class Ui_MainWindow(object):
         self.actionport.setText(QtWidgets.QApplication.translate("MainWindow", "port", None, -1))
         self.actionbaud_2.setText(QtWidgets.QApplication.translate("MainWindow", "baud", None, -1))
         self.actionDUT_Test.setText(QtWidgets.QApplication.translate("MainWindow", "DUT Test", None, -1))
+        self.actionLoad_PDF.setText(QtWidgets.QApplication.translate("MainWindow", "Load PDF", None, -1))
+        self.actionLoad_PDF.setShortcut(QtWidgets.QApplication.translate("MainWindow", "O", None, -1))
 
 
 if __name__ == "__main__":

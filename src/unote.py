@@ -12,16 +12,12 @@
 # ----------------------------------------------------------
 from util import readFile, writeFile
 from collections import OrderedDict
-from core import RegisterMapHandler, ConnectionHandler
-from pdfEngine import pdfEngine
-from imageHelper import imageHelper
+
 
 from PySide2 import QtCore, QtGui, QtWidgets
 from PySide2.QtGui import QPixmap
 from PySide2.QtCore import Signal, QFile, QTextStream, Slot, QObject
 from PySide2.QtWidgets import QDialog, QGraphicsView, QGraphicsScene
-from PySide2.QtWebEngineWidgets import QWebEnginePage, QWebEngineView
-from PySide2.QtWebChannel import QWebChannel
 
 
 import argparse  # parsing cmdline arguments
@@ -110,15 +106,9 @@ class UNote(Ui_MainWindow):
         if self.debugMode:
             self.logHelper.appendLog("GUI is in debug mode. Actual connection handling will be disabled")
 
-        self.pdfEngine = pdfEngine()
-        self.imageHelper = imageHelper()
 
-        self.qimg = self.pdfEngine.renderPdf('X:/UNote/src/test.pdf', 1)
-        self.pixImgItem = self.imageHelper.createImageItem(self.qimg)
 
-        self.scene = QGraphicsScene()
-        self.scene.addItem(self.pixImgItem)
-        self.ui.graphicsView.setScene(self.scene)
+
 
     def onQApplicationQuit(self):
         '''
@@ -138,6 +128,9 @@ class UNote(Ui_MainWindow):
 
         # Open Preferences
         self.ui.actionPreferences.triggered.connect(lambda:self.receiversInst.openPreferencesReceiver(self.preferencesGui))
+
+        # Load PDF File
+        self.ui.actionLoad_PDF.triggered.connect(lambda:self.receiversInst.loadPdf())
 
 
 

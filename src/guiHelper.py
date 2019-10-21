@@ -20,7 +20,7 @@ class GuiHelper(QWidget):
     def __init__(self):
         super().__init__()
 
-    def openFileNameDialog(self, filter=None):
+    def openFileNameDialog(self, filter=None, dir = ""):
         '''
         Opens a native File Name Dialog
         Use filter like:
@@ -32,13 +32,14 @@ class GuiHelper(QWidget):
 
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getOpenFileName(self, "Open File", "", filter, options=options)
+        fileName, _ = QFileDialog.getOpenFileName(parent = self, caption = "Open File", dir = dir, filter = filter, options = options)
+
         if fileName:
             print(fileName)
 
         return fileName
 
-    def openFileNamesDialog(self, filter=None):
+    def openFileNamesDialog(self, filter=None, dir = ""):
         '''
         Opens a native File Names Dialog
         Use filter like:
@@ -50,8 +51,8 @@ class GuiHelper(QWidget):
 
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        fileNames, _ = QFileDialog.getOpenFileNames(
-            self, "Open Files", "", filter, options=options)
+        fileNames, _ = QFileDialog.getOpenFileNames(parent = self, caption = "Open Files", dir = dir, filter = filter, options = options)
+
         if fileNames:
             print(fileNames)
 

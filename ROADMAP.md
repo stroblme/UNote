@@ -1,0 +1,8 @@
+- [x] Cleanup and structure
+- [x] Initial pdf rendering
+- [x] Inverting pdf colors
+- [x] Implement file loading menu
+- [ ] Implement annotations
+- [ ] Implement basic forms
+- [ ] Implement free drawing
+- [ ] Implement database structure

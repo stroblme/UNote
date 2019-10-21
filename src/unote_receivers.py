@@ -12,7 +12,7 @@ from PySide2.QtCore import Signal, Qt, QObject, Slot
 import json
 
 from preferences import Preferences
-
+from core import GraphicsViewHandler
 from guiHelper import GuiHelper
 
 class Receivers(QObject):
@@ -26,9 +26,16 @@ class Receivers(QObject):
         super().__init__()
 
         self.uiInst = uiInst
-
         self.guiHelper = GuiHelper()
 
+        self.gvh = GraphicsViewHandler(self.uiInst)
+
+
+    def setLogHelperInst(self, logHelper):
+        '''
+        Used to set the log helper instance after instantiating the unote_receiver obj
+        '''
+        self.logHelper = logHelper
 
     def openPreferencesReceiver(self, preferenceInstance):
         '''
@@ -36,12 +43,14 @@ class Receivers(QObject):
         '''
         preferenceInstance.run()
 
+    def loadPdf(self):
+        '''
+        Loads a pdf to the current view
+        '''
+        pdfFileName = self.guiHelper.openFileNameDialog("PDF File (*.pdf)")
 
-    def setLogHelperInst(self, logHelper):
-        '''
-        Used to set the log helper instance after instantiating the cxptest_receiver obj
-        '''
-        self.logHelper = logHelper
+        self.gvh.loadPdfToCurrentView(pdfFileName)
+
 
     @Slot(str)
     def JSSendMessage(self, msg):
