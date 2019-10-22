@@ -22,7 +22,7 @@ import os
 
 from indexed import IndexedOrderedDict
 
-import copy
+import fitz
 
 class QPdfView(QGraphicsPixmapItem):
     def __init__(self):
@@ -31,18 +31,25 @@ class QPdfView(QGraphicsPixmapItem):
     def setQImage(self, qImg):
         self.qImg = qImg
 
-    def setPdfPage(self, qImg, pageNumber):
+    def setPixMap(self, qImg, pageNumber):
+        self.pageNumber = pageNumber
+
+        self.updatePixMap(qImg)
+
+    def updatePixMap(self, qImg):
         self.qImg = qImg
 
         self.pixImg = QPixmap()
         self.pixImg.convertFromImage(self.qImg)
 
-        self.pageNumber = pageNumber
-
         self.setPixmap(self.pixImg)
 
-    def reloadQImg(self):
-        pass
+    def setPage(self, page):
+        self.page = page
+
+    def reloadQImg(self, zoomFactor):
+        mat = fitz.Matrix(zoomFactor, zoomFactor)
+        self.pixImg.convertFromImage(self.qImg)
 
     def getVisibleRect(self):
         pass
@@ -52,6 +59,7 @@ class GraphicsViewHandler(QGraphicsView):
     DEFAULTPAGESPACE = 20
     CONTINOUSVIEW = True
 
+    absZoomFactor = float(1)
 
     def __init__(self, parent):
         '''Create the Viewport.
@@ -63,7 +71,7 @@ class GraphicsViewHandler(QGraphicsView):
         self.parent = parent
         self.scaleFactor = 1.0
 
-        self.pdfEngine = pdfEngine()
+        self.pdf = pdfEngine()
         self.imageHelper = imageHelper()
 
         self.setMouseTracking(True)
@@ -74,7 +82,7 @@ class GraphicsViewHandler(QGraphicsView):
         # self.resize(parent.size())
 
     def loadPdfToCurrentView(self, pdfFilePath):
-        self.pdfEngine.openPdf(pdfFilePath)
+        self.pdf.openPdf(pdfFilePath)
 
         self.scene = QGraphicsScene()
         self.setScene(self.scene)
@@ -82,17 +90,22 @@ class GraphicsViewHandler(QGraphicsView):
 
         posX = float(0)
         posY = float(0)
-        for pIt in range(self.pdfEngine.doc.pageCount):
+        for pIt in range(self.pdf.doc.pageCount):
             posX, posY = self.loadPdfPageToCurrentView(pIt, posX, posY)
 
 
     def loadPdfPageToCurrentView(self, pageNumber, posX, posY):
 
         pdfView = QPdfView()
-        qImg = self.pdfEngine.renderPage(pageNumber)
+        pdfView.setPage(self.pdf.getPage(pageNumber))
+
+        pixmap = self.pdf.renderPixmap(pdfView.page)
+
+        qImg = self.pdf.getQImage(pixmap)
+
         qImg = self.imageHelper.applyTheme(qImg)
 
-        pdfView.setPdfPage(qImg, pageNumber)
+        pdfView.setPixMap(qImg, pageNumber)
 
         # qImgItem = self.imagehelper.createImageItem(qImg)
 
@@ -123,9 +136,22 @@ class GraphicsViewHandler(QGraphicsView):
         renderedItems = self.scene.items(self.mapToScene(self.viewport().geometry()))
 
         for renderedItem in renderedItems:
-            renderedItem.reloadQImg()
+            self.updatePdf(renderedItem, self.absZoomFactor)
 
+    def updatePdf(self, pdf, zoom):
+        mat = fitz.Matrix(zoom, zoom)
 
+        pixmap = self.pdf.renderPixmap(pdf.page, mat = mat)
+
+        qImg = self.pdf.getQImage(pixmap)
+
+        qImg = self.imageHelper.applyTheme(qImg)
+
+        pdf.updatePixMap(qImg)
+
+    def getCurrentScaleFactor(self):
+        print(self.mapToScene(self.viewport().geometry()))
+        print(self.sceneRect())
 
     def wheelEvent(self, event):
         """
@@ -147,10 +173,12 @@ class GraphicsViewHandler(QGraphicsView):
 
             # Zoom
             if event.angleDelta().y() > 0:
-                zoomFactor = zoomInFactor
+                relZoomFactor = zoomInFactor
             else:
-                zoomFactor = zoomOutFactor
-            self.scale(zoomFactor, zoomFactor)
+                relZoomFactor = zoomOutFactor
+
+            self.absZoomFactor = self.absZoomFactor * relZoomFactor
+            self.scale(relZoomFactor, relZoomFactor)
 
             # Get the new position
             newPos = self.mapToScene(event.pos())

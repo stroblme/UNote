@@ -14,13 +14,17 @@ class pdfEngine():
 
         return self.doc
 
-    def renderPage(self, pageNumber):
+    def getPage(self, pageNumber):
+        page = self.extractPage(self.doc, pageNumber)
+
+        return page
+
+    def renderPage(self, pageNumber, clip = None, mat = None):
         if not self.doc:
             return None
 
         page = self.extractPage(self.doc, pageNumber)
-        pixmap = self.renderPixmap(page)
-        image = self.getQImage(pixmap)
+        pixmap = self.renderPixmap(page, clip = clip, mat = mat)
 
         qimage = self.getQImage(pixmap)
 
