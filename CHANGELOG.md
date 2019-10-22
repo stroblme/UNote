@@ -4,6 +4,7 @@
 - [x] Implement file loading menu
 - [x] Implement scrolling and full pdf load
 - [x] Implement zooming
+- [ ] Improve zooming, by re-rendering page
 - [ ] Implement annotations
 - [ ] Implement basic forms
 - [ ] Implement free drawing
