@@ -6,7 +6,7 @@
 # Author: Melvin Strobl
 # ---------------------------------------------------------------
 
-from PySide2.QtWidgets import QSizePolicy, QFrame, QDialog, QGraphicsView, QGraphicsScene, QApplication
+from PySide2.QtWidgets import QSizePolicy, QFrame, QDialog, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem
 from PySide2.QtCore import Qt, QRectF
 
 from interfaces import IregCon, IcsrCtrl
@@ -22,10 +22,20 @@ from indexed import IndexedOrderedDict
 
 import copy
 
+# class QPdfView(QGraphicsPixmapItem):
+#     def __init__(self, parent):
+#         QGraphicsPixmapItem.__init__(self, parent)
+
+#         self.parent = parent
+
+#     def setQImage(self, qImg):
+#         self.qImg = qImg
+
+#     def reloadQImg(self):
+#         pass
 
 class GraphicsViewHandler(QGraphicsView):
     pages = IndexedOrderedDict()
-
     DEFAULTPAGESPACE = 20
     CONTINOUSVIEW = True
 
@@ -36,6 +46,7 @@ class GraphicsViewHandler(QGraphicsView):
         :param parent: Parent editor widget.
         '''
         QGraphicsView.__init__(self, parent)
+
         self.parent = parent
         self.scaleFactor = 1.0
 
@@ -55,6 +66,7 @@ class GraphicsViewHandler(QGraphicsView):
         self.scene = QGraphicsScene()
         self.setScene(self.scene)
 
+
         posX = float(0)
         posY = float(0)
         for pIt in range(self.pdfEngine.doc.pageCount):
@@ -63,20 +75,20 @@ class GraphicsViewHandler(QGraphicsView):
 
     def loadPdfPageToCurrentView(self, pageNumber, posX, posY):
 
-        qimg = self.pdfEngine.renderPage(pageNumber)
+        qImg = self.pdfEngine.renderPage(pageNumber)
+        qImgItem = self.imageHelper.createImageItem(qImg)
+        # pdfView = QPdfView(qImgItem)
 
-        pixImgItem = self.imageHelper.createImageItem(qimg)
+        self.pages[pageNumber] = qImgItem
 
-        self.pages[pageNumber] = qimg, pixImgItem
-
-        self.scene.addItem(self.pages[pageNumber][1])
-        self.pages[pageNumber][1].setPos(posX, posY)
+        self.scene.addItem(self.pages[pageNumber])
+        self.pages[pageNumber].setPos(posX, posY)
 
         if self.CONTINOUSVIEW:
             newPosX = posX
-            newPosY = posY + pixImgItem.boundingRect().height() + self.DEFAULTPAGESPACE
+            newPosY = posY + qImgItem.boundingRect().height() + self.DEFAULTPAGESPACE
         else:
-            newPosX = posX + pixImgItem.boundingRect().width() + self.DEFAULTPAGESPACE
+            newPosX = posX + qImgItem.boundingRect().width() + self.DEFAULTPAGESPACE
             newPosY = posY
 
         return newPosX, newPosY
@@ -94,7 +106,7 @@ class GraphicsViewHandler(QGraphicsView):
         renderedItems = self.scene.items(self.mapToScene(self.viewport().geometry()))
 
         for renderedItem in renderedItems:
-            
+            renderedItem.reloadQImg()
 
         # print(renderedItems)
         print(renderedItems)
