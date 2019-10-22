@@ -8,6 +8,8 @@
 
 from PySide2.QtWidgets import QSizePolicy, QFrame, QDialog, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem
 from PySide2.QtCore import Qt, QRectF
+from PySide2.QtGui import QPixmap
+
 
 from interfaces import IregCon, IcsrCtrl
 from preferences import Preferences
@@ -22,17 +24,28 @@ from indexed import IndexedOrderedDict
 
 import copy
 
-# class QPdfView(QGraphicsPixmapItem):
-#     def __init__(self, parent):
-#         QGraphicsPixmapItem.__init__(self, parent)
+class QPdfView(QGraphicsPixmapItem):
+    def __init__(self):
+        QGraphicsPixmapItem.__init__(self)
 
-#         self.parent = parent
+    def setQImage(self, qImg):
+        self.qImg = qImg
 
-#     def setQImage(self, qImg):
-#         self.qImg = qImg
+    def setPdfPage(self, qImg, pageNumber):
+        self.qImg = qImg
 
-#     def reloadQImg(self):
-#         pass
+        self.pixImg = QPixmap()
+        self.pixImg.convertFromImage(self.qImg)
+
+        self.pageNumber = pageNumber
+
+        self.setPixmap(self.pixImg)
+
+    def reloadQImg(self):
+        pass
+
+    def getVisibleRect(self):
+        pass
 
 class GraphicsViewHandler(QGraphicsView):
     pages = IndexedOrderedDict()
@@ -75,20 +88,24 @@ class GraphicsViewHandler(QGraphicsView):
 
     def loadPdfPageToCurrentView(self, pageNumber, posX, posY):
 
+        pdfView = QPdfView()
         qImg = self.pdfEngine.renderPage(pageNumber)
-        qImgItem = self.imageHelper.createImageItem(qImg)
-        # pdfView = QPdfView(qImgItem)
+        qImg = self.imageHelper.applyTheme(qImg)
 
-        self.pages[pageNumber] = qImgItem
+        pdfView.setPdfPage(qImg, pageNumber)
+
+        # qImgItem = self.imagehelper.createImageItem(qImg)
+
+        self.pages[pageNumber] = pdfView
 
         self.scene.addItem(self.pages[pageNumber])
         self.pages[pageNumber].setPos(posX, posY)
 
         if self.CONTINOUSVIEW:
             newPosX = posX
-            newPosY = posY + qImgItem.boundingRect().height() + self.DEFAULTPAGESPACE
+            newPosY = posY + pdfView.boundingRect().height() + self.DEFAULTPAGESPACE
         else:
-            newPosX = posX + qImgItem.boundingRect().width() + self.DEFAULTPAGESPACE
+            newPosX = posX + pdfView.boundingRect().width() + self.DEFAULTPAGESPACE
             newPosY = posY
 
         return newPosX, newPosY
@@ -108,8 +125,6 @@ class GraphicsViewHandler(QGraphicsView):
         for renderedItem in renderedItems:
             renderedItem.reloadQImg()
 
-        # print(renderedItems)
-        print(renderedItems)
 
 
     def wheelEvent(self, event):

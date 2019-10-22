@@ -10,12 +10,11 @@ class imageHelper(QWidget):
     def __init__(self):
         super().__init__()
 
-    def createImageItem(self, qimg):
+    def createImageItem(self, qimg, qPdfView):
         qimg = self.applyTheme(qimg)
         pixImg = QPixmap()
         pixImg.convertFromImage(qimg)
-        pixImgItem = QGraphicsPixmapItem()
-        pixImgItem.setPixmap(pixImg)
+        qPdfView.setPixmap(pixImg)
 
         return pixImgItem
 
