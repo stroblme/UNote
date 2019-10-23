@@ -6,8 +6,8 @@
 # Author: Melvin Strobl
 # ---------------------------------------------------------------
 
-from PySide2 import QtCore
-from PySide2.QtCore import Signal, Qt, QObject, Slot
+from PyQt5 import QtCore
+from PyQt5.QtCore import pyqtSignal, Qt, QObject, pyqtSlot
 
 import json
 
@@ -19,7 +19,7 @@ class Receivers(QObject):
     Class for handling all the event calls from the ui
     '''
 
-    SigSendMessageToJS = Signal(str)
+    SigSendMessageToJS = pyqtSignal(str)
 
     def __init__(self, uiInst):
         super().__init__()
@@ -52,7 +52,7 @@ class Receivers(QObject):
     def insertText(self):
         self.uiInst.graphicsView.insertText()
 
-    @Slot(str)
+    @pyqtSlot(str)
     def JSSendMessage(self, msg):
         '''
         This method is called each time the webviewer receives a user input.

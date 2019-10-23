@@ -1,6 +1,6 @@
-from PySide2 import QtWidgets, QtCore, QtGui
-from PySide2.QtWidgets import QFileDialog, QWidget, QGraphicsPixmapItem
-from PySide2.QtGui import QPixmap, QImage, QColor
+from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5.QtWidgets import QFileDialog, QWidget, QGraphicsPixmapItem
+from PyQt5.QtGui import QPixmap, QImage, QColor
 
 from preferences import Preferences
 

@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Users\m17538\Projects\unote\src\ui\preferences_gui.ui',
-# licensing of 'C:\Users\m17538\Projects\unote\src\ui\preferences_gui.ui' applies.
+# Form implementation generated from reading ui file 'C:\Users\m17538\Projects\unote\src\ui\preferences_gui.ui'
 #
-# Created: Wed Oct 23 16:03:23 2019
-#      by: pyside2-uic  running on PySide2 5.13.1
+# Created by: PyQt5 UI code generator 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
 
-from PySide2 import QtCore, QtGui, QtWidgets
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_PreferencesDialog(object):
     def setupUi(self, PreferencesDialog):
@@ -48,22 +48,12 @@ class Ui_PreferencesDialog(object):
         self.verticalLayout.addWidget(self.buttonBox)
 
         self.retranslateUi(PreferencesDialog)
-        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL("accepted()"), PreferencesDialog.accept)
-        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL("rejected()"), PreferencesDialog.reject)
+        self.buttonBox.accepted.connect(PreferencesDialog.accept)
+        self.buttonBox.rejected.connect(PreferencesDialog.reject)
         QtCore.QMetaObject.connectSlotsByName(PreferencesDialog)
 
     def retranslateUi(self, PreferencesDialog):
-        PreferencesDialog.setWindowTitle(QtWidgets.QApplication.translate("PreferencesDialog", "Dialog", None, -1))
-        self.labelAppearance.setText(QtWidgets.QApplication.translate("PreferencesDialog", "Appearance", None, -1))
-        self.radioButtonDarkTheme.setText(QtWidgets.QApplication.translate("PreferencesDialog", "Dark Theme", None, -1))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    PreferencesDialog = QtWidgets.QDialog()
-    ui = Ui_PreferencesDialog()
-    ui.setupUi(PreferencesDialog)
-    PreferencesDialog.show()
-    sys.exit(app.exec_())
-
+        _translate = QtCore.QCoreApplication.translate
+        PreferencesDialog.setWindowTitle(_translate("PreferencesDialog", "Dialog"))
+        self.labelAppearance.setText(_translate("PreferencesDialog", "Appearance"))
+        self.radioButtonDarkTheme.setText(_translate("PreferencesDialog", "Dark Theme"))

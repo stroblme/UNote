@@ -14,10 +14,10 @@ from util import readFile, writeFile
 from collections import OrderedDict
 
 
-from PySide2 import QtCore, QtGui, QtWidgets
-from PySide2.QtGui import QPixmap
-from PySide2.QtCore import Signal, QFile, QTextStream, Slot, QObject
-from PySide2.QtWidgets import QDialog, QGraphicsView, QGraphicsScene
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import pyqtSignal, QFile, QTextStream, pyqtSlot, QObject
+from PyQt5.QtWidgets import QDialog, QGraphicsView, QGraphicsScene
 
 
 import argparse  # parsing cmdline arguments
@@ -35,10 +35,6 @@ import atexit
 
 SCRIPTDIR = os.path.dirname(os.path.realpath(__file__))
 
-# Reload the main ui
-subprocess.run('pyside2-uic -x ' + SCRIPTDIR + '\\ui\\preferences_gui.ui -o ' + SCRIPTDIR + '\\ui\\preferences_qt_export.py')
-
-subprocess.run('pyside2-uic -x ' + SCRIPTDIR + '\\ui\\unote_gui.ui -o  ' + SCRIPTDIR + '\\ui\\unote_qt_export.py')
 
 from ui.unote_qt_export import Ui_MainWindow
 
@@ -104,7 +100,7 @@ class UNote(Ui_MainWindow):
         '''
         #Update window sizes
         try:
-            self.MainWindow.resize(int(Preferences.data['windowHeight']), int(Preferences.data['windowWidth']))
+            self.MainWindow.setGeometry(int(Preferences.data['windowXPos']), int(Preferences.data['windowYPos']), int(Preferences.data['windowWidth']), int(Preferences.data['windowHeight']))
         except Exception as identifier:
             print("Unable to restore window size: " + str(identifier))
 
@@ -121,6 +117,8 @@ class UNote(Ui_MainWindow):
         '''
         Preferences.updateKeyValue('windowHeight', self.MainWindow.height())
         Preferences.updateKeyValue('windowWidth', self.MainWindow.width())
+        Preferences.updateKeyValue('windowXPos', self.MainWindow.x())
+        Preferences.updateKeyValue('windowYPos', self.MainWindow.y())
 
         self.preferencesGui.storeSettings()
 
@@ -201,6 +199,12 @@ def main():
         args = argumentHelper()
     except ValueError as e:
         sys.exit("Unable to parse arguments:\n" + str(e))
+
+    if args.updateUI:
+        subprocess.run('py -3 -m PyQt5.uic.pyuic .\\ui\\cxptest_gui.ui -o .\\ui\\cxptest_qt_export.py -x')
+        subprocess.run('py -3 -m PyQt5.uic.pyuic .\\ui\\preferences_gui.ui -o .\\ui\\preferences_qt_export.py -x')
+        
+    from ui.unote_qt_export import Ui_MainWindow
 
     UNoteGUI = UNote(args.debug)
     UNoteGUI.run(args)

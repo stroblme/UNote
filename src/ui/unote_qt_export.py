@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Users\m17538\Projects\unote\src\ui\unote_gui.ui',
-# licensing of 'C:\Users\m17538\Projects\unote\src\ui\unote_gui.ui' applies.
+# Form implementation generated from reading ui file 'C:\Users\m17538\Projects\unote\src\ui\unote_gui.ui'
 #
-# Created: Wed Oct 23 16:03:24 2019
-#      by: pyside2-uic  running on PySide2 5.13.1
+# Created by: PyQt5 UI code generator 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
 
-from PySide2 import QtCore, QtGui, QtWidgets
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -54,25 +54,15 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QtWidgets.QApplication.translate("MainWindow", "UNote", None, -1))
-        self.menuFile.setTitle(QtWidgets.QApplication.translate("MainWindow", "File", None, -1))
-        self.menuTools.setTitle(QtWidgets.QApplication.translate("MainWindow", "Tools", None, -1))
-        self.actionExit.setText(QtWidgets.QApplication.translate("MainWindow", "Exit", None, -1))
-        self.actionExit.setShortcut(QtWidgets.QApplication.translate("MainWindow", "Esc", None, -1))
-        self.actionPreferences.setText(QtWidgets.QApplication.translate("MainWindow", "Preferences", None, -1))
-        self.actionPreferences.setShortcut(QtWidgets.QApplication.translate("MainWindow", "P", None, -1))
-        self.actionLoad_PDF.setText(QtWidgets.QApplication.translate("MainWindow", "Load PDF", None, -1))
-        self.actionLoad_PDF.setShortcut(QtWidgets.QApplication.translate("MainWindow", "O", None, -1))
-        self.actionInsert_Text.setText(QtWidgets.QApplication.translate("MainWindow", "Insert Text", None, -1))
-        self.actionInsert_Text.setShortcut(QtWidgets.QApplication.translate("MainWindow", "T", None, -1))
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
-
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "UNote"))
+        self.menuFile.setTitle(_translate("MainWindow", "File"))
+        self.menuTools.setTitle(_translate("MainWindow", "Tools"))
+        self.actionExit.setText(_translate("MainWindow", "Exit"))
+        self.actionExit.setShortcut(_translate("MainWindow", "Esc"))
+        self.actionPreferences.setText(_translate("MainWindow", "Preferences"))
+        self.actionPreferences.setShortcut(_translate("MainWindow", "P"))
+        self.actionLoad_PDF.setText(_translate("MainWindow", "Load PDF"))
+        self.actionLoad_PDF.setShortcut(_translate("MainWindow", "O"))
+        self.actionInsert_Text.setText(_translate("MainWindow", "Insert Text"))
+        self.actionInsert_Text.setShortcut(_translate("MainWindow", "T"))

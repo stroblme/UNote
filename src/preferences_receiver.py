@@ -5,7 +5,7 @@
 #
 # Author: Melvin Strobl
 # ---------------------------------------------------------------
-from PySide2.QtCore import QObject
+from PyQt5.QtCore import QObject
 
 from guiHelper import GuiHelper
 from preferences import Preferences

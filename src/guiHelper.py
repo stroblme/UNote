@@ -6,11 +6,11 @@
 # Author: Melvin Strobl
 # ---------------------------------------------------------------
 
-from PySide2 import QtWidgets, QtCore
-from PySide2.QtWidgets import QFileDialog, QWidget
-from PySide2.QtCore import QSettings, QFile, QTextStream
+from PyQt5 import QtWidgets, QtCore
+from PyQt5.QtWidgets import QFileDialog, QWidget
+from PyQt5.QtCore import QSettings, QFile, QTextStream
 
-from PySide2.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication
 
 import style.BreezeStyleSheets.breeze_resources
 
@@ -32,7 +32,7 @@ class GuiHelper(QWidget):
 
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getOpenFileName(parent = self, caption = "Open File", dir = dir, filter = filter, options = options)
+        fileName, _ = QFileDialog.getOpenFileName(self, "Open File", "", filter, options=options)
 
         if fileName:
             print(fileName)
@@ -51,7 +51,7 @@ class GuiHelper(QWidget):
 
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        fileNames, _ = QFileDialog.getOpenFileNames(parent = self, caption = "Open Files", dir = dir, filter = filter, options = options)
+        fileNames, _ = QFileDialog.getOpenFileNames(self, "Open File", "", filter, options=options)
 
         if fileNames:
             print(fileNames)

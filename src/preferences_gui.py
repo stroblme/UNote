@@ -6,9 +6,9 @@
 # Author: Melvin Strobl
 # ---------------------------------------------------------------
 
-from PySide2 import QtCore, QtGui, QtWidgets
-from PySide2.QtCore import Signal, QSettings, QObject
-from PySide2.QtWidgets import QDialog
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import pyqtSignal, QSettings, QObject
+from PyQt5.QtWidgets import QDialog
 
 
 from util import readFile, writeFile

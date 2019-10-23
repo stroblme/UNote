@@ -6,9 +6,9 @@
 # Author: Melvin Strobl
 # ---------------------------------------------------------------
 
-from PySide2.QtWidgets import QSizePolicy, QFrame, QDialog, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGesture
-from PySide2.QtCore import Qt, QRectF, QEvent
-from PySide2.QtGui import QPixmap
+from PyQt5.QtWidgets import QSizePolicy, QFrame, QDialog, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGesture
+from PyQt5.QtCore import Qt, QRectF, QEvent
+from PyQt5.QtGui import QPixmap
 
 
 from interfaces import IregCon, IcsrCtrl
