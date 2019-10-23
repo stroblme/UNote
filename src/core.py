@@ -6,7 +6,7 @@
 # Author: Melvin Strobl
 # ---------------------------------------------------------------
 
-from PyQt5.QtWidgets import QSizePolicy, QFrame, QDialog, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGesture
+from PyQt5.QtWidgets import QSizePolicy, QFrame, QDialog, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGesture, QGraphicsLineItem 
 from PyQt5.QtCore import Qt, QRectF, QEvent
 from PyQt5.QtGui import QPixmap
 
@@ -104,6 +104,8 @@ class GraphicsViewHandler(QGraphicsView):
             # Load each page to a new position in the current view.
             posX, posY = self.loadPdfPageToCurrentView(pIt, posX, posY)
 
+        self.qli = QGraphicsLineItem(0,0,0,100)
+        self.scene.addItem(self.qli)
 
     def loadPdfPageToCurrentView(self, pageNumber, posX, posY):
 
@@ -148,6 +150,9 @@ class GraphicsViewHandler(QGraphicsView):
 
 
         for renderedItem in renderedItems:
+            if type(renderedItem) == QGraphicsLineItem:
+                continue
+
             clipX = 0
             clipY = 0
 
@@ -197,7 +202,10 @@ class GraphicsViewHandler(QGraphicsView):
 
             self.updatePdf(renderedItem, zoom = self.absZoomFactor, clip = clip)
 
-            renderedItem.setPos(renderedItem.x() + clipX, renderedItem.y() + clipY)
+            if clipX != 0:
+                renderedItem.setPos(viewportX, renderedItem.y())
+            if clipY != 0:
+                renderedItem.setPos(renderedItem.x(), viewportY)
 
             
 
