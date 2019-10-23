@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'X:\UNote\src\ui\preferences_gui.ui',
 # licensing of 'X:\UNote\src\ui\preferences_gui.ui' applies.
 #
-# Created: Wed Oct 23 11:13:31 2019
+# Created: Wed Oct 23 12:51:32 2019
 #      by: pyside2-uic  running on PySide2 5.13.1
 #
 # WARNING! All changes made in this file will be lost!

@@ -54,6 +54,10 @@ class QPdfView(QGraphicsPixmapItem):
     def getVisibleRect(self):
         pass
 
+    def insertText(self):
+        pass
+
+
 
 
 class GraphicsViewHandler(QGraphicsView):
@@ -121,7 +125,7 @@ class GraphicsViewHandler(QGraphicsView):
 
         return newPosX, newPosY
 
-    def getRenderedPages(self):
+    def updateRenderedPages(self):
         h = float(self.size().height())
         w = float(self.size().width())
         x = float(0)
@@ -135,6 +139,20 @@ class GraphicsViewHandler(QGraphicsView):
 
         for renderedItem in renderedItems:
             self.updatePdf(renderedItem, self.absZoomFactor)
+
+    def insertText(self):
+        h = float(self.size().height())
+        w = float(self.size().width())
+        x = float(0)
+        y = float(0)
+
+        rect = QRectF(x,y,w,h)
+        # print(w, h)
+        # print(self.scene.sceneRect())
+
+        renderedItems = self.scene.items(self.mapToScene(self.viewport().geometry()))
+
+        self.pdf.insertText(renderedItems[0].page, "hi")
 
     def updatePdf(self, pdf, zoom, pageNumber = None):
         mat = fitz.Matrix(zoom, zoom)
@@ -188,7 +206,7 @@ class GraphicsViewHandler(QGraphicsView):
             delta = newPos - oldPos
             self.translate(delta.x(), delta.y())
 
-            self.getRenderedPages()
+            self.updateRenderedPages()
         else:
             QGraphicsView.wheelEvent(self, event)
 

@@ -49,6 +49,8 @@ class Receivers(QObject):
 
         self.uiInst.graphicsView.loadPdfToCurrentView(pdfFileName)
 
+    def insertText(self):
+        self.uiInst.graphicsView.insertText()
 
     @Slot(str)
     def JSSendMessage(self, msg):
