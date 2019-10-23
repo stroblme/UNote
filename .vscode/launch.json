@@ -9,8 +9,19 @@
             "name": "UNote",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/src/unote.py",
-            "cwd": "${workspaceFolder}/src"
+            "program": "${workspaceFolder}/src/cxptest_gui.py",
+            "cwd": "${workspaceFolder}/src",
+            "args": ["-u"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "UNote Debug",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/cxptest_gui.py",
+            "args": ["-d", "-u"],
+            "cwd": "${workspaceFolder}/src",
+            "console": "integratedTerminal"
         }
     ]
 }
