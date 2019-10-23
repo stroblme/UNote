@@ -4,8 +4,12 @@
 - [x] Implement file loading menu
 - [x] Implement scrolling and full pdf load
 - [x] Implement zooming
-- [ ] Improve zooming, by re-rendering page
+- [x] Improve zooming, by re-rendering page
+- [ ] Implement gestures for touch compatibility
+- [ ] implement mouse paning
 - [ ] Implement annotations
 - [ ] Implement basic forms
 - [ ] Implement free drawing
+- [ ] Implement plain-text annotations
+- [ ] Implement markdown formatting annotations
 - [ ] Implement database structure

@@ -6,8 +6,8 @@
 # Author: Melvin Strobl
 # ---------------------------------------------------------------
 
-from PySide2.QtWidgets import QSizePolicy, QFrame, QDialog, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem
-from PySide2.QtCore import Qt, QRectF
+from PySide2.QtWidgets import QSizePolicy, QFrame, QDialog, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGesture
+from PySide2.QtCore import Qt, QRectF, QEvent
 from PySide2.QtGui import QPixmap
 
 
@@ -54,6 +54,8 @@ class QPdfView(QGraphicsPixmapItem):
     def getVisibleRect(self):
         pass
 
+
+
 class GraphicsViewHandler(QGraphicsView):
     pages = IndexedOrderedDict()
     DEFAULTPAGESPACE = 20
@@ -79,6 +81,9 @@ class GraphicsViewHandler(QGraphicsView):
         self.setFrameShape(QFrame.StyledPanel)
         self.setObjectName("graphicsView")
 
+        self.setDragMode(self.ScrollHandDrag)
+
+        # self.grabGesture(QGesture.gestureType(self))
         # self.resize(parent.size())
 
     def loadPdfToCurrentView(self, pdfFilePath):
@@ -99,15 +104,8 @@ class GraphicsViewHandler(QGraphicsView):
         pdfView = QPdfView()
         pdfView.setPage(self.pdf.getPage(pageNumber))
 
-        pixmap = self.pdf.renderPixmap(pdfView.page)
+        self.updatePdf(pdfView, self.absZoomFactor, pageNumber)
 
-        qImg = self.pdf.getQImage(pixmap)
-
-        qImg = self.imageHelper.applyTheme(qImg)
-
-        pdfView.setPixMap(qImg, pageNumber)
-
-        # qImgItem = self.imagehelper.createImageItem(qImg)
 
         self.pages[pageNumber] = pdfView
 
@@ -138,7 +136,7 @@ class GraphicsViewHandler(QGraphicsView):
         for renderedItem in renderedItems:
             self.updatePdf(renderedItem, self.absZoomFactor)
 
-    def updatePdf(self, pdf, zoom):
+    def updatePdf(self, pdf, zoom, pageNumber = None):
         mat = fitz.Matrix(zoom, zoom)
 
         pixmap = self.pdf.renderPixmap(pdf.page, mat = mat)
@@ -147,7 +145,10 @@ class GraphicsViewHandler(QGraphicsView):
 
         qImg = self.imageHelper.applyTheme(qImg)
 
-        pdf.updatePixMap(qImg)
+        if pageNumber:
+            pdf.setPixMap(qImg, pageNumber)
+        else:
+            pdf.updatePixMap(qImg)
 
     def getCurrentScaleFactor(self):
         print(self.mapToScene(self.viewport().geometry()))
@@ -190,3 +191,6 @@ class GraphicsViewHandler(QGraphicsView):
             self.getRenderedPages()
         else:
             QGraphicsView.wheelEvent(self, event)
+
+    def gestureEvent(self, event):
+        print('hi')
