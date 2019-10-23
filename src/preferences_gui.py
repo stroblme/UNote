@@ -113,7 +113,6 @@ class PreferencesGUI(Ui_PreferencesDialog):
         Saves all entries, which have been entered without explicit confirmation
         '''
 
-        Preferences.updateKeyValue("lineEditAvailableBaudRates", self.ui.lineEditAvailableBaudRates.text())
 
     def loadSettings(self):
         '''

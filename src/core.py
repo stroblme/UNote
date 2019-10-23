@@ -96,10 +96,12 @@ class GraphicsViewHandler(QGraphicsView):
         self.scene = QGraphicsScene()
         self.setScene(self.scene)
 
-
+        # Start at the top
         posX = float(0)
         posY = float(0)
+
         for pIt in range(self.pdf.doc.pageCount):
+            # Load each page to a new position in the current view.
             posX, posY = self.loadPdfPageToCurrentView(pIt, posX, posY)
 
 
@@ -160,7 +162,7 @@ class GraphicsViewHandler(QGraphicsView):
         pixmap = self.pdf.renderPixmap(pdf.page, mat = mat)
 
         qImg = self.pdf.getQImage(pixmap)
-
+        qImg = qImg.scaled(self.pdf.width, self.pdf.height)
         qImg = self.imageHelper.applyTheme(qImg)
 
         if pageNumber:
@@ -204,11 +206,13 @@ class GraphicsViewHandler(QGraphicsView):
 
             # Move scene to old position
             delta = newPos - oldPos
-            self.translate(delta.x(), delta.y())
+            # self.translate(delta.x(), delta.y())
 
-            self.updateRenderedPages()
         else:
             QGraphicsView.wheelEvent(self, event)
+
+        self.updateRenderedPages()
+
 
     def gestureEvent(self, event):
         print('hi')

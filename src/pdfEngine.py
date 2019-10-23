@@ -8,7 +8,8 @@ class pdfEngine():
     def __init__(self):
         super().__init__()
 
-
+    height = 900
+    width = 637
 
     def openPdf(self, filename):
         self.filename = filename
@@ -40,8 +41,8 @@ class pdfEngine():
 
     def renderPixmap(self, page, mat = None, clip = None, alpha = False):
         pixmap = page.getPixmap(matrix = mat, clip = clip, alpha = alpha)
-
         return pixmap
+
 
     def getQImage(self, pixmap):
         mode = "RGBA" if pixmap.alpha else "RGB"
