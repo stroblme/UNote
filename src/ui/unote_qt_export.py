@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'X:\UNote\src\ui\unote_gui.ui',
-# licensing of 'X:\UNote\src\ui\unote_gui.ui' applies.
+# Form implementation generated from reading ui file 'C:\Users\m17538\Projects\unote\src\ui\unote_gui.ui',
+# licensing of 'C:\Users\m17538\Projects\unote\src\ui\unote_gui.ui' applies.
 #
-# Created: Wed Oct 23 12:51:33 2019
+# Created: Wed Oct 23 16:03:24 2019
 #      by: pyside2-uic  running on PySide2 5.13.1
 #
 # WARNING! All changes made in this file will be lost!
