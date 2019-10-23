@@ -148,26 +148,56 @@ class GraphicsViewHandler(QGraphicsView):
 
 
         for renderedItem in renderedItems:
-            if(renderedItem.y() < viewportY):
-                print(str(renderedItem.page) + "\tPagestart out of scope")
+            clipX = 0
+            clipY = 0
 
-                clipX = renderedItem.x() - viewportX
-                clipY = renderedItem.y() - viewportY
-            else:
-                clipX = renderedItem.x()
-                clipY = renderedItem.y()
+            if(renderedItem.x() < viewportX):
+                clipX = viewportX - renderedItem.x()
+
+            if(renderedItem.y() < viewportY):            
+                clipY = viewportY - renderedItem.y()
+                
             
+            if((renderedItem.x() + renderedItem.boundingRect().width()) - (viewportX + viewportWidth) > 0):
+                print(str(renderedItem.page) + "\tPageend out of scope")
+                # Start in scope, End not in scope
+                if clipX == 0:
+                    clipW = renderedItem.x() - viewportWidth
+                # Start not in scope, End not in scope
+                else:
+                    clipW = viewportWidth
+
+            else:
+                # Start in scope, End in scope
+                if clipX == 0:
+                    clipW =  renderedItem.boundingRect().width() - renderedItem.x() - viewportX
+                # Start not in scope, End in scope
+                else:
+                    clipW = renderedItem.boundingRect().width()
+
             if((renderedItem.y() + renderedItem.boundingRect().height()) - (viewportY + viewportHeight) > 0):
                 print(str(renderedItem.page) + "\tPageend out of scope")
-
-                clipW = viewportWidth
-                clipH = viewportHeight
+                # Start in scope, End not in scope
+                if clipY == 0:
+                    clipH = renderedItem.y() - viewportHeight
+                # Start not in scope, End not in scope
+                else:
+                    clipH = viewportHeight
 
             else:
-                clipW = renderedItem.y() - viewportX + renderedItem.boundingRect().width()
-                clipH = renderedItem.y() - viewportY + renderedItem.boundingRect().height()
+                # Start in scope, End in scope
+                if clipY == 0:
+                    clipH = renderedItem.boundingRect().height() - renderedItem.y() - viewportY
+                # Start not in scope, End in scope
+                else:
+                    clipH = renderedItem.boundingRect().height()
 
-            self.updatePdf(renderedItem, self.absZoomFactor)
+
+            clip = QRectF(clipX, clipY, clipW, clipH)
+
+            self.updatePdf(renderedItem, zoom = self.absZoomFactor, clip = clip)
+
+            renderedItem.setPos(renderedItem.x() + clipX, renderedItem.y() + clipY)
 
             
 
@@ -185,10 +215,15 @@ class GraphicsViewHandler(QGraphicsView):
 
         self.pdf.insertText(renderedItems[0].page, "hi")
 
-    def updatePdf(self, pdf, zoom=absZoomFactor, pageNumber = None):
+    def updatePdf(self, pdf, zoom=absZoomFactor, clip=None, pageNumber = None):
         mat = fitz.Matrix(zoom, zoom)
 
-        pixmap = self.pdf.renderPixmap(pdf.page, mat = mat)
+        fClip = None
+        if clip:
+            fClip = fitz.Rect(clip.x(), clip.y(), clip.x() + clip.width(), clip.y() + clip.width())
+            # fClip = fitz.Rect(clip.x(), clip.y(), clip.x() + clip.width(), clip.y() + clip.width())
+
+        pixmap = self.pdf.renderPixmap(pdf.page, mat = mat, clip = fClip)
 
         qImg = self.pdf.getQImage(pixmap)
         qImg.setDevicePixelRatio(zoom)
