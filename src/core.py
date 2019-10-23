@@ -110,7 +110,7 @@ class GraphicsViewHandler(QGraphicsView):
         pdfView = QPdfView()
         pdfView.setPage(self.pdf.getPage(pageNumber))
 
-        self.updatePdf(pdfView, self.absZoomFactor, pageNumber)
+        self.updatePdf(pdfView, pageNumber = pageNumber)
 
 
         self.pages[pageNumber] = pdfView
@@ -128,19 +128,48 @@ class GraphicsViewHandler(QGraphicsView):
         return newPosX, newPosY
 
     def updateRenderedPages(self):
-        h = float(self.size().height())
-        w = float(self.size().width())
-        x = float(0)
-        y = float(0)
+        # h = float(self.size().height())
+        # w = float(self.size().width())
+        # x = float(0)
+        # y = float(0)
 
-        rect = QRectF(x,y,w,h)
+        # rect = QRectF(x,y,w,h)
         # print(w, h)
         # print(self.scene.sceneRect())
 
         renderedItems = self.scene.items(self.mapToScene(self.viewport().geometry()))
 
+        rect = self.mapToScene(self.viewport().geometry()).boundingRect()
+        viewportHeight = rect.height()
+        viewportWidth = rect.width()
+        viewportX = rect.x()
+        viewportY = rect.y()
+        print("")
+
+
         for renderedItem in renderedItems:
+            if(renderedItem.y() < viewportY):
+                print(str(renderedItem.page) + "\tPagestart out of scope")
+
+                clipX = renderedItem.x() - viewportX
+                clipY = renderedItem.y() - viewportY
+            else:
+                clipX = renderedItem.x()
+                clipY = renderedItem.y()
+            
+            if((renderedItem.y() + renderedItem.boundingRect().height()) - (viewportY + viewportHeight) > 0):
+                print(str(renderedItem.page) + "\tPageend out of scope")
+
+                clipW = viewportWidth
+                clipH = viewportHeight
+
+            else:
+                clipW = renderedItem.y() - viewportX + renderedItem.boundingRect().width()
+                clipH = renderedItem.y() - viewportY + renderedItem.boundingRect().height()
+
             self.updatePdf(renderedItem, self.absZoomFactor)
+
+            
 
     def insertText(self):
         h = float(self.size().height())
@@ -156,14 +185,13 @@ class GraphicsViewHandler(QGraphicsView):
 
         self.pdf.insertText(renderedItems[0].page, "hi")
 
-    def updatePdf(self, pdf, zoom, pageNumber = None):
+    def updatePdf(self, pdf, zoom=absZoomFactor, pageNumber = None):
         mat = fitz.Matrix(zoom, zoom)
 
         pixmap = self.pdf.renderPixmap(pdf.page, mat = mat)
 
         qImg = self.pdf.getQImage(pixmap)
         qImg.setDevicePixelRatio(zoom)
-        # qImg = qImg.smoothScaled(self.pdf.width, self.pdf.height)
         qImg = self.imageHelper.applyTheme(qImg)
 
         if pageNumber:
