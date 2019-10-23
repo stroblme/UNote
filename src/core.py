@@ -162,7 +162,8 @@ class GraphicsViewHandler(QGraphicsView):
         pixmap = self.pdf.renderPixmap(pdf.page, mat = mat)
 
         qImg = self.pdf.getQImage(pixmap)
-        qImg = qImg.scaled(self.pdf.width, self.pdf.height)
+        qImg.setDevicePixelRatio(zoom)
+        # qImg = qImg.smoothScaled(self.pdf.width, self.pdf.height)
         qImg = self.imageHelper.applyTheme(qImg)
 
         if pageNumber:
