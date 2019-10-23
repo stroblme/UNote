@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Users\m17538\Projects\unote\src\ui\preferences_gui.ui'
+# Form implementation generated from reading ui file '.\ui\preferences_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.13.0
 #
@@ -57,3 +57,13 @@ class Ui_PreferencesDialog(object):
         PreferencesDialog.setWindowTitle(_translate("PreferencesDialog", "Dialog"))
         self.labelAppearance.setText(_translate("PreferencesDialog", "Appearance"))
         self.radioButtonDarkTheme.setText(_translate("PreferencesDialog", "Dark Theme"))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    PreferencesDialog = QtWidgets.QDialog()
+    ui = Ui_PreferencesDialog()
+    ui.setupUi(PreferencesDialog)
+    PreferencesDialog.show()
+    sys.exit(app.exec_())
