@@ -51,6 +51,8 @@ class QPdfView(QGraphicsPixmapItem):
         self.wOrigin = self.boundingRect().width()
         self.hOrigin = self.boundingRect().height()
 
+        print(self.hOrigin)
+
     def setPage(self, page):
         self.page = page
 
@@ -121,7 +123,6 @@ class GraphicsViewHandler(QGraphicsView):
 
         self.updatePdf(pdfView, pageNumber = pageNumber)
 
-        pdfView.setAsOrigin()
 
         self.pages[pageNumber] = pdfView
 
@@ -134,6 +135,8 @@ class GraphicsViewHandler(QGraphicsView):
         else:
             newPosX = posX + pdfView.boundingRect().width() + self.DEFAULTPAGESPACE
             newPosY = posY
+
+        pdfView.setAsOrigin()
 
         return newPosX, newPosY
 
@@ -165,9 +168,13 @@ class GraphicsViewHandler(QGraphicsView):
             clipY = 0
 
             if(renderedItem.xOrigin < viewportX):
+                print(str(renderedItem.page) + "\tPagestart out of scope")
+
                 clipX = viewportX - renderedItem.xOrigin
 
             if(renderedItem.yOrigin < viewportY):
+                print(str(renderedItem.page) + "\tPagestart out of scope")
+
                 clipY = viewportY - renderedItem.yOrigin
 
 
@@ -192,7 +199,7 @@ class GraphicsViewHandler(QGraphicsView):
                 print(str(renderedItem.page) + "\tPageend out of scope")
                 # Start in scope, End not in scope
                 if clipY == 0:
-                    clipH = renderedItem.yOrigin - viewportHeight
+                    clipH = (viewportY + viewportHeight) - renderedItem.yOrigin
                 # Start not in scope, End not in scope
                 else:
                     clipH = viewportHeight
@@ -203,7 +210,7 @@ class GraphicsViewHandler(QGraphicsView):
                     clipH = renderedItem.hOrigin - renderedItem.yOrigin - viewportY
                 # Start not in scope, End in scope
                 else:
-                    clipH = renderedItem.hOrigin
+                    clipH = renderedItem.hOrigin - clipY
 
 
             clip = QRectF(clipX, clipY, clipW, clipH)
@@ -211,9 +218,12 @@ class GraphicsViewHandler(QGraphicsView):
             self.updatePdf(renderedItem, zoom = self.absZoomFactor, clip = clip)
 
             if clipX != 0:
-                renderedItem.setPos(viewportX, renderedItem.y())
+                renderedItem.setPos(viewportX, renderedItem.yOrigin)
             if clipY != 0:
-                renderedItem.setPos(renderedItem.x(), viewportY)
+                renderedItem.setPos(renderedItem.xOrigin, viewportY)
+
+            if clipX == 0 and clipY == 0:
+                renderedItem.setPos(renderedItem.xOrigin, renderedItem.yOrigin)
 
 
 
