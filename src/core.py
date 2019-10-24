@@ -86,7 +86,6 @@ class QPdfView(QGraphicsPixmapItem):
 
 
     def mousePressEvent(self, event):
-        QGraphicsPixmapItem.mousePressEvent(event)
         if event.button() == Qt.RightButton:
             self.insertText(event.pos())
 
