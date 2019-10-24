@@ -48,37 +48,36 @@ class pdfEngine():
         img = Image.frombytes(mode, [pixmap.width, pixmap.height], pixmap.samples)
         return ImageQt.ImageQt(img)
 
-    def insertText(self, page, text, textRect):
-        red  = (1,0,0)                                   # some colors
-        gold = (1,1,0)
-        blue = (0,0,1)
-        """We use a Shape object (something like a canvas) to output the text and
-        the rectangles surounding it for demonstration.
-        """
-        textRect = fitz.Rect(390, 390, 590, 590)
+    # def insertText(self, page, text, textRect):
+    #     red  = (1,0,0)                                   # some colors
+    #     gold = (1,1,0)
+    #     blue = (0,0,1)
+    #     """We use a Shape object (something like a canvas) tot output the text and
+    #     the rectangles surounding it for demonstration.
+    #     """
 
-        shape = page.newShape()                            # create Shape
-        shape.drawRect(textRect)                                 # draw rectangles
-        shape.finish(width = 1, color = red, fill = gold)
-        # Now insert text in the rectangles. Font "Helvetica" will be used
-        # by default. A return code rc < 0 indicates insufficient space (not checked here).
-        rc = shape.insertTextbox(textRect, fontsize=100, buffer=text, color = blue, rotate=180)
-        shape.commit()                                     # write all stuff to page /Contents
-        # print(shape.width)
-        # print(shape.height)
-        # print(page.bound().height)
-        # print(page.bound().width)
-        # print(self.doc.metadata['encryption'])
-        # self.doc.metadata['encryption'] = False
+    #     shape = page.newShape()                            # create Shape
+    #     shape.drawRect(textRect)                                 # draw rectangles
+    #     shape.finish(width = 1, color = red, fill = gold)
+    #     # Now insert text in the rectangles. Font "Helvetica" will be used
+    #     # by default. A return code rc < 0 indicates insufficient space (not checked here).
+    #     rc = shape.insertTextbox(textRect, fontsize=100, buffer=text, color = blue, rotate=180)
+    #     shape.commit()                                     # write all stuff to page /Contents
+    #     # print(shape.width)
+    #     # print(shape.height)
+    #     # print(page.bound().height)
+    #     # print(page.bound().width)
+    #     # print(self.doc.metadata['encryption'])
+    #     # self.doc.metadata['encryption'] = False
 
-        # page.insertText(fitz.Point(490,490),                   # bottom-left of 1st char
-        #              'hihiu',                # the text (honors '\n')
-        #              fontname = "helv",   # the default font
-        #              fontsize = 100,       # the default font size
-        #              rotate = 0,          # also available: 90, 180, 270
-        #              )
+    #     # page.insertText(fitz.Point(490,490),                   # bottom-left of 1st char
+    #     #              'hihiu',                # the text (honors '\n')
+    #     #              fontname = "helv",   # the default font
+    #     #              fontsize = 100,       # the default font size
+    #     #              rotate = 0,          # also available: 90, 180, 270
+    #     #              )
 
-        name, ext = os.path.splitext(self.filename)
-        name = name + '_c'
+    #     name, ext = os.path.splitext(self.filename)
+    #     name = name + '_c'
 
         self.doc.save(name)

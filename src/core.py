@@ -63,9 +63,36 @@ class QPdfView(QGraphicsPixmapItem):
     def getVisibleRect(self):
         pass
 
-    def insertText(self):
-        pass
+    def insertText(self, qpos):
+        h = float(22)
+        w = float(120)
 
+        textRect = fitz.Rect(qpos.x(), qpos.y(), qpos.x() + w, qpos.y() - h)
+
+        red  = (1,0,0)                                   # some colors
+        gold = (1,1,0)
+        blue = (0,0,1)
+        black = (0,0,0)
+        white = (1,1,1)
+        """We use a Shape object (something like a canvas) tot output the text and
+        the rectangles surounding it for demonstration.
+        """
+
+        shape = self.page.newShape()                            # create Shape
+        shape.drawRect(textRect)                                 # draw rectangles
+        shape.finish(width = 1, color = red, fill = black)
+        # Now insert text in the rectangles. Font "Helvetica" will be used
+        # by default. A return code rc < 0 indicates insufficient space (not checked here).
+        rc = shape.insertTextbox(textRect, fontsize=18, buffer="hi", color = white, rotate=0)
+        if rc < 0:
+            print('not enough space')
+        shape.commit()   
+
+
+    def mousePressEvent(self, event):
+        print(event.pos())
+        if event.button() == Qt.RightButton:
+            self.insertText(event.pos())
 
 
 
@@ -94,7 +121,7 @@ class GraphicsViewHandler(QGraphicsView):
         self.setFrameShape(QFrame.StyledPanel)
         self.setObjectName("graphicsView")
 
-        self.setDragMode(self.ScrollHandDrag)
+        # self.setDragMode(self.ScrollHandDrag)
 
         # self.grabGesture(QGesture.gestureType(self))
         # self.resize(parent.size())
@@ -243,26 +270,12 @@ class GraphicsViewHandler(QGraphicsView):
         for renderedItem in renderedItems:
             if not renderedItem.isUnderMouse():
                 continue
-            qTextPoint = renderedItem.mapToScene(self.mousePos)
-            print(qTextPoint)
+            qTextPoint = renderedItem.mapFromScene(self.mousePos)
             item = renderedItem
             break
 
 
-        h = float(40)
-        w = float(40)
-        x = qTextPoint.x() - item.xOrigin
-        y = - qTextPoint.y() - item.yOrigin
-
-        rect = QRectF(x,y,w,h)
-        # print(w, h)
-        # print(self.scene.sceneRect())
-
-        textRect = fitz.Rect(rect.x(), rect.y(), rect.x() + rect.width(), rect.y() + rect.height())
-
-        self.pdf.insertText(item.page, "hi", textRect)
-
-        self.updateRenderedPages()
+        
 
 
     def updatePdf(self, pdf, zoom=absZoomFactor, clip=None, pageNumber = None):
@@ -326,7 +339,7 @@ class GraphicsViewHandler(QGraphicsView):
         self.updateRenderedPages()
 
     def mouseMoveEvent(self, event):
-        self.mousePos = event.pos()
+        self.mousePos = event.localPos()
         super(GraphicsViewHandler, self).mouseMoveEvent(event)
         self.updateRenderedPages()
 

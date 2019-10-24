@@ -201,7 +201,7 @@ def main():
         sys.exit("Unable to parse arguments:\n" + str(e))
 
     if args.updateUI:
-        subprocess.run('py -3 -m PyQt5.uic.pyuic .\\ui\\cxptest_gui.ui -o .\\ui\\cxptest_qt_export.py -x')
+        subprocess.run('py -3 -m PyQt5.uic.pyuic .\\ui\\unote_gui.ui -o .\\ui\\unote_qt_export.py -x')
         subprocess.run('py -3 -m PyQt5.uic.pyuic .\\ui\\preferences_gui.ui -o .\\ui\\preferences_qt_export.py -x')
         
     from ui.unote_qt_export import Ui_MainWindow

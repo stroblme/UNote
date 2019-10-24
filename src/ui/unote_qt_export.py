@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Users\m17538\Projects\unote\src\ui\unote_gui.ui'
+# Form implementation generated from reading ui file '.\ui\unote_gui.ui'
 #
 # Created by: PyQt5 UI code generator 5.13.0
 #
@@ -66,3 +66,13 @@ class Ui_MainWindow(object):
         self.actionLoad_PDF.setShortcut(_translate("MainWindow", "O"))
         self.actionInsert_Text.setText(_translate("MainWindow", "Insert Text"))
         self.actionInsert_Text.setShortcut(_translate("MainWindow", "T"))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())
