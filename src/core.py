@@ -31,6 +31,7 @@ class QPdfView(QGraphicsPixmapItem):
     def __init__(self):
         QGraphicsPixmapItem.__init__(self)
         self.blockEdit = False
+        self.ongoingEdit = False
 
     def setQImage(self, qImg):
         self.qImg = qImg
@@ -86,16 +87,40 @@ class QPdfView(QGraphicsPixmapItem):
         shape.commit()
 
     def startHighlightText(self, qpos):
-
-
+        print('start')
+        self.ongoingEdit = True
+        self.highLightStart = qpos
         pass
 
-    def wheelEvent(self, event):
-        modifiers = QApplication.keyboardModifiers()
+    def stopHighlightText(self, qpos):
+        print('stop')
+        self.ongoingEdit = False
+        pass
 
-        Mmodo = QApplication.mouseButtons()
-        if bool(Mmodo == Qt.RightButton) or bool(modifiers == Qt.ControlModifier):
-            self.blockEdit = True
+    def updateHighlightText(self, qpos):
+        print('update')
+        self.highLightStop = qpos
+
+        yMin = min(self.highLightStart.y(), self.highLightStop.y())
+        yMax = max(self.highLightStart.y(), self.highLightStop.y())
+
+        if abs(yMin - yMax) < 10:
+            yMin = yMin - 5
+            yMax = yMax + 5
+
+        xMin = min(self.highLightStart.x(), self.highLightStop.x())
+        xMax = max(self.highLightStart.x(), self.highLightStop.x())
+
+        rect = fitz.Rect(xMin, yMin, xMax, yMax)
+        self.page.addHighlightAnnot(rect)
+
+    def wheelEvent(self, event):
+        if not self.ongoingEdit:
+            modifiers = QApplication.keyboardModifiers()
+
+            Mmodo = QApplication.mouseButtons()
+            if bool(Mmodo == Qt.RightButton) or bool(modifiers == Qt.ControlModifier):
+                self.blockEdit = True
 
         QGraphicsPixmapItem.wheelEvent(self, event)
 
@@ -120,14 +145,16 @@ class QPdfView(QGraphicsPixmapItem):
                 self.stopHighlightText(event.pos())
 
     def mouseMoveEvent(self, event):
-        if self.blockEdit:
-            return
+        self.blockEdit = False
 
-        if event.button() == Qt.RightButton:
+        if self.ongoingEdit:
             if textMode:
                 self.insertText(event.pos())
             elif highlightMode:
-                self.stopHighlightText(event.pos())
+                self.updateHighlightText(event.pos())
+
+        QGraphicsPixmapItem.mouseMoveEvent(self, event)
+
 
 class GraphicsViewHandler(QGraphicsView):
     pages = IndexedOrderedDict()

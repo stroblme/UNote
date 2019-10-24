@@ -57,8 +57,8 @@ class Receivers(QObject):
     def toggleTextMode(self):
         self.uiInst.graphicsView.toggleTextMode()
 
-    def toggleHighLightMode(self):
-        self.uiInst.graphicsView.toggleHighLightMode()
+    def toggleHighlightMode(self):
+        self.uiInst.graphicsView.toggleHighlightMode()
 
     @pyqtSlot(str)
     def JSSendMessage(self, msg):
