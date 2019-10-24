@@ -243,17 +243,16 @@ class GraphicsViewHandler(QGraphicsView):
         for renderedItem in renderedItems:
             if not renderedItem.isUnderMouse():
                 continue
-            qTextPoint = renderedItem.mapFromScene(self.mousePos)
+            qTextPoint = renderedItem.mapToScene(self.mousePos)
+            print(qTextPoint)
             item = renderedItem
             break
 
-        if not qTextPoint:
-            return
 
-        h = float(400)
-        w = float(400)
-        x = qTextPoint.x()
-        y = qTextPoint.y()
+        h = float(40)
+        w = float(40)
+        x = qTextPoint.x() - item.xOrigin
+        y = - qTextPoint.y() - item.yOrigin
 
         rect = QRectF(x,y,w,h)
         # print(w, h)
@@ -262,6 +261,9 @@ class GraphicsViewHandler(QGraphicsView):
         textRect = fitz.Rect(rect.x(), rect.y(), rect.x() + rect.width(), rect.y() + rect.height())
 
         self.pdf.insertText(item.page, "hi", textRect)
+
+        self.updateRenderedPages()
+
 
     def updatePdf(self, pdf, zoom=absZoomFactor, clip=None, pageNumber = None):
         mat = fitz.Matrix(zoom, zoom)
