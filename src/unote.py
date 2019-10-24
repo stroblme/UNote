@@ -12,7 +12,7 @@
 # ----------------------------------------------------------
 from util import readFile, writeFile
 from collections import OrderedDict
-
+import time
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QPixmap
@@ -65,9 +65,10 @@ class UNote(Ui_MainWindow):
 
         self.connectReceivers()
 
-        print("Loading pdf")
         if pdfLoad:
+            start_time = time.time()
             self.ui.graphicsView.loadPdfToCurrentView(os.path.abspath(pdfLoad))
+            print("--- Loaded PDF within %s seconds ---" % (time.time() - start_time))
 
 
     def initUI(self):

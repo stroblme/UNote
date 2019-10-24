@@ -97,6 +97,7 @@ class GraphicsViewHandler(QGraphicsView):
     CONTINOUSVIEW = True
 
     absZoomFactor = float(1)
+    lowResZoomFactor = float(0.1)
 
     def __init__(self, parent):
         '''Create the Viewport.
@@ -140,37 +141,20 @@ class GraphicsViewHandler(QGraphicsView):
         # self.moveToThread(self.thread)
 
         for pIt in range(self.pdf.doc.pageCount):
-            # Load each page to a new position in the current view.
-            posX, posY = self.loadPdfPageToCurrentView(pIt, posX, posY)
 
-            if posY > self.viewport().geometry().height():
-                self.t1 = threading.Thread(target = self.furtherRendering(pIt+1, self.pdf.doc.pageCount, posX, posY))
-                self.t1.start()
-                # self.thread.started.connect(lambda:self.furtherRendering(pIt, self.pdf.doc.pageCount, posX, posY))
-                print("rendering in bckg")
-                break
+            if pIt > 2:
+                posX, posY = self.loadPdfPageToCurrentView(pIt, posX, posY, self.lowResZoomFactor)
+            else:
+                # Load each page to a new position in the current view.
+                posX, posY = self.loadPdfPageToCurrentView(pIt, posX, posY, self.absZoomFactor)
 
 
-
-    def furtherRendering(self, itStart, itEnd, posX, posY):
-        for pIt in range(itStart, self.pdf.doc.pageCount):
-            # Load each page to a new position in the current view.
-            posX, posY = self.loadPdfPageToCurrentView(pIt, posX, posY)
-
-
-    def renderingFinished(self, qItems):
-        print("rendering finished")
-
-        for qItem in qItems:
-            self.scene.addItem(self.qli)
-
-
-    def loadPdfPageToCurrentView(self, pageNumber, posX, posY):
+    def loadPdfPageToCurrentView(self, pageNumber, posX, posY, zoom = None):
 
         pdfView = QPdfView()
         pdfView.setPage(self.pdf.getPage(pageNumber))
 
-        self.updatePdf(pdfView, pageNumber = pageNumber)
+        self.updatePdf(pdfView, zoom = zoom, pageNumber = pageNumber)
 
 
         self.pages[pageNumber] = pdfView
@@ -178,16 +162,9 @@ class GraphicsViewHandler(QGraphicsView):
         self.scene.addItem(self.pages[pageNumber])
         self.pages[pageNumber].setPos(posX, posY)
 
-        if self.CONTINOUSVIEW:
-            newPosX = posX
-            newPosY = posY + pdfView.boundingRect().height() + self.DEFAULTPAGESPACE
-        else:
-            newPosX = posX + pdfView.boundingRect().width() + self.DEFAULTPAGESPACE
-            newPosY = posY
-
         pdfView.setAsOrigin()
 
-        return newPosX, newPosY
+        return posX, posY + pdfView.hOrigin + self.DEFAULTPAGESPACE
 
     def updateRenderedPages(self):
         try:
@@ -352,17 +329,57 @@ class GraphicsViewHandler(QGraphicsView):
     def gestureEvent(self, event):
         print('hi')
 
-class Renderer(QObject):
-    finished = pyqtSignal()
-    intReady = pyqtSignal(int)
+# class Renderer(QObject):
+#     finished = pyqtSignal()
+#     intReady = pyqtSignal(int)
 
-    def __init__(self):
-        self.pdf = pdfEngine()
+#     def __init__(self, doc, pages):
+#         self.pdf = pdfEngine()
+#         self.doc = doc
+#         self.pages = pages
 
-    @pyqtSlot()
-    def procCounter(self): # A slot takes no params
-        for i in range(1, 100):
-            time.sleep(1)
-            self.intReady.emit(i)
+#     @pyqtSlot()
+#     def procCounter(self): # A slot takes no params
+#         for pIt in range(self.pdf.doc.pageCount):
+#             loadInPage(pIt)
 
-        self.finished.emit()
+#     def loadInPage(pageNumber):
+#         pdfView = QPdfView()
+#         pdfView.setPage(self.pdf.getPage(pageNumber))
+
+#         self.updatePdf(pdfView, pageNumber = pageNumber)
+
+
+#         self.pages[pageNumber] = pdfView
+
+#         self.scene.addItem(self.pages[pageNumber])
+#         self.pages[pageNumber].setPos(posX, posY)
+
+#         if self.CONTINOUSVIEW:
+#             newPosX = posX
+#             newPosY = posY + pdfView.boundingRect().height() + self.DEFAULTPAGESPACE
+#         else:
+#             newPosX = posX + pdfView.boundingRect().width() + self.DEFAULTPAGESPACE
+#             newPosY = posY
+
+#         pdfView.setAsOrigin()
+
+#         return newPosX, newPosY
+
+#     def updatePdf(self, pdf, zoom=absZoomFactor, clip=None, pageNumber = None):
+#         mat = fitz.Matrix(zoom, zoom)
+
+#         fClip = None
+#         if clip:
+#             fClip = fitz.Rect(clip.x(), clip.y(), clip.x() + clip.width(), clip.y() + clip.height())
+
+#         pixmap = self.pdf.renderPixmap(pdf.page, mat = mat, clip = fClip)
+
+#         qImg = self.pdf.getQImage(pixmap)
+#         qImg.setDevicePixelRatio(zoom)
+#         qImg = self.imageHelper.applyTheme(qImg)
+
+#         if pageNumber:
+#             pdf.setPixMap(qImg, pageNumber)
+#         else:
+#             pdf.updatePixMap(qImg)
