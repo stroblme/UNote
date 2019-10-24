@@ -41,6 +41,8 @@ class Receivers(QObject):
         '''
         preferenceInstance.run()
 
+        self.uiInst.graphicsView.updateRenderedPages()
+
     def loadPdf(self):
         '''
         Loads a pdf to the current view

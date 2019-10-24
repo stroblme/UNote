@@ -51,8 +51,6 @@ class QPdfView(QGraphicsPixmapItem):
         self.wOrigin = self.boundingRect().width()
         self.hOrigin = self.boundingRect().height()
 
-        print(self.hOrigin)
-
     def setPage(self, page):
         self.page = page
 
@@ -88,7 +86,7 @@ class QPdfView(QGraphicsPixmapItem):
 
 
     def mousePressEvent(self, event):
-        print(event.pos())
+        QGraphicsPixmapItem.mousePressEvent(event)
         if event.button() == Qt.RightButton:
             self.insertText(event.pos())
 
@@ -123,6 +121,8 @@ class GraphicsViewHandler(QGraphicsView):
 
         # self.grabGesture(QGesture.gestureType(self))
         # self.resize(parent.size())
+
+    
 
     def loadPdfToCurrentView(self, pdfFilePath):
         self.pdf.openPdf(pdfFilePath)
@@ -166,15 +166,6 @@ class GraphicsViewHandler(QGraphicsView):
         return newPosX, newPosY
 
     def updateRenderedPages(self):
-        # h = float(self.size().height())
-        # w = float(self.size().width())
-        # x = float(0)
-        # y = float(0)
-
-        # rect = QRectF(x,y,w,h)
-        # print(w, h)
-        # print(self.scene.sceneRect())
-
         try:
             renderedItems = self.scene.items(self.mapToScene(self.viewport().geometry()))
         except Exception as e:
@@ -195,18 +186,15 @@ class GraphicsViewHandler(QGraphicsView):
             clipY = 0
 
             if(renderedItem.xOrigin < viewportX):
-                # print(str(renderedItem.page) + "\tPagestart x out of scope")
 
                 clipX = viewportX - renderedItem.xOrigin
 
             if(renderedItem.yOrigin < viewportY):
-                # print(str(renderedItem.page) + "\tPagestart y out of scope")
 
                 clipY = viewportY - renderedItem.yOrigin
 
 
             if((renderedItem.xOrigin + renderedItem.wOrigin) - (viewportX + viewportWidth) > 0):
-                # print(str(renderedItem.page) + "\tPageend x out of scope")
                 # Start in scope, End not in scope
                 if clipX == 0:
                     clipW = (viewportX + viewportWidth) - renderedItem.xOrigin
@@ -223,7 +211,6 @@ class GraphicsViewHandler(QGraphicsView):
                     clipW = renderedItem.wOrigin - clipX
 
             if((renderedItem.yOrigin + renderedItem.hOrigin) - (viewportY + viewportHeight) > 0):
-                # print(str(renderedItem.page) + "\tPageend y out of scope")
                 # Start in scope, End not in scope
                 if clipY == 0:
                     clipH = (viewportY + viewportHeight) - renderedItem.yOrigin
@@ -255,7 +242,6 @@ class GraphicsViewHandler(QGraphicsView):
 
             renderedItem.setPos(rItx, rIty)
 
-            # print(renderedItem.boundingRect().height())
 
 
 
@@ -294,10 +280,6 @@ class GraphicsViewHandler(QGraphicsView):
         else:
             pdf.updatePixMap(qImg)
 
-
-    def getCurrentScaleFactor(self):
-        print(self.mapToScene(self.viewport().geometry()))
-        print(self.sceneRect())
 
     def wheelEvent(self, event):
         """
@@ -339,7 +321,7 @@ class GraphicsViewHandler(QGraphicsView):
     def mouseMoveEvent(self, event):
         self.mousePos = event.localPos()
         super(GraphicsViewHandler, self).mouseMoveEvent(event)
-        self.updateRenderedPages()
+        # self.updateRenderedPages()
 
 
 
