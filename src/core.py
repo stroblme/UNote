@@ -150,7 +150,10 @@ class GraphicsViewHandler(QGraphicsView):
         # print(w, h)
         # print(self.scene.sceneRect())
 
-        renderedItems = self.scene.items(self.mapToScene(self.viewport().geometry()))
+        try:
+            renderedItems = self.scene.items(self.mapToScene(self.viewport().geometry()))
+        except Exception as e:
+            return
 
         rect = self.mapToScene(self.viewport().geometry()).boundingRect()
         viewportHeight = rect.height()
@@ -264,6 +267,7 @@ class GraphicsViewHandler(QGraphicsView):
         else:
             pdf.updatePixMap(qImg)
 
+
     def getCurrentScaleFactor(self):
         print(self.mapToScene(self.viewport().geometry()))
         print(self.sceneRect())
@@ -307,6 +311,18 @@ class GraphicsViewHandler(QGraphicsView):
 
 
         self.updateRenderedPages()
+
+    def mousePressEvent(self, event):
+        super(GraphicsViewHandler, self).mousePressEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        super(GraphicsViewHandler, self).mouseReleaseEvent(event)
+        self.updateRenderedPages()
+
+    def mouseMoveEvent(self, event):
+        super(GraphicsViewHandler, self).mouseMoveEvent(event)
+        self.updateRenderedPages()
+
 
 
     def gestureEvent(self, event):
