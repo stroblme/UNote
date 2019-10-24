@@ -15,11 +15,11 @@
             "console": "integratedTerminal"
         },
         {
-            "name": "UNote Debug",
+            "name": "UNote Preload",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/unote.py",
-            "args": ["-d", "-u"],
+            "args": ["-p","test.pdf", "-u"],
             "cwd": "${workspaceFolder}/src",
             "console": "integratedTerminal"
         }

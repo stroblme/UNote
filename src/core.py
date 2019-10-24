@@ -121,7 +121,7 @@ class GraphicsViewHandler(QGraphicsView):
         # self.grabGesture(QGesture.gestureType(self))
         # self.resize(parent.size())
 
-    
+
 
     def loadPdfToCurrentView(self, pdfFilePath):
         self.pdf.openPdf(pdfFilePath)
@@ -144,16 +144,16 @@ class GraphicsViewHandler(QGraphicsView):
             posX, posY = self.loadPdfPageToCurrentView(pIt, posX, posY)
 
             if posY > self.viewport().geometry().height():
-                self.t1 = threading.Thread(target = self.furtherRendering(pIt, self.pdf.doc.pageCount, posX, posY))
+                self.t1 = threading.Thread(target = self.furtherRendering(pIt+1, self.pdf.doc.pageCount, posX, posY))
                 self.t1.start()
                 # self.thread.started.connect(lambda:self.furtherRendering(pIt, self.pdf.doc.pageCount, posX, posY))
                 print("rendering in bckg")
                 break
 
-        
+
 
     def furtherRendering(self, itStart, itEnd, posX, posY):
-        for pIt in range(self.pdf.doc.pageCount):
+        for pIt in range(itStart, self.pdf.doc.pageCount):
             # Load each page to a new position in the current view.
             posX, posY = self.loadPdfPageToCurrentView(pIt, posX, posY)
 
@@ -283,7 +283,7 @@ class GraphicsViewHandler(QGraphicsView):
             break
 
 
-        
+
 
 
     def updatePdf(self, pdf, zoom=absZoomFactor, clip=None, pageNumber = None):

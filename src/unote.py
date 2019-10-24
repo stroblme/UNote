@@ -48,10 +48,9 @@ class UNote(Ui_MainWindow):
     Main class for the UNote
     '''
 
-    def __init__(self, debugMode):
+    def __init__(self, pdfLoad):
         super().__init__()
 
-        self.debugMode = debugMode
 
         self.initUI()
 
@@ -66,6 +65,11 @@ class UNote(Ui_MainWindow):
 
         self.connectReceivers()
 
+        print("Loading pdf")
+        if pdfLoad:
+            self.ui.graphicsView.loadPdfToCurrentView(os.path.abspath(pdfLoad))
+
+
     def initUI(self):
         self.app = QtWidgets.QApplication(sys.argv)
         self.MainWindow = QtWidgets.QMainWindow()
@@ -74,8 +78,6 @@ class UNote(Ui_MainWindow):
         self.ui.setupUi(self.MainWindow)
 
         self.MainWindow.setWindowIcon(QtGui.QIcon("icon.png"))
-        print(self.ui.centralwidget.resize(self.MainWindow.size()))
-        print(self.MainWindow.size())
 
         self.ui.graphicsView = GraphicsViewHandler(self.ui.centralwidget)
         self.ui.gridLayout.addWidget(self.ui.graphicsView, 0, 0, 1, 1)
@@ -104,8 +106,6 @@ class UNote(Ui_MainWindow):
         except Exception as identifier:
             print("Unable to restore window size: " + str(identifier))
 
-        if self.debugMode:
-            self.logHelper.appendLog("GUI is in debug mode. Actual connection handling will be disabled")
 
 
 
@@ -163,8 +163,8 @@ def argumentHelper():
     argparser.add_argument('-u', '--updateUI', action="store_true",
                         help='Index, specifing the sheet number')
 
-    argparser.add_argument('-d', '--debug', action="store_true",
-                        help='Debug mode without FPGA Board')
+    argparser.add_argument('-p', '--pdf',
+                        help='Load pdf')
 
     return argparser.parse_args()
 
@@ -203,10 +203,11 @@ def main():
     if args.updateUI:
         subprocess.run('py -3 -m PyQt5.uic.pyuic .\\ui\\unote_gui.ui -o .\\ui\\unote_qt_export.py -x')
         subprocess.run('py -3 -m PyQt5.uic.pyuic .\\ui\\preferences_gui.ui -o .\\ui\\preferences_qt_export.py -x')
-        
+
+
     from ui.unote_qt_export import Ui_MainWindow
 
-    UNoteGUI = UNote(args.debug)
+    UNoteGUI = UNote(args.pdf)
     UNoteGUI.run(args)
 
 
