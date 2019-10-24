@@ -6,7 +6,7 @@
 - [x] Implement zooming
 - [x] Improve zooming, by re-rendering page
 - [ ] Implement gestures for touch compatibility
-- [ ] implement mouse paning
+- [x] implement mouse paning
 - [ ] Implement annotations
 - [ ] Implement basic forms
 - [ ] Implement free drawing

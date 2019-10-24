@@ -160,7 +160,6 @@ class GraphicsViewHandler(QGraphicsView):
         viewportWidth = rect.width()
         viewportX = rect.x()
         viewportY = rect.y()
-        print("")
 
 
         for renderedItem in renderedItems:
@@ -171,18 +170,18 @@ class GraphicsViewHandler(QGraphicsView):
             clipY = 0
 
             if(renderedItem.xOrigin < viewportX):
-                print(str(renderedItem.page) + "\tPagestart x out of scope")
+                # print(str(renderedItem.page) + "\tPagestart x out of scope")
 
                 clipX = viewportX - renderedItem.xOrigin
 
             if(renderedItem.yOrigin < viewportY):
-                print(str(renderedItem.page) + "\tPagestart y out of scope")
+                # print(str(renderedItem.page) + "\tPagestart y out of scope")
 
                 clipY = viewportY - renderedItem.yOrigin
 
 
             if((renderedItem.xOrigin + renderedItem.wOrigin) - (viewportX + viewportWidth) > 0):
-                print(str(renderedItem.page) + "\tPageend x out of scope")
+                # print(str(renderedItem.page) + "\tPageend x out of scope")
                 # Start in scope, End not in scope
                 if clipX == 0:
                     clipW = (viewportX + viewportWidth) - renderedItem.xOrigin
@@ -199,7 +198,7 @@ class GraphicsViewHandler(QGraphicsView):
                     clipW = renderedItem.wOrigin - clipX
 
             if((renderedItem.yOrigin + renderedItem.hOrigin) - (viewportY + viewportHeight) > 0):
-                print(str(renderedItem.page) + "\tPageend y out of scope")
+                # print(str(renderedItem.page) + "\tPageend y out of scope")
                 # Start in scope, End not in scope
                 if clipY == 0:
                     clipH = (viewportY + viewportHeight) - renderedItem.yOrigin
@@ -236,18 +235,33 @@ class GraphicsViewHandler(QGraphicsView):
 
 
     def insertText(self):
-        h = float(self.size().height())
-        w = float(self.size().width())
-        x = float(0)
-        y = float(0)
+        try:
+            renderedItems = self.scene.items(self.mapToScene(self.viewport().geometry()))
+        except Exception as e:
+            return
+
+        for renderedItem in renderedItems:
+            if not renderedItem.isUnderMouse():
+                continue
+            qTextPoint = renderedItem.mapFromScene(self.mousePos)
+            item = renderedItem
+            break
+
+        if not qTextPoint:
+            return
+
+        h = float(400)
+        w = float(400)
+        x = qTextPoint.x()
+        y = qTextPoint.y()
 
         rect = QRectF(x,y,w,h)
         # print(w, h)
         # print(self.scene.sceneRect())
 
-        renderedItems = self.scene.items(self.mapToScene(self.viewport().geometry()))
+        textRect = fitz.Rect(rect.x(), rect.y(), rect.x() + rect.width(), rect.y() + rect.height())
 
-        self.pdf.insertText(renderedItems[0].page, "hi")
+        self.pdf.insertText(item.page, "hi", textRect)
 
     def updatePdf(self, pdf, zoom=absZoomFactor, clip=None, pageNumber = None):
         mat = fitz.Matrix(zoom, zoom)
@@ -287,9 +301,6 @@ class GraphicsViewHandler(QGraphicsView):
             zoomInFactor = 1.2
             zoomOutFactor = 1 / zoomInFactor
 
-            # Save the scene pos
-            oldPos = self.mapToScene(event.pos())
-
             # Zoom
             if event.angleDelta().y() > 0:
                 relZoomFactor = zoomInFactor
@@ -298,13 +309,6 @@ class GraphicsViewHandler(QGraphicsView):
 
             self.absZoomFactor = self.absZoomFactor * relZoomFactor
             self.scale(relZoomFactor, relZoomFactor)
-
-            # Get the new position
-            newPos = self.mapToScene(event.pos())
-
-            # Move scene to old position
-            delta = newPos - oldPos
-            # self.translate(delta.x(), delta.y())
 
         else:
             QGraphicsView.wheelEvent(self, event)
@@ -320,6 +324,7 @@ class GraphicsViewHandler(QGraphicsView):
         self.updateRenderedPages()
 
     def mouseMoveEvent(self, event):
+        self.mousePos = event.pos()
         super(GraphicsViewHandler, self).mouseMoveEvent(event)
         self.updateRenderedPages()
 
