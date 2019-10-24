@@ -7,10 +7,11 @@
 - [x] Improve zooming, by re-rendering page
 - [x] Implement mouse paning
 - [x] Implement plain-text annotations
-- [ ] Implement gestures for touch compatibility
-- [ ] Make loading pdfs faster and safer
-- [ ] Implement annotations
+- [x] Make loading pdfs faster and safer
 - [x] Implement highlighting
+- [ ] Save PDFs
+- [ ] Implement gestures for touch compatibility
+- [ ] Implement annotations
 - [ ] Implement basic forms
 - [ ] Implement free drawing
 - [ ] Implement plain-text editing
