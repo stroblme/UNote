@@ -67,11 +67,9 @@ class QPdfView(QGraphicsPixmapItem):
         h = float(22)
         w = float(120)
 
-        textRect = fitz.Rect(qpos.x(), qpos.y(), qpos.x() + w, qpos.y() - h)
+        textRect = fitz.Rect(qpos.x(), qpos.y() - h/2, qpos.x() + w, qpos.y() + h/2)
 
-        red  = (1,0,0)                                   # some colors
-        gold = (1,1,0)
-        blue = (0,0,1)
+        cyan  = (14/255,125/255,145/255)                                   # some colors
         black = (0,0,0)
         white = (1,1,1)
         """We use a Shape object (something like a canvas) tot output the text and
@@ -80,13 +78,13 @@ class QPdfView(QGraphicsPixmapItem):
 
         shape = self.page.newShape()                            # create Shape
         shape.drawRect(textRect)                                 # draw rectangles
-        shape.finish(width = 1, color = red, fill = black)
+        shape.finish(width = 1, color = cyan, fill = white)
         # Now insert text in the rectangles. Font "Helvetica" will be used
         # by default. A return code rc < 0 indicates insufficient space (not checked here).
-        rc = shape.insertTextbox(textRect, fontsize=18, buffer="hi", color = white, rotate=0)
+        rc = shape.insertTextbox(textRect, fontsize=18, buffer="hi", color = black, rotate=0)
         if rc < 0:
             print('not enough space')
-        shape.commit()   
+        shape.commit()
 
 
     def mousePressEvent(self, event):
