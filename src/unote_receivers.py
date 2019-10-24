@@ -49,6 +49,9 @@ class Receivers(QObject):
         '''
         pdfFileName = self.guiHelper.openFileNameDialog("PDF File (*.pdf)")
 
+        if pdfFileName == '':
+            return
+            
         self.uiInst.graphicsView.loadPdfToCurrentView(pdfFileName)
 
     def insertText(self):

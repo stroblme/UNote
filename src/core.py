@@ -7,10 +7,10 @@
 # ---------------------------------------------------------------
 
 from PyQt5.QtWidgets import QSizePolicy, QFrame, QDialog, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGesture, QGraphicsLineItem
-from PyQt5.QtCore import Qt, QRectF, QEvent
+from PyQt5.QtCore import Qt, QRectF, QEvent, QThread, pyqtSignal, pyqtSlot, QObject
 from PyQt5.QtGui import QPixmap
 
-
+import threading
 from interfaces import IregCon, IcsrCtrl
 from preferences import Preferences
 
@@ -133,12 +133,37 @@ class GraphicsViewHandler(QGraphicsView):
         posX = float(0)
         posY = float(0)
 
+        self.qli = QGraphicsLineItem(0,0,0,1)
+        self.scene.addItem(self.qli)
+
+        # self.thread = QThread
+        # self.moveToThread(self.thread)
+
         for pIt in range(self.pdf.doc.pageCount):
             # Load each page to a new position in the current view.
             posX, posY = self.loadPdfPageToCurrentView(pIt, posX, posY)
 
-        self.qli = QGraphicsLineItem(0,0,0,100)
-        self.scene.addItem(self.qli)
+            if posY > self.viewport().geometry().height():
+                self.t1 = threading.Thread(target = self.furtherRendering(pIt, self.pdf.doc.pageCount, posX, posY))
+                self.t1.start()
+                # self.thread.started.connect(lambda:self.furtherRendering(pIt, self.pdf.doc.pageCount, posX, posY))
+                print("rendering in bckg")
+                break
+
+        
+
+    def furtherRendering(self, itStart, itEnd, posX, posY):
+        for pIt in range(self.pdf.doc.pageCount):
+            # Load each page to a new position in the current view.
+            posX, posY = self.loadPdfPageToCurrentView(pIt, posX, posY)
+
+
+    def renderingFinished(self, qItems):
+        print("rendering finished")
+
+        for qItem in qItems:
+            self.scene.addItem(self.qli)
+
 
     def loadPdfPageToCurrentView(self, pageNumber, posX, posY):
 
@@ -326,3 +351,18 @@ class GraphicsViewHandler(QGraphicsView):
 
     def gestureEvent(self, event):
         print('hi')
+
+class Renderer(QObject):
+    finished = pyqtSignal()
+    intReady = pyqtSignal(int)
+
+    def __init__(self):
+        self.pdf = pdfEngine()
+
+    @pyqtSlot()
+    def procCounter(self): # A slot takes no params
+        for i in range(1, 100):
+            time.sleep(1)
+            self.intReady.emit(i)
+
+        self.finished.emit()
