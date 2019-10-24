@@ -5,11 +5,13 @@
 - [x] Implement scrolling and full pdf load
 - [x] Implement zooming
 - [x] Improve zooming, by re-rendering page
+- [x] Implement mouse paning
+- [x] Implement plain-text annotations
 - [ ] Implement gestures for touch compatibility
-- [x] implement mouse paning
+- [ ] Make loading pdfs faster and safer
 - [ ] Implement annotations
 - [ ] Implement basic forms
 - [ ] Implement free drawing
-- [ ] Implement plain-text annotations
+- [ ] Implement plain-text editing
 - [ ] Implement markdown formatting annotations
 - [ ] Implement database structure
