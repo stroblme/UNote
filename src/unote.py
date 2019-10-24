@@ -136,7 +136,8 @@ class UNote(Ui_MainWindow):
         # Load PDF File
         self.ui.actionLoad_PDF.triggered.connect(lambda:self.receiversInst.loadPdf())
 
-        self.ui.actionInsert_Text.triggered.connect(lambda:self.receiversInst.insertText())
+        self.ui.actionText_Mode.triggered.connect(lambda:self.receiversInst.toggleTextMode())
+        self.ui.actionHighlight_Mode.triggered.connect(lambda:self.receiversInst.toggleHighlightMode())
 
 # ----------------------------------------------------------
 # User Parameter region

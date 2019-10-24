@@ -51,11 +51,14 @@ class Receivers(QObject):
 
         if pdfFileName == '':
             return
-            
+
         self.uiInst.graphicsView.loadPdfToCurrentView(pdfFileName)
 
-    def insertText(self):
-        self.uiInst.graphicsView.insertText()
+    def toggleTextMode(self):
+        self.uiInst.graphicsView.toggleTextMode()
+
+    def toggleHighLightMode(self):
+        self.uiInst.graphicsView.toggleHighLightMode()
 
     @pyqtSlot(str)
     def JSSendMessage(self, msg):

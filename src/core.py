@@ -24,9 +24,13 @@ from indexed import IndexedOrderedDict
 
 import fitz
 
+textMode = False
+highlightMode = False
+
 class QPdfView(QGraphicsPixmapItem):
     def __init__(self):
         QGraphicsPixmapItem.__init__(self)
+        self.blockEdit = False
 
     def setQImage(self, qImg):
         self.qImg = qImg
@@ -70,9 +74,6 @@ class QPdfView(QGraphicsPixmapItem):
         cyan  = (14/255,125/255,145/255)                                   # some colors
         black = (0,0,0)
         white = (1,1,1)
-        """We use a Shape object (something like a canvas) tot output the text and
-        the rectangles surounding it for demonstration.
-        """
 
         shape = self.page.newShape()                            # create Shape
         shape.drawRect(textRect)                                 # draw rectangles
@@ -84,12 +85,49 @@ class QPdfView(QGraphicsPixmapItem):
             print('not enough space')
         shape.commit()
 
+    def startHighlightText(self, qpos):
+
+
+        pass
+
+    def wheelEvent(self, event):
+        modifiers = QApplication.keyboardModifiers()
+
+        Mmodo = QApplication.mouseButtons()
+        if bool(Mmodo == Qt.RightButton) or bool(modifiers == Qt.ControlModifier):
+            self.blockEdit = True
+
+        QGraphicsPixmapItem.wheelEvent(self, event)
+
 
     def mousePressEvent(self, event):
+        if self.blockEdit:
+            return
+
         if event.button() == Qt.RightButton:
-            self.insertText(event.pos())
+            if textMode:
+                self.insertText(event.pos())
+            elif highlightMode:
+                self.startHighlightText(event.pos())
 
+    def mouseReleaseEvent(self, event):
+        self.blockEdit = False
 
+        if event.button() == Qt.RightButton:
+            if textMode:
+                self.insertText(event.pos())
+            elif highlightMode:
+                self.stopHighlightText(event.pos())
+
+    def mouseMoveEvent(self, event):
+        if self.blockEdit:
+            return
+
+        if event.button() == Qt.RightButton:
+            if textMode:
+                self.insertText(event.pos())
+            elif highlightMode:
+                self.stopHighlightText(event.pos())
 
 class GraphicsViewHandler(QGraphicsView):
     pages = IndexedOrderedDict()
@@ -98,6 +136,8 @@ class GraphicsViewHandler(QGraphicsView):
 
     absZoomFactor = float(1)
     lowResZoomFactor = float(0.1)
+
+
 
     def __init__(self, parent):
         '''Create the Viewport.
@@ -244,21 +284,13 @@ class GraphicsViewHandler(QGraphicsView):
             renderedItem.setPos(rItx, rIty)
 
 
+    def toggleTextMode(self):
+        global textMode
+        textMode = not textMode
 
-
-    def insertText(self):
-        try:
-            renderedItems = self.scene.items(self.mapToScene(self.viewport().geometry()))
-        except Exception as e:
-            return
-
-        for renderedItem in renderedItems:
-            if not renderedItem.isUnderMouse():
-                continue
-            qTextPoint = renderedItem.mapFromScene(self.mousePos)
-            item = renderedItem
-            break
-
+    def toggleHighlightMode(self):
+        global highlightMode
+        highlightMode = not highlightMode
 
 
 
