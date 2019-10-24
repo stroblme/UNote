@@ -43,7 +43,10 @@ class Ui_MainWindow(object):
         self.actionText_Mode.setObjectName("actionText_Mode")
         self.actionHighlight_Mode = QtWidgets.QAction(MainWindow)
         self.actionHighlight_Mode.setObjectName("actionHighlight_Mode")
+        self.actionSave_PDF = QtWidgets.QAction(MainWindow)
+        self.actionSave_PDF.setObjectName("actionSave_PDF")
         self.menuFile.addAction(self.actionLoad_PDF)
+        self.menuFile.addAction(self.actionSave_PDF)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionPreferences)
         self.menuFile.addSeparator()
@@ -71,6 +74,8 @@ class Ui_MainWindow(object):
         self.actionText_Mode.setShortcut(_translate("MainWindow", "Ctrl+T"))
         self.actionHighlight_Mode.setText(_translate("MainWindow", "Highlight Mode"))
         self.actionHighlight_Mode.setShortcut(_translate("MainWindow", "Ctrl+H"))
+        self.actionSave_PDF.setText(_translate("MainWindow", "Save PDF"))
+        self.actionSave_PDF.setShortcut(_translate("MainWindow", "Ctrl+S"))
 
 
 if __name__ == "__main__":

@@ -139,6 +139,8 @@ class UNote(Ui_MainWindow):
         self.ui.actionText_Mode.triggered.connect(lambda:self.receiversInst.toggleTextMode())
         self.ui.actionHighlight_Mode.triggered.connect(lambda:self.receiversInst.toggleHighlightMode())
 
+        self.ui.actionSave_PDF.triggered.connect(lambda:self.receiversInst.savePdf())
+
 # ----------------------------------------------------------
 # User Parameter region
 # ----------------------------------------------------------

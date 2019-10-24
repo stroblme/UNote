@@ -196,7 +196,8 @@ class GraphicsViewHandler(QGraphicsView):
         # self.grabGesture(QGesture.gestureType(self))
         # self.resize(parent.size())
 
-
+    def saveCurrentPdf(self):
+        self.pdf.savePdf()
 
     def loadPdfToCurrentView(self, pdfFilePath):
         self.pdf.openPdf(pdfFilePath)

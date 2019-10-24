@@ -15,6 +15,12 @@ class pdfEngine():
 
         return self.doc
 
+    def savePdf(self):
+        name, ext = os.path.splitext(self.filename)
+        name = name + '_m'
+
+        self.doc.save(name + ext)
+
     def getPage(self, pageNumber):
         page = self.extractPage(self.doc, pageNumber)
 

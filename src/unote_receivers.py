@@ -54,6 +54,9 @@ class Receivers(QObject):
 
         self.uiInst.graphicsView.loadPdfToCurrentView(pdfFileName)
 
+    def savePdf(self):
+        self.uiInst.graphicsView.saveCurrentPdf()
+
     def toggleTextMode(self):
         self.uiInst.graphicsView.toggleTextMode()
 
