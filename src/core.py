@@ -7,7 +7,7 @@
 # ---------------------------------------------------------------
 
 from PyQt5.QtWidgets import QSizePolicy, QFrame, QDialog, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGesture, QGraphicsLineItem
-from PyQt5.QtCore import Qt, QRectF, QEvent, QThread, pyqtSignal, pyqtSlot, QObject
+from PyQt5.QtCore import Qt, QRectF, QEvent, QThread, pyqtSignal, pyqtSlot, QObject, QPoint
 from PyQt5.QtGui import QPixmap
 
 import threading
@@ -131,29 +131,36 @@ class QPdfView(QGraphicsPixmapItem):
 
         if event.button() == Qt.RightButton:
             if textMode:
-                self.insertText(event.pos())
+                self.insertText(self.toPdfCoordinates(event.pos()))
             elif highlightMode:
-                self.startHighlightText(event.pos())
+                self.startHighlightText(self.toPdfCoordinates(event.pos()))
 
     def mouseReleaseEvent(self, event):
         self.blockEdit = False
 
         if event.button() == Qt.RightButton:
             if textMode:
-                self.insertText(event.pos())
+                self.insertText(self.toPdfCoordinates(event.pos()))
             elif highlightMode:
-                self.stopHighlightText(event.pos())
+                self.stopHighlightText(self.toPdfCoordinates(event.pos()))
 
     def mouseMoveEvent(self, event):
         self.blockEdit = False
 
         if self.ongoingEdit:
             if textMode:
-                self.insertText(event.pos())
+                self.insertText(self.toPdfCoordinates(event.pos()))
             elif highlightMode:
-                self.updateHighlightText(event.pos())
+                self.updateHighlightText(self.toPdfCoordinates(event.pos()))
 
         QGraphicsPixmapItem.mouseMoveEvent(self, event)
+
+    def toPdfCoordinates(self, qPos):
+        xDif = self.x() - self.xOrigin
+        yDif = self.y() - self.yOrigin
+        pPos = QPoint(qPos.x() + xDif, qPos.y() + yDif)
+
+        return pPos
 
 
 class GraphicsViewHandler(QGraphicsView):

@@ -10,6 +10,7 @@
 - [ ] Implement gestures for touch compatibility
 - [ ] Make loading pdfs faster and safer
 - [ ] Implement annotations
+- [x] Implement highlighting
 - [ ] Implement basic forms
 - [ ] Implement free drawing
 - [ ] Implement plain-text editing
