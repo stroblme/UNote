@@ -9,7 +9,7 @@
 - [x] Implement plain-text annotations
 - [x] Make loading pdfs faster and safer
 - [x] Implement highlighting
-- [ ] Save PDFs
+- [x] Save PDFs
 - [ ] Implement gestures for touch compatibility
 - [ ] Implement annotations
 - [ ] Implement basic forms
