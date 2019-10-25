@@ -67,9 +67,7 @@ class UNote(Ui_MainWindow):
         self.connectReceivers()
 
         if pdfLoad:
-            start_time = time.time()
             self.ui.graphicsView.loadPdfToCurrentView(os.path.abspath(pdfLoad))
-            print("--- Loaded PDF within %s seconds ---" % (time.time() - start_time))
 
 
     def initUI(self):

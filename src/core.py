@@ -21,6 +21,7 @@ from enum import Enum
 
 import subprocess  # for running external cmds
 import os
+import time
 
 from indexed import IndexedOrderedDict
 
@@ -121,18 +122,13 @@ class QPdfView(QGraphicsPixmapItem):
         return True
 
     def startHighlightText(self, qpos):
-        print('start')
         self.ongoingEdit = True
         self.highLightStart = qpos
-        pass
 
     def stopHighlightText(self, qpos):
-        print('stop')
         self.ongoingEdit = False
-        pass
 
     def updateHighlightText(self, qpos):
-        print('update')
         self.highLightStop = qpos
 
         yMin = min(self.highLightStart.y(), self.highLightStop.y())
@@ -240,6 +236,8 @@ class GraphicsViewHandler(QGraphicsView):
         self.pdf.savePdf()
 
     def loadPdfToCurrentView(self, pdfFilePath):
+        start_time = time.time()
+
         self.pdf.openPdf(pdfFilePath)
 
         self.scene = QGraphicsScene()
@@ -262,6 +260,8 @@ class GraphicsViewHandler(QGraphicsView):
             else:
                 # Load each page to a new position in the current view.
                 posX, posY = self.loadPdfPageToCurrentView(pIt, posX, posY, self.absZoomFactor)
+
+        print("--- Loaded PDF within %s seconds ---" % (time.time() - start_time))
 
 
     def loadPdfPageToCurrentView(self, pageNumber, posX, posY, zoom = None):
