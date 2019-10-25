@@ -95,9 +95,25 @@ class QPdfView(QGraphicsPixmapItem):
         annot = self.page.addFreetextAnnot(textRect, "Text Annotion")
         annot.setBorder(border)
         annot.update(fontsize = 20, border_color=cyan, fill_color=white, text_color=black)
+        annot.update()
 
     def editText(self, qpos):
-        pass
+        # textAnnots = self.page.annots(fitz.PDF_ANNOT_TEXT)
+        for annot in self.page.annots(types=(fitz.PDF_ANNOT_FREE_TEXT, fitz.PDF_ANNOT_TEXT)):
+            if self.pointInArea(qpos, annot.rect):
+                info = annot.info
+                info["content"] = "test"
+                annot.setInfo(info)
+                annot.update()
+
+    def pointInArea(self, qpos, frect):
+        if qpos.x() < frect.x0 or qpos.y() < frect.y0:
+            return False
+
+        if qpos.x() > frect.x1 or qpos.y() > frect.y1:
+            return False
+
+        return True
 
     def startHighlightText(self, qpos):
         print('start')
@@ -142,20 +158,26 @@ class QPdfView(QGraphicsPixmapItem):
         if self.blockEdit:
             return
 
-        if event.button() == Qt.RightButton:
+        if event.button() == Qt.LeftButton:
             if editMode == editModes.textBox:
                 self.insertText(self.toPdfCoordinates(event.pos()))
             elif editMode == editModes.highlight:
                 self.startHighlightText(self.toPdfCoordinates(event.pos()))
+        # elif event.button() == Qt.RightButton:
+        #     if editMode == editModes.textBox:
+        #         self.editText(self.toPdfCoordinates(event.pos()))
 
     def mouseReleaseEvent(self, event):
         self.blockEdit = False
 
-        if event.button() == Qt.RightButton:
+        if event.button() == Qt.LeftButton:
             if editMode == editModes.textBox:
                 self.insertText(self.toPdfCoordinates(event.pos()))
             elif editMode == editModes.highlight:
                 self.stopHighlightText(self.toPdfCoordinates(event.pos()))
+        elif event.button() == Qt.RightButton:
+            if editMode == editModes.textBox:
+                self.editText(self.toPdfCoordinates(event.pos()))
 
     def mouseMoveEvent(self, event):
         self.blockEdit = False
