@@ -42,6 +42,7 @@ from unote_receivers import Receivers
 from preferences_gui import PreferencesGUI
 from preferences import Preferences
 from core import GraphicsViewHandler
+from toolbox import ToolBoxWidget
 
 class UNote(Ui_MainWindow):
     '''
@@ -82,6 +83,11 @@ class UNote(Ui_MainWindow):
 
         self.ui.graphicsView = GraphicsViewHandler(self.ui.centralwidget)
         self.ui.gridLayout.addWidget(self.ui.graphicsView, 0, 0, 1, 1)
+
+        self.ui.floatingToolBox = ToolBoxWidget(self.MainWindow)
+        self.ui.floatingToolBox.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.FramelessWindowHint)
+        self.ui.floatingToolBox.setObjectName("floatingToolBox")
+        self.ui.floatingToolBox.setGeometry(QtCore.QRect(400, 400, 200, 200))
 
 
 
