@@ -33,6 +33,10 @@ class editModes():
 
 editMode = editModes.none
 
+class textModes():
+    plainText = 'plainText'
+    mdText = 'markdownText'
+
 class QPdfView(QGraphicsPixmapItem):
     def __init__(self):
         QGraphicsPixmapItem.__init__(self)
@@ -73,7 +77,7 @@ class QPdfView(QGraphicsPixmapItem):
         pass
 
     def insertText(self, qpos):
-        h = float(22)
+        h = float(20)
         w = float(120)
 
         textRect = fitz.Rect(qpos.x(), qpos.y() - h/2, qpos.x() + w, qpos.y() + h/2)
@@ -94,7 +98,7 @@ class QPdfView(QGraphicsPixmapItem):
         border = {"width": 0.4, "dashes": [1]}
         annot = self.page.addFreetextAnnot(textRect, "Text Annotion")
         annot.setBorder(border)
-        annot.update(fontsize = 20, border_color=cyan, fill_color=white, text_color=black)
+        annot.update(fontsize = 16, border_color=cyan, fill_color=white, text_color=black)
         annot.update()
 
     def editText(self, qpos):
@@ -103,6 +107,7 @@ class QPdfView(QGraphicsPixmapItem):
             if self.pointInArea(qpos, annot.rect):
                 info = annot.info
                 info["content"] = "test"
+                info["subject"] = textModes.plainText
                 annot.setInfo(info)
                 annot.update()
 
