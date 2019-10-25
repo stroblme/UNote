@@ -5,6 +5,8 @@ from PyQt5.QtWidgets import QDialog, QGraphicsView, QGraphicsScene, QWidget, QPu
 
 from indexed import IndexedOrderedDict
 
+from math import sin, cos
+
 INNEROFFSET = 80
 OUTEROFFSET = 8
 
@@ -12,31 +14,18 @@ OUTERLINEWIDTH = OUTEROFFSET
 INNERLINEWIDTH = 4
 
 BOTTOMLINEWIDTH = 2
+BOTTOMOFFSET = 20
 
-class ToolBoxItems():
-    numberOfButtons = 2
-
-    textButtonName = 'textButton'
-    highlightButtonName = 'highlightButton'
-
-    self.items = IndexedOrderedDict()
-
-    def __init__(self, parent):
-        super().__init__()
-
-    def loadButtons(self, ):
-        textButton = ToolBoxButton(parent)
-        highlightButton = ToolBoxButton(parent)
-
-        self.items[self.textButtonName] = textButton
-        self.items[self.highlightButtonName] = highlightButton
+CIRCLE = 5760
 
 class ToolBoxButton(QPushButton):
-    def __init__(self, parent):
+    def __init__(self, parent, start, length):
         '''Create the Viewport.
 
         :param parent: Parent editor widget.
         '''
+        self.setArc(start, length)
+        # print('1')
         QPushButton.__init__(self, parent)
 
     def setArc(self, start, length):
@@ -46,6 +35,9 @@ class ToolBoxButton(QPushButton):
     def paintEvent(self, event):
         self.drawPiePiece(event)
 
+        QPushButton.paintEvent(self, event)
+
+
     def drawPiePiece(self, event):
         outerPieRect = self.rect()
         outerPieRect.adjust(+INNEROFFSET,+INNEROFFSET,-INNEROFFSET,-INNEROFFSET)
@@ -54,6 +46,8 @@ class ToolBoxButton(QPushButton):
         shapePainter.setRenderHint(shapePainter.Antialiasing)
         shapePainter.setPen(QPen(QColor(14,125,145),  BOTTOMLINEWIDTH, Qt.SolidLine))
         shapePainter.drawPie(outerPieRect, self.start, self.length)
+
+        self.move(BOTTOMOFFSET*sin((self.start+self.length)/CIRCLE), BOTTOMOFFSET*cos((self.start+self.length)/CIRCLE))
 
     def mousePressEvent(self, event):
         QPushButton.mousePressEvent(self, event)
@@ -65,7 +59,12 @@ class ToolBoxButton(QPushButton):
         QPushButton.mouseReleaseEvent(self, event)
 
 class ToolBoxWidget(QWidget):
+    numberOfButtons = 2
 
+    textButtonName = 'textButton'
+    highlightButtonName = 'highlightButton'
+
+    items = IndexedOrderedDict()
 
     def __init__(self, parent):
         '''Create the Viewport.
@@ -73,11 +72,12 @@ class ToolBoxWidget(QWidget):
         :param parent: Parent editor widget.
         '''
         QWidget.__init__(self, parent)
-
+        self.drawButtons()
 
     def paintEvent(self, event):
         self.drawCircularShape(event)
-        self.drawButtons(event)
+
+        QWidget.paintEvent(self, event)
 
     def drawCircularShape(self, paintEvent):
         outerCircleRect = self.rect()
@@ -89,18 +89,15 @@ class ToolBoxWidget(QWidget):
         shapePainter = QPainter(self)
         shapePainter.setRenderHint(shapePainter.Antialiasing)
         shapePainter.setPen(QPen(QColor(14,125,145),  OUTERLINEWIDTH, Qt.SolidLine))
-        shapePainter.drawArc(outerCircleRect, 0, 5760)
+        shapePainter.drawArc(outerCircleRect, 0, CIRCLE)
         shapePainter.setPen(QPen(QColor(14,125,145),  INNERLINEWIDTH, Qt.SolidLine))
-        shapePainter.drawArc(innerCircleRect, 0, 5760)
+        shapePainter.drawArc(innerCircleRect, 0, CIRCLE)
 
-    def drawButtons(self, event):
-        self.toolBoxItems = ToolBoxItems(self)
+    def drawButtons(self):
+        self.textButton = ToolBoxButton(self, 0, CIRCLE/self.numberOfButtons)
 
-        arcStart = 0
-        arcLength = 5760/self.toolBoxItems.numberOfButtons
-
-        for toolBoxItem in self.toolBoxItems.items:
-            toolBoxItem.
+        self.highlightButton = ToolBoxButton(self, 1 * CIRCLE/self.numberOfButtons, CIRCLE)
+        pass
 
     def mousePressEvent(self, event):
         self.__mousePressPos = None
