@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '.\ui\unote_gui.ui'
 #
-# Created by: PyQt5 UI code generator 5.13.1
+# Created by: PyQt5 UI code generator 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -25,7 +25,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_6.addLayout(self.gridLayout)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1680, 23))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1680, 21))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
@@ -40,8 +40,10 @@ class Ui_MainWindow(object):
         self.actionLoad_PDF = QtWidgets.QAction(MainWindow)
         self.actionLoad_PDF.setObjectName("actionLoad_PDF")
         self.actionText_Mode = QtWidgets.QAction(MainWindow)
+        self.actionText_Mode.setCheckable(True)
         self.actionText_Mode.setObjectName("actionText_Mode")
         self.actionHighlight_Mode = QtWidgets.QAction(MainWindow)
+        self.actionHighlight_Mode.setCheckable(True)
         self.actionHighlight_Mode.setObjectName("actionHighlight_Mode")
         self.actionSave_PDF = QtWidgets.QAction(MainWindow)
         self.actionSave_PDF.setObjectName("actionSave_PDF")

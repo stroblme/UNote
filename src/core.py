@@ -17,6 +17,8 @@ from preferences import Preferences
 from pdfEngine import pdfEngine
 from imageHelper import imageHelper
 
+from enum import Enum
+
 import subprocess  # for running external cmds
 import os
 
@@ -24,8 +26,12 @@ from indexed import IndexedOrderedDict
 
 import fitz
 
-textMode = False
-highlightMode = False
+class editModes():
+    none = 'none'
+    highlight = 'highlight'
+    textBox = 'textBox'
+
+editMode = editModes.none
 
 class QPdfView(QGraphicsPixmapItem):
     def __init__(self):
@@ -76,18 +82,22 @@ class QPdfView(QGraphicsPixmapItem):
         black = (0,0,0)
         white = (1,1,1)
 
-        shape = self.page.newShape()                            # create Shape
-        shape.drawRect(textRect)                                 # draw rectangles
-        shape.finish(width = 1, color = cyan, fill = white)
-        # Now insert text in the rectangles. Font "Helvetica" will be used
-        # by default. A return code rc < 0 indicates insufficient space (not checked here).
-        rc = shape.insertTextbox(textRect, fontsize=18, buffer="hi", color = black, rotate=0)
-        if rc < 0:
-            print('not enough space')
-        shape.commit()
+        # shape = self.page.newShape()                            # create Shape
+        # shape.drawRect(textRect)                                 # draw rectangles
+        # shape.finish(width = 1, color = cyan, fill = white)
+        # # Now insert text in the rectangles. Font "Helvetica" will be used
+        # # by default. A return code rc < 0 indicates insufficient space (not checked here).
+        # rc = shape.insertTextbox(textRect, fontsize=18, buffer="hi", color = black, rotate=0)
+        # if rc < 0:
+        #     print('not enough space')
+        # shape.commit()
+        border = {"width": 0.4, "dashes": [1]}
+        annot = self.page.addFreetextAnnot(textRect, "Text Annotion")
+        annot.setBorder(border)
+        annot.update(fontsize = 20, border_color=cyan, fill_color=white, text_color=black)
 
     def editText(self, qpos):
-
+        pass
 
     def startHighlightText(self, qpos):
         print('start')
@@ -133,27 +143,27 @@ class QPdfView(QGraphicsPixmapItem):
             return
 
         if event.button() == Qt.RightButton:
-            if textMode:
+            if editMode == editModes.textBox:
                 self.insertText(self.toPdfCoordinates(event.pos()))
-            elif highlightMode:
+            elif editMode == editModes.highlight:
                 self.startHighlightText(self.toPdfCoordinates(event.pos()))
 
     def mouseReleaseEvent(self, event):
         self.blockEdit = False
 
         if event.button() == Qt.RightButton:
-            if textMode:
+            if editMode == editModes.textBox:
                 self.insertText(self.toPdfCoordinates(event.pos()))
-            elif highlightMode:
+            elif editMode == editModes.highlight:
                 self.stopHighlightText(self.toPdfCoordinates(event.pos()))
 
     def mouseMoveEvent(self, event):
         self.blockEdit = False
 
         if self.ongoingEdit:
-            if textMode:
+            if editMode == editModes.textBox:
                 self.insertText(self.toPdfCoordinates(event.pos()))
-            elif highlightMode:
+            elif editMode == editModes.highlight:
                 self.updateHighlightText(self.toPdfCoordinates(event.pos()))
 
         QGraphicsPixmapItem.mouseMoveEvent(self, event)
@@ -323,12 +333,20 @@ class GraphicsViewHandler(QGraphicsView):
 
 
     def toggleTextMode(self):
-        global textMode
-        textMode = not textMode
+        global editMode
+
+        if editMode == editModes.textBox:
+            editMode = editModes.none
+        else:
+            editMode = editModes.textBox
 
     def toggleHighlightMode(self):
-        global highlightMode
-        highlightMode = not highlightMode
+        global editMode
+
+        if editMode == editModes.highlight:
+            editMode = editModes.none
+        else:
+            editMode = editModes.highlight
 
 
 
