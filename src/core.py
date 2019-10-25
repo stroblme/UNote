@@ -86,6 +86,9 @@ class QPdfView(QGraphicsPixmapItem):
             print('not enough space')
         shape.commit()
 
+    def editText(self, qpos):
+
+
     def startHighlightText(self, qpos):
         print('start')
         self.ongoingEdit = True
