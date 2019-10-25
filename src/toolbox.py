@@ -1,9 +1,30 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtCore import pyqtSignal, QFile, QTextStream, pyqtSlot, QObject
+from PyQt5.QtGui import QPixmap, QPainter, QPen, QBrush, QColor, QPolygon
+from PyQt5.QtCore import pyqtSignal, QFile, QTextStream, pyqtSlot, QObject, QPoint, Qt
+from PyQt5.QtWidgets import QDialog, QGraphicsView, QGraphicsScene, QWidget, QPushButton, QVBoxLayout
 
-class ToolBoxWidget(QtWidgets.QWidget):
 
+class ToolBoxWidget(QWidget):
+
+    def __init__(self, parent):
+        '''Create the Viewport.
+
+        :param parent: Parent editor widget.
+        '''
+        QWidget.__init__(self, parent)
+
+    def paintEvent(self, event):
+        self.drawCircularShape(event)
+
+    def drawCircularShape(self, paintEvent):
+        circleRect = self.rect()
+        circleRect.adjust(+10,+10,-10,-10)
+        painter = QPainter(self)
+        painter.setRenderHint(painter.Antialiasing)
+        painter.setPen(QPen(QColor(14,125,145),  8, Qt.SolidLine))
+        painter.drawArc(circleRect, 0, 5760)
+        
+        pass
     def mousePressEvent(self, event):
         self.__mousePressPos = None
         self.__mouseMovePos = None
@@ -11,7 +32,7 @@ class ToolBoxWidget(QtWidgets.QWidget):
             self.__mousePressPos = event.globalPos()
             self.__mouseMovePos = event.globalPos()
 
-        super(QtWidgets.QWidget, self).mousePressEvent(event)
+        QWidget.mousePressEvent(self, event)
 
     def mouseMoveEvent(self, event):
         if event.buttons() == QtCore.Qt.LeftButton:
@@ -24,7 +45,7 @@ class ToolBoxWidget(QtWidgets.QWidget):
 
             self.__mouseMovePos = globalPos
 
-        super(QtWidgets.QWidget, self).mouseMoveEvent(event)
+        QWidget.mouseMoveEvent(self, event)
 
     def mouseReleaseEvent(self, event):
         if self.__mousePressPos is not None:
@@ -33,4 +54,4 @@ class ToolBoxWidget(QtWidgets.QWidget):
                 event.ignore()
                 return
 
-        super(QtWidgets.QWidget, self).mouseReleaseEvent(event)
+        QWidget.mouseReleaseEvent(self, event)

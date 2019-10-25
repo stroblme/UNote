@@ -17,7 +17,7 @@ import time
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import pyqtSignal, QFile, QTextStream, pyqtSlot, QObject
-from PyQt5.QtWidgets import QDialog, QGraphicsView, QGraphicsScene
+from PyQt5.QtWidgets import QDialog, QGraphicsView, QGraphicsScene, QWidget
 
 
 import argparse  # parsing cmdline arguments
@@ -86,7 +86,7 @@ class UNote(Ui_MainWindow):
         self.ui.floatingToolBox.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.FramelessWindowHint)
         self.ui.floatingToolBox.setObjectName("floatingToolBox")
         self.ui.floatingToolBox.setGeometry(QtCore.QRect(400, 400, 200, 200))
-
+        self.ui.floatingToolBox.show()
 
 
     def run(self, args):
