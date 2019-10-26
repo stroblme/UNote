@@ -155,6 +155,7 @@ class QPdfView(QGraphicsPixmapItem):
         QGraphicsPixmapItem.wheelEvent(self, event)
 
 
+
     def mousePressEvent(self, event):
         if self.blockEdit:
             return
@@ -295,7 +296,7 @@ class GraphicsViewHandler(QGraphicsView):
 
 
         for renderedItem in renderedItems:
-            if type(renderedItem) == QGraphicsLineItem:
+            if type(renderedItem) != QPdfView:
                 continue
 
             clipX = 0
@@ -439,7 +440,15 @@ class GraphicsViewHandler(QGraphicsView):
         super(GraphicsViewHandler, self).mouseMoveEvent(event)
         # self.updateRenderedPages()
 
+    def keyPressEvent(self, event):
+        self.updateRenderedPages()
 
+        super(GraphicsViewHandler, self).keyPressEvent(event)
+
+    def keyReleaseEvent(self, event):
+        self.updateRenderedPages()
+
+        super(GraphicsViewHandler, self).keyReleaseEvent(event)
 
     def gestureEvent(self, event):
         print('hi')

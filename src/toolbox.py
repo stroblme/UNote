@@ -65,6 +65,8 @@ class ToolBoxWidget(QWidget):
     textButtonName = 'textButton'
     highlightButtonName = 'highlightButton'
 
+    textBoxMode = False
+
     items = IndexedOrderedDict()
 
     def __init__(self, parent):
@@ -76,7 +78,10 @@ class ToolBoxWidget(QWidget):
         self.drawButtons()
 
     def paintEvent(self, event):
-        self.drawCircularShape(event)
+        if self.textBoxMode:
+            self.drawRectShape(event)
+        else:
+            self.drawCircularShape(event)
 
         QWidget.paintEvent(self, event)
 
