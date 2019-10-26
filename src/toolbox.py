@@ -49,6 +49,7 @@ class ToolBoxButton(QPushButton):
 
         self.move(BOTTOMOFFSET*sin((self.start+self.length)/CIRCLE), BOTTOMOFFSET*cos((self.start+self.length)/CIRCLE))
 
+
     def mousePressEvent(self, event):
         QPushButton.mousePressEvent(self, event)
 
@@ -92,6 +93,16 @@ class ToolBoxWidget(QWidget):
         shapePainter.drawArc(outerCircleRect, 0, CIRCLE)
         shapePainter.setPen(QPen(QColor(14,125,145),  INNERLINEWIDTH, Qt.SolidLine))
         shapePainter.drawArc(innerCircleRect, 0, CIRCLE)
+
+    def drawRectShape(self, event):
+        outerRect = self.rect()
+        outerRect.adjust(+OUTEROFFSET,+OUTEROFFSET,-OUTEROFFSET,-OUTEROFFSET)
+
+        shapePainter = QPainter(self)
+        shapePainter.setRenderHint(shapePainter.Antialiasing)
+        shapePainter.setPen(QPen(QColor(14,125,145),  OUTERLINEWIDTH, Qt.SolidLine))
+        shapePainter.drawRect(outerRect)
+
 
     def drawButtons(self):
         self.textButton = ToolBoxButton(self, 0, CIRCLE/self.numberOfButtons)
