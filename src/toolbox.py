@@ -1,7 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QPixmap, QPainter, QPen, QBrush, QColor, QPolygon
 from PyQt5.QtCore import pyqtSignal, QFile, QTextStream, pyqtSlot, QObject, QPoint, Qt
-from PyQt5.QtWidgets import QDialog, QGraphicsView, QGraphicsScene, QWidget, QPushButton, QVBoxLayout
+from PyQt5.QtWidgets import QDialog, QGraphicsView, QGraphicsScene, QWidget, QPushButton, QVBoxLayout, QTextEdit, QGridLayout
 
 from indexed import IndexedOrderedDict
 
@@ -9,6 +9,7 @@ from math import sin, cos
 
 INNEROFFSET = 80
 OUTEROFFSET = 8
+TEXTBOXOFFSET = 10
 
 OUTERLINEWIDTH = OUTEROFFSET
 INNERLINEWIDTH = 4
@@ -47,7 +48,7 @@ class ToolBoxButton(QPushButton):
         shapePainter.setPen(QPen(QColor(14,125,145),  BOTTOMLINEWIDTH, Qt.SolidLine))
         shapePainter.drawPie(outerPieRect, self.start, self.length)
 
-        self.move(BOTTOMOFFSET*sin((self.start+self.length)/CIRCLE), BOTTOMOFFSET*cos((self.start+self.length)/CIRCLE))
+        self.move(BOTTOMOFFSET*sin((self.start+self.length)*CIRCLE), BOTTOMOFFSET*cos((self.start+self.length)*CIRCLE))
 
 
     def mousePressEvent(self, event):
@@ -60,14 +61,19 @@ class ToolBoxButton(QPushButton):
         QPushButton.mouseReleaseEvent(self, event)
 
 class ToolBoxWidget(QWidget):
-    numberOfButtons = 2
+    numberOfButtons = 4
 
     textButtonName = 'textButton'
     highlightButtonName = 'highlightButton'
+    okButtonName = 'okButton'
+    cancelButtonName = 'cancelButton'
 
-    textBoxMode = False
+    textBoxMode = True
 
     items = IndexedOrderedDict()
+
+    textInputFinished = pyqtSignal(bool, str, name='textInputFinished')
+
 
     def __init__(self, parent):
         '''Create the Viewport.
@@ -75,15 +81,49 @@ class ToolBoxWidget(QWidget):
         :param parent: Parent editor widget.
         '''
         QWidget.__init__(self, parent)
-        self.drawButtons()
+        self.initUI()
+
 
     def paintEvent(self, event):
         if self.textBoxMode:
             self.drawRectShape(event)
+            self.setButtonVisibility(False)
         else:
             self.drawCircularShape(event)
+            self.setButtonVisibility(True)
 
         QWidget.paintEvent(self, event)
+
+    def initUI(self):
+        outerRect = self.rect()
+        outerRect.adjust(+TEXTBOXOFFSET,+TEXTBOXOFFSET,-TEXTBOXOFFSET,-TEXTBOXOFFSET)
+        self.pTextEdit = QTextEdit(self)
+        self.pTextEdit.setLineWrapMode(QTextEdit.WidgetWidth)
+        self.pTextEdit.setAutoFormatting(QTextEdit.AutoAll)
+        self.pTextEdit.setAcceptRichText(True)
+        self.pTextEdit.setPlaceholderText("Text Box Content")
+        self.pTextEdit.setGeometry(outerRect)
+        self.pTextEdit.ensureCursorVisible()
+
+        self.keyPressEvent = self.pTextEdit.keyPressEvent
+        self.keyReleaseEvent = self.pTextEdit.keyReleaseEvent
+
+        widgetLayout = QGridLayout(self)
+        widgetLayout.addWidget(self.pTextEdit)
+
+        self.textButton = ToolBoxButton(self, 0, self.numberOfButtons/1 * self.numberOfButtons/CIRCLE)
+
+        self.highlightButton = ToolBoxButton(self, 1 * self.numberOfButtons/CIRCLE, 2 * self.numberOfButtons/CIRCLE)
+
+        self.okButton = ToolBoxButton(self, 2 * self.numberOfButtons/CIRCLE, 3 * self.numberOfButtons/CIRCLE)
+
+        self.cancelButton = ToolBoxButton(self, 3 * self.numberOfButtons/CIRCLE, CIRCLE)
+
+        self.okButton.setShortcut("Ctrl+Return")
+        self.cancelButton.setShortcut("Esc")
+
+        self.okButton.clicked.connect(self.handleOkButton)
+        self.cancelButton.clicked.connect(self.handleCancelButton)
 
     def drawCircularShape(self, paintEvent):
         outerCircleRect = self.rect()
@@ -99,6 +139,9 @@ class ToolBoxWidget(QWidget):
         shapePainter.setPen(QPen(QColor(14,125,145),  INNERLINEWIDTH, Qt.SolidLine))
         shapePainter.drawArc(innerCircleRect, 0, CIRCLE)
 
+        self.pTextEdit.setEnabled(True)
+        self.pTextEdit.setVisible(True)
+
     def drawRectShape(self, event):
         outerRect = self.rect()
         outerRect.adjust(+OUTEROFFSET,+OUTEROFFSET,-OUTEROFFSET,-OUTEROFFSET)
@@ -108,12 +151,15 @@ class ToolBoxWidget(QWidget):
         shapePainter.setPen(QPen(QColor(14,125,145),  OUTERLINEWIDTH, Qt.SolidLine))
         shapePainter.drawRect(outerRect)
 
+        self.pTextEdit.setEnabled(True)
+        self.pTextEdit.setVisible(True)
 
-    def drawButtons(self):
-        self.textButton = ToolBoxButton(self, 0, CIRCLE/self.numberOfButtons)
+    def setButtonVisibility(self, state):
+        self.textButton.setVisible(state)
+        self.highlightButton.setVisible(state)
 
-        self.highlightButton = ToolBoxButton(self, 1 * CIRCLE/self.numberOfButtons, CIRCLE)
-        pass
+        self.okButton.move(self.height(), self.width())
+        self.cancelButton.move(self.height(), self.width())
 
     def mousePressEvent(self, event):
         self.__mousePressPos = None
@@ -145,3 +191,24 @@ class ToolBoxWidget(QWidget):
                 return
 
         QWidget.mouseReleaseEvent(self, event)
+
+
+    @pyqtSlot()
+    def handleTextInputRequest(self, qpos):
+
+        # Switch in to text box mode and redraw Widget
+        self.textBoxMode = True
+        self.repaint()
+
+    def handleOkButton(self):
+        print('ok')
+        if self.textBoxMode:
+            self.textInputFinished.emit(True, self.pTextEdit.toPlainText())
+
+
+
+    def handleCancelButton(self):
+        print('cancel')
+
+        if self.textBoxMode:
+            self.textInputFinished.emit(False, self.pTextEdit.toPlainText())

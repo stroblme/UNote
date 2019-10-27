@@ -39,6 +39,8 @@ class textModes():
     mdText = 'markdownText'
 
 class QPdfView(QGraphicsPixmapItem):
+    requestTextInput = pyqtSignal()
+
     def __init__(self):
         QGraphicsPixmapItem.__init__(self)
         self.blockEdit = False
@@ -78,6 +80,7 @@ class QPdfView(QGraphicsPixmapItem):
         pass
 
     def insertText(self, qpos):
+        self.requestTextInput.emit()
         h = float(20)
         w = float(120)
 
@@ -101,6 +104,10 @@ class QPdfView(QGraphicsPixmapItem):
         annot.setBorder(border)
         annot.update(fontsize = 16, border_color=cyan, fill_color=white, text_color=black)
         annot.update()
+
+    @pyqtSlot()
+    def textInputReceived(self, str):
+        print('pdf received text input')
 
     def editText(self, qpos):
         # textAnnots = self.page.annots(fitz.PDF_ANNOT_TEXT)
@@ -208,7 +215,7 @@ class GraphicsViewHandler(QGraphicsView):
     absZoomFactor = float(1)
     lowResZoomFactor = float(0.1)
 
-
+    requestTextInput = pyqtSignal()
 
     def __init__(self, parent):
         '''Create the Viewport.
@@ -259,6 +266,9 @@ class GraphicsViewHandler(QGraphicsView):
             if pIt > 2:
                 posX, posY = self.loadPdfPageToCurrentView(pIt, posX, posY, self.lowResZoomFactor)
             else:
+                if pIt == 2:
+                    print('Boosting renderer..')
+
                 # Load each page to a new position in the current view.
                 posX, posY = self.loadPdfPageToCurrentView(pIt, posX, posY, self.absZoomFactor)
 
@@ -272,6 +282,7 @@ class GraphicsViewHandler(QGraphicsView):
 
         self.updatePdf(pdfView, zoom = zoom, pageNumber = pageNumber)
 
+        pdfView.requestTextInput.connect(self.toolBoxTextInputRequestedEvent)
 
         self.pages[pageNumber] = pdfView
 
@@ -452,6 +463,16 @@ class GraphicsViewHandler(QGraphicsView):
 
     def gestureEvent(self, event):
         print('hi')
+
+    @pyqtSlot()
+    def toolBoxTextInputEvent(self, result, content):
+        print(str(result) + ' ' + content)
+
+    @pyqtSlot()
+    def toolBoxTextInputRequestedEvent(self):
+        print('Requesting input')
+
+        self.requestTextInput.emit()
 
 # class Renderer(QObject):
 #     finished = pyqtSignal()

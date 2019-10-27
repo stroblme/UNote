@@ -146,6 +146,9 @@ class UNote(Ui_MainWindow):
 
         self.ui.actionSave_PDF.triggered.connect(lambda:self.receiversInst.savePdf())
 
+        self.ui.floatingToolBox.textInputFinished.connect(self.ui.graphicsView.toolBoxTextInputEvent)
+
+        self.ui.graphicsView.requestTextInput.connect(self.ui.floatingToolBox.handleTextInputRequest)
 # ----------------------------------------------------------
 # User Parameter region
 # ----------------------------------------------------------
