@@ -87,10 +87,8 @@ class QPdfView(QGraphicsPixmapItem):
     def getVisibleRect(self):
         pass
 
-    def insertText(self, qpos, text):
-
-        h = float(20)
-        w = float(120)
+    def insertText(self, qpos, content):
+        h, w = self.calculateTextRectWidth(content)
 
         textRect = fitz.Rect(qpos.x(), qpos.y() - h/2, qpos.x() + w, qpos.y() + h/2)
 
@@ -108,9 +106,9 @@ class QPdfView(QGraphicsPixmapItem):
         #     print('not enough space')
         # shape.commit()
         border = {"width": 0.4, "dashes": [1]}
-        annot = self.page.addFreetextAnnot(textRect, text)
+        annot = self.page.addFreetextAnnot(textRect, content)
         annot.setBorder(border)
-        annot.update(fontsize = 16, border_color=cyan, fill_color=white, text_color=black)
+        annot.update(fontsize = 14, border_color=cyan, fill_color=white, text_color=black)
         annot.update()
 
     def textInputReceived(self, x, y, result, content):
@@ -127,15 +125,46 @@ class QPdfView(QGraphicsPixmapItem):
 
 
     def editText(self, qpos, content):
+
         # textAnnots = self.page.annots(fitz.PDF_ANNOT_TEXT)
         for annot in self.page.annots(types=(fitz.PDF_ANNOT_FREE_TEXT, fitz.PDF_ANNOT_TEXT)):
             if self.pointInArea(qpos, annot.rect):
+
+                h, w = self.calculateTextRectWidth(content)
+
+                annot.setRect(fitz.Rect(annot.rect.x0, annot.rect.y0, annot.rect.x0 + w, annot.rect.y0 + h))
+
                 info = annot.info
                 info["content"] = content
                 info["subject"] = textModes.plainText
                 annot.setInfo(info)
                 annot.update()
                 return
+
+    def calculateTextRectWidth(self, content):
+        fontwidth = 8
+        defaultHeight = 16
+        defaultWidth = 130
+        numOfLines = content.count('\n') + 1
+        
+        suggestedWidth = defaultWidth
+        suggestedHeight = defaultHeight * numOfLines
+
+        # while defaultWidth == suggestedWidth or suggestedHeight > suggestedWidth:
+
+        #     suggestedWidth += suggestedHeight
+
+        #     for line in content.split('\n'):
+        #         delta = len(line) * fontwidth - suggestedWidth
+        #         if delta > 0:
+        #             suggestedHeight += (delta / suggestedWidth) * defaultHeight
+        for line in content.split('\n'):
+                delta = len(line) * fontwidth - suggestedWidth
+                if delta > 0:
+                    suggestedHeight += (delta / suggestedWidth) * defaultHeight
+
+        return float(suggestedHeight), float(suggestedWidth)
+    
 
     def getTextBoxContent(self, qpos):
         for annot in self.page.annots(types=(fitz.PDF_ANNOT_FREE_TEXT, fitz.PDF_ANNOT_TEXT)):
@@ -503,62 +532,6 @@ class GraphicsViewHandler(QGraphicsView):
         self.pages[pageNumber].textInputReceived(x, y, result, content)
         self.updateRenderedPages()
 
-
     @pyqtSlot(int, int, int, str)
     def toolBoxTextInputRequestedEvent(self, x, y, pageNumber, currentContent):
         self.requestTextInput.emit(x, y, pageNumber, currentContent)
-
-# class Renderer(QObject):
-#     finished = pyqtSignal()
-#     intReady = pyqtSignal(int)
-
-#     def __init__(self, doc, pages):
-#         self.pdf = pdfEngine()
-#         self.doc = doc
-#         self.pages = pages
-
-#     @pyqtSlot()
-#     def procCounter(self): # A slot takes no params
-#         for pIt in range(self.pdf.doc.pageCount):
-#             loadInPage(pIt)
-
-#     def loadInPage(pageNumber):
-#         pdfView = QPdfView()
-#         pdfView.setPage(self.pdf.getPage(pageNumber))
-
-#         self.updatePdf(pdfView, pageNumber = pageNumber)
-
-
-#         self.pages[pageNumber] = pdfView
-
-#         self.scene.addItem(self.pages[pageNumber])
-#         self.pages[pageNumber].setPos(posX, posY)
-
-#         if self.CONTINOUSVIEW:
-#             newPosX = posX
-#             newPosY = posY + pdfView.boundingRect().height() + self.DEFAULTPAGESPACE
-#         else:
-#             newPosX = posX + pdfView.boundingRect().width() + self.DEFAULTPAGESPACE
-#             newPosY = posY
-
-#         pdfView.setAsOrigin()
-
-#         return newPosX, newPosY
-
-#     def updatePdf(self, pdf, zoom=absZoomFactor, clip=None, pageNumber = None):
-#         mat = fitz.Matrix(zoom, zoom)
-
-#         fClip = None
-#         if clip:
-#             fClip = fitz.Rect(clip.x(), clip.y(), clip.x() + clip.width(), clip.y() + clip.height())
-
-#         pixmap = self.pdf.renderPixmap(pdf.page, mat = mat, clip = fClip)
-
-#         qImg = self.pdf.getQImage(pixmap)
-#         qImg.setDevicePixelRatio(zoom)
-#         qImg = self.imageHelper.applyTheme(qImg)
-
-#         if pageNumber:
-#             pdf.setPixMap(qImg, pageNumber)
-#         else:
-#             pdf.updatePixMap(qImg)
