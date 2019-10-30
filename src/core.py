@@ -30,7 +30,8 @@ import fitz
 class editModes():
     none = 'none'
     highlight = 'highlight'
-    textBox = 'textBox'
+    newTextBox = 'newTextBox'
+    editTextBox = 'editTextBox'
 
 editMode = editModes.none
 
@@ -39,7 +40,8 @@ class textModes():
     mdText = 'markdownText'
 
 class EventHelper(QObject):
-    requestTextInput = pyqtSignal(int, int, int)
+    # x, y, pageNumber, currentContent
+    requestTextInput = pyqtSignal(int, int, int, str)
 
 
 class QPdfView(QGraphicsPixmapItem):
@@ -112,17 +114,37 @@ class QPdfView(QGraphicsPixmapItem):
         annot.update()
 
     def textInputReceived(self, x, y, result, content):
-        self.insertText(QPoint(x, y), content)
+        if editMode == editModes.newTextBox:
+            self.insertText(QPoint(x, y), content)
+            self.resetEditMode()
+        elif editMode == editModes.editTextBox:
+            self.editText(QPoint(x, y), content)
+            self.resetEditMode()
 
-    def editText(self, qpos):
+    def resetEditMode(self):
+        global editMode
+        editMode = editModes.none
+
+
+    def editText(self, qpos, content):
         # textAnnots = self.page.annots(fitz.PDF_ANNOT_TEXT)
         for annot in self.page.annots(types=(fitz.PDF_ANNOT_FREE_TEXT, fitz.PDF_ANNOT_TEXT)):
             if self.pointInArea(qpos, annot.rect):
                 info = annot.info
-                info["content"] = "test"
+                info["content"] = content
                 info["subject"] = textModes.plainText
                 annot.setInfo(info)
                 annot.update()
+                return
+
+    def getTextBoxContent(self, qpos):
+        for annot in self.page.annots(types=(fitz.PDF_ANNOT_FREE_TEXT, fitz.PDF_ANNOT_TEXT)):
+            if self.pointInArea(qpos, annot.rect):
+                info = annot.info
+                
+                return info["content"]
+
+        return None
 
     def pointInArea(self, qpos, frect):
         if qpos.x() < frect.x0 or qpos.y() < frect.y0:
@@ -173,30 +195,32 @@ class QPdfView(QGraphicsPixmapItem):
             return
 
         if event.button() == Qt.LeftButton:
-            if editMode == editModes.textBox:
-                relCorrdinates = self.toPdfCoordinates(event.pos())
-                # self.eh.requestTextInput.emit(self.pageNumber, relCorrdinates.x(), relCorrdinates.y())
-
-
-            elif editMode == editModes.highlight:
+            if editMode == editModes.highlight:
                 self.startHighlightText(self.toPdfCoordinates(event.pos()))
         # elif event.button() == Qt.RightButton:
         #     if editMode == editModes.textBox:
         #         self.editText(self.toPdfCoordinates(event.pos()))
 
     def mouseReleaseEvent(self, event):
+        global editMode
         self.blockEdit = False
 
         if event.button() == Qt.LeftButton:
-            if editMode == editModes.textBox:
+            if editMode == editModes.newTextBox:
                 relCorrdinates = self.toPdfCoordinates(event.pos())
-                self.eh.requestTextInput.emit(relCorrdinates.x(), relCorrdinates.y(), self.pageNumber)
+                self.eh.requestTextInput.emit(relCorrdinates.x(), relCorrdinates.y(), self.pageNumber, "")
 
             elif editMode == editModes.highlight:
                 self.stopHighlightText(self.toPdfCoordinates(event.pos()))
         elif event.button() == Qt.RightButton:
-            if editMode == editModes.textBox:
-                self.editText(self.toPdfCoordinates(event.pos()))
+            editMode = editModes.editTextBox
+
+            relCorrdinates = self.toPdfCoordinates(event.pos())
+            curContent = self.getTextBoxContent(event.pos())
+            if curContent:
+                self.eh.requestTextInput.emit(relCorrdinates.x(), relCorrdinates.y(), self.pageNumber, curContent)
+            else:
+                print("Cannot find a text box under that cursor")
 
     def mouseMoveEvent(self, event):
         self.blockEdit = False
@@ -223,7 +247,8 @@ class GraphicsViewHandler(QGraphicsView):
     absZoomFactor = float(1)
     lowResZoomFactor = float(0.1)
 
-    requestTextInput = pyqtSignal(int, int, int)
+    # x, y, pageNumber, currentContent
+    requestTextInput = pyqtSignal(int, int, int, str)
 
     def __init__(self, parent):
         '''Create the Viewport.
@@ -383,10 +408,10 @@ class GraphicsViewHandler(QGraphicsView):
     def toggleTextMode(self):
         global editMode
 
-        if editMode == editModes.textBox:
+        if editMode == editModes.newTextBox:
             editMode = editModes.none
         else:
-            editMode = editModes.textBox
+            editMode = editModes.newTextBox
 
     def toggleHighlightMode(self):
         global editMode
@@ -449,7 +474,6 @@ class GraphicsViewHandler(QGraphicsView):
         self.updateRenderedPages()
 
     def mousePressEvent(self, event):
-        print('test')
         super(GraphicsViewHandler, self).mousePressEvent(event)
 
     def mouseReleaseEvent(self, event):
@@ -472,7 +496,7 @@ class GraphicsViewHandler(QGraphicsView):
         super(GraphicsViewHandler, self).keyReleaseEvent(event)
 
     def gestureEvent(self, event):
-        print('hi')
+        print('gesture event received in core.py ')
 
     @pyqtSlot(int, int, int, bool, str)
     def toolBoxTextInputEvent(self, x, y, pageNumber, result, content):
@@ -480,9 +504,9 @@ class GraphicsViewHandler(QGraphicsView):
         self.updateRenderedPages()
 
 
-    @pyqtSlot(int, int, int)
-    def toolBoxTextInputRequestedEvent(self, x, y, pageNumber):
-        self.requestTextInput.emit(x, y, pageNumber)
+    @pyqtSlot(int, int, int, str)
+    def toolBoxTextInputRequestedEvent(self, x, y, pageNumber, currentContent):
+        self.requestTextInput.emit(x, y, pageNumber, currentContent)
 
 # class Renderer(QObject):
 #     finished = pyqtSignal()

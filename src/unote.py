@@ -85,7 +85,7 @@ class UNote(Ui_MainWindow):
         self.ui.floatingToolBox = ToolBoxWidget(self.MainWindow)
         self.ui.floatingToolBox.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.FramelessWindowHint)
         self.ui.floatingToolBox.setObjectName("floatingToolBox")
-        self.ui.floatingToolBox.setGeometry(QtCore.QRect(0-200/2, self.MainWindow.height()-200/2, 200, 200))
+        self.ui.floatingToolBox.setGeometry(QtCore.QRect(200, self.MainWindow.height()-200, 200, 200))
         self.ui.floatingToolBox.show()
 
 

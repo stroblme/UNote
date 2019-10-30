@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QPixmap, QPainter, QPen, QBrush, QColor, QPolygon
-from PyQt5.QtCore import pyqtSignal, QFile, QTextStream, pyqtSlot, QObject, QPoint, Qt
+from PyQt5.QtCore import pyqtSignal, QFile, QTextStream, pyqtSlot, QObject, QPoint, Qt, QRect
 from PyQt5.QtWidgets import QDialog, QGraphicsView, QGraphicsScene, QWidget, QPushButton, QVBoxLayout, QTextEdit, QGridLayout
 
 from indexed import IndexedOrderedDict
@@ -142,21 +142,33 @@ class ToolBoxWidget(QWidget):
 
         self.pTextEdit.setEnabled(False)
         self.pTextEdit.setVisible(False)
-        self.pTextEdit.setText("")
+        
 
     def drawRectShape(self, event):
         outerRect = self.rect()
         outerRect.adjust(+OUTEROFFSET,+OUTEROFFSET,-OUTEROFFSET,-OUTEROFFSET)
 
+        moveRect = QRect(0,0, 11,11)
+
         shapePainter = QPainter(self)
         shapePainter.setRenderHint(shapePainter.Antialiasing)
         shapePainter.setPen(QPen(QColor(14,125,145),  OUTERLINEWIDTH, Qt.SolidLine))
         shapePainter.drawRect(outerRect)
-
-        self.pTextEdit.ensureCursorVisible()
+        shapePainter.setPen(QPen(QColor(14,125,145),  2, Qt.SolidLine))
+        shapePainter.drawArc(moveRect, 0, CIRCLE)
 
         self.pTextEdit.setEnabled(True)
         self.pTextEdit.setVisible(True)
+
+        self.pTextEdit.ensureCursorVisible()
+        self.pTextEdit.setFocus()
+
+    def insertCurrentContent(self, content):
+        if content != "":
+            self.pTextEdit.setText(content)
+        else:
+            self.pTextEdit.setText("")
+
 
     def setButtonVisibility(self, state):
         self.textButton.setVisible(state)
@@ -197,30 +209,30 @@ class ToolBoxWidget(QWidget):
         QWidget.mouseReleaseEvent(self, event)
 
 
-    @pyqtSlot(int, int, int)
-    def handleTextInputRequest(self, x, y, pageNumber):
+    @pyqtSlot(int, int, int, str)
+    def handleTextInputRequest(self, x, y, pageNumber, currentContent):
         # Switch in to text box mode and redraw Widget
         self.currentPageNumber = pageNumber
+        self.insertCurrentContent(currentContent)
         self.currentX = x
         self.currentY = y
         self.textBoxMode = True
         self.repaint()
 
     def handleOkButton(self):
-        print('ok')
         if self.textBoxMode:
             self.textInputFinished.emit(self.currentX, self.currentY, self.currentPageNumber, True, self.pTextEdit.toPlainText())
             self.textBoxMode = False
             self.repaint()
             self.currentPageNumber = -1
-
-
+            self.currentX = -1
+            self.currentY = -1
 
     def handleCancelButton(self):
-        print('cancel')
-
         if self.textBoxMode:
             self.textInputFinished.emit(self.currentX, self.currentY, self.currentPageNumber, False, self.pTextEdit.toPlainText())
             self.textBoxMode = False
             self.repaint()
             self.currentPageNumber = -1
+            self.currentX = -1
+            self.currentY = -1
