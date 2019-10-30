@@ -1,66 +1,64 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QPixmap, QPainter, QPen, QBrush, QColor, QPolygon
-from PyQt5.QtCore import pyqtSignal, QFile, QTextStream, pyqtSlot, QObject, QPoint, Qt, QRect
+from PyQt5.QtCore import pyqtSignal, QFile, QTextStream, pyqtSlot, QObject, QPoint, Qt, QRect, QSize
 from PyQt5.QtWidgets import QDialog, QGraphicsView, QGraphicsScene, QWidget, QPushButton, QVBoxLayout, QTextEdit, QGridLayout
 
 from indexed import IndexedOrderedDict
 
 from math import sin, cos
 
-INNEROFFSET = 80
 OUTEROFFSET = 8
 TEXTBOXOFFSET = 10
 
 OUTERLINEWIDTH = OUTEROFFSET
 INNERLINEWIDTH = 4
 
-BOTTOMLINEWIDTH = 2
-BOTTOMOFFSET = 20
+BUTTONOFFSET = 10
 
 CIRCLE = 5760
 
-class ToolBoxButton(QPushButton):
-    def __init__(self, parent, start, length):
-        '''
-        Creates a ToolBoxButton instance as a arc
+# class ToolBoxButton(QPushButton):
+#     def __init__(self, parent, start, length):
+#         '''
+#         Creates a ToolBoxButton instance as a arc
 
-        :param start: starting point of the arc
-        :param length: length of the arc
-        '''
-        self.setArc(start, length)
-        # print('1')
-        QPushButton.__init__(self, parent)
+#         :param start: starting point of the arc
+#         :param length: length of the arc
+#         '''
+#         self.setArc(start, length)
+#         # print('1')
+#         QPushButton.__init__(self, parent)
 
-    def setArc(self, start, length):
-        self.start = start
-        self.length = length
+#     def setArc(self, start, length):
+#         self.start = start
+#         self.length = length
 
-    def paintEvent(self, event):
-        self.drawPiePiece(event)
+#     def paintEvent(self, event):
+#         self.drawPiePiece(event)
 
-        QPushButton.paintEvent(self, event)
-
-
-    def drawPiePiece(self, event):
-        outerPieRect = self.rect()
-        outerPieRect.adjust(+INNEROFFSET,+INNEROFFSET,-INNEROFFSET,-INNEROFFSET)
-
-        shapePainter = QPainter(self)
-        shapePainter.setRenderHint(shapePainter.Antialiasing)
-        shapePainter.setPen(QPen(QColor(14,125,145),  BOTTOMLINEWIDTH, Qt.SolidLine))
-        shapePainter.drawPie(outerPieRect, self.start, self.length)
-
-        self.move(BOTTOMOFFSET*sin((self.start+self.length)*CIRCLE), BOTTOMOFFSET*cos((self.start+self.length)*CIRCLE))
+#         QPushButton.paintEvent(self, event)
 
 
-    def mousePressEvent(self, event):
-        QPushButton.mousePressEvent(self, event)
+#     def drawPiePiece(self, event):
+#         outerPieRect = self.rect()
+#         outerPieRect.adjust(+INNEROFFSET,+INNEROFFSET,-INNEROFFSET,-INNEROFFSET)
 
-    def mouseMoveEvent(self, event):
-        QPushButton.mouseMoveEvent(self, event)
+#         shapePainter = QPainter(self)
+#         shapePainter.setRenderHint(shapePainter.Antialiasing)
+#         shapePainter.setPen(QPen(QColor(14,125,145),  BOTTOMLINEWIDTH, Qt.SolidLine))
+#         shapePainter.drawPie(outerPieRect, self.start, self.length)
 
-    def mouseReleaseEvent(self, event):
-        QPushButton.mouseReleaseEvent(self, event)
+#         self.move(BOTTOMOFFSET*sin((self.start+self.length)*CIRCLE), BOTTOMOFFSET*cos((self.start+self.length)*CIRCLE))
+
+
+#     def mousePressEvent(self, event):
+#         QPushButton.mousePressEvent(self, event)
+
+#     def mouseMoveEvent(self, event):
+#         QPushButton.mouseMoveEvent(self, event)
+
+#     def mouseReleaseEvent(self, event):
+#         QPushButton.mouseReleaseEvent(self, event)
 
 class ToolBoxWidget(QWidget):
     numberOfButtons = 4
@@ -101,6 +99,14 @@ class ToolBoxWidget(QWidget):
         # Shrink it for matiching textBox size
         outerRect.adjust(+TEXTBOXOFFSET,+TEXTBOXOFFSET,-TEXTBOXOFFSET,-TEXTBOXOFFSET)
 
+        outerCircleRect = self.rect()
+        outerCircleRect.adjust(+BUTTONOFFSET,+BUTTONOFFSET,-BUTTONOFFSET,-BUTTONOFFSET)
+
+        topLeft = outerCircleRect.topLeft()
+        topRight = QPoint(outerCircleRect.topRight().x() + 30, outerCircleRect.topRight().y() + 30)
+        bottomLeft = QPoint(topLeft.x(), topRight.y() + 30)
+        bottomRight = QPoint(topRight.x() + 30, topRight.y() + 30)
+
         # We use a textEdit for making text boxes editable for user
         self.pTextEdit = QTextEdit(self)
         # Always enable line wrapping
@@ -118,13 +124,30 @@ class ToolBoxWidget(QWidget):
         widgetLayout = QGridLayout(self)
         widgetLayout.addWidget(self.pTextEdit)
 
-        self.textButton = ToolBoxButton(self, 0, self.numberOfButtons/1 * self.numberOfButtons/CIRCLE)
+        buttonSize = QSize(60,40)
 
-        self.highlightButton = ToolBoxButton(self, 1 * self.numberOfButtons/CIRCLE, 2 * self.numberOfButtons/CIRCLE)
+        self.textButton = QPushButton(self)
+        self.textButton.setFixedSize(buttonSize)
+        self.textButton.move(topRight)
+        self.textButton.setText('T')
 
-        self.okButton = ToolBoxButton(self, 2 * self.numberOfButtons/CIRCLE, 3 * self.numberOfButtons/CIRCLE)
+        self.highlightButton = QPushButton(self)
+        self.highlightButton.setFixedSize(buttonSize)
+        self.highlightButton.move(topLeft)
+        self.highlightButton.setText('H')
 
-        self.cancelButton = ToolBoxButton(self, 3 * self.numberOfButtons/CIRCLE, CIRCLE)
+        self.okButton = QPushButton(self)
+        self.okButton.setFixedSize(buttonSize)
+        self.okButton.move(bottomLeft)
+        self.okButton.setText('Ok')
+
+        self.cancelButton = QPushButton(self)
+        self.cancelButton.setFixedSize(buttonSize)
+        self.cancelButton.move(bottomRight)
+        self.cancelButton.setText('Cancel')
+
+
+
 
         # Set Shortcuts for the buttons
         self.okButton.setShortcut("Ctrl+Return")
@@ -220,8 +243,10 @@ class ToolBoxWidget(QWidget):
         self.textButton.setVisible(state)
         self.highlightButton.setVisible(state)
 
-        self.okButton.move(self.height(), self.width())
-        self.cancelButton.move(self.height(), self.width())
+        # self.okButton.move(self.rect.bottomRight())
+        # self.cancelButton.move(self.rect.bottomRight())
+        # self.okButton.setVisible(state)
+        # self.cancelButton.setVisible(state)
 
     def mousePressEvent(self, event):
         '''
