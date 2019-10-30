@@ -68,12 +68,14 @@ class ToolBoxWidget(QWidget):
     okButtonName = 'okButton'
     cancelButtonName = 'cancelButton'
 
-    textBoxMode = True
+    textBoxMode = False
 
     items = IndexedOrderedDict()
 
-    textInputFinished = pyqtSignal(bool, str)
-
+    textInputFinished = pyqtSignal(int, bool, str)
+    currentPageNumber = -1
+    currentX = -1
+    currentY = -1
 
     def __init__(self, parent):
         '''Create the Viewport.
@@ -103,7 +105,6 @@ class ToolBoxWidget(QWidget):
         self.pTextEdit.setAcceptRichText(True)
         self.pTextEdit.setPlaceholderText("Text Box Content")
         self.pTextEdit.setGeometry(outerRect)
-        self.pTextEdit.ensureCursorVisible()
 
         self.keyPressEvent = self.pTextEdit.keyPressEvent
         self.keyReleaseEvent = self.pTextEdit.keyReleaseEvent
@@ -139,8 +140,8 @@ class ToolBoxWidget(QWidget):
         shapePainter.setPen(QPen(QColor(14,125,145),  INNERLINEWIDTH, Qt.SolidLine))
         shapePainter.drawArc(innerCircleRect, 0, CIRCLE)
 
-        self.pTextEdit.setEnabled(True)
-        self.pTextEdit.setVisible(True)
+        self.pTextEdit.setEnabled(False)
+        self.pTextEdit.setVisible(False)
 
     def drawRectShape(self, event):
         outerRect = self.rect()
@@ -150,6 +151,8 @@ class ToolBoxWidget(QWidget):
         shapePainter.setRenderHint(shapePainter.Antialiasing)
         shapePainter.setPen(QPen(QColor(14,125,145),  OUTERLINEWIDTH, Qt.SolidLine))
         shapePainter.drawRect(outerRect)
+
+        self.pTextEdit.ensureCursorVisible()
 
         self.pTextEdit.setEnabled(True)
         self.pTextEdit.setVisible(True)
@@ -193,17 +196,22 @@ class ToolBoxWidget(QWidget):
         QWidget.mouseReleaseEvent(self, event)
 
 
-    @pyqtSlot(int)
-    def handleTextInputRequest(self, qpos):
-
+    @pyqtSlot(int, int, int)
+    def handleTextInputRequest(self, x, y, pageNumber):
         # Switch in to text box mode and redraw Widget
+        self.currentPageNumber = pageNumber
+        self.currentX = x
+        self.currentY = y
         self.textBoxMode = True
         self.repaint()
 
     def handleOkButton(self):
         print('ok')
         if self.textBoxMode:
-            self.textInputFinished.emit(True, self.pTextEdit.toPlainText())
+            self.textInputFinished.emit(self.currentX, self.currentY, self.currentPageNumber, True, self.pTextEdit.toPlainText())
+            self.textBoxMode = False
+            self.repaint()
+            self.currentPageNumber = -1
 
 
 
@@ -211,4 +219,7 @@ class ToolBoxWidget(QWidget):
         print('cancel')
 
         if self.textBoxMode:
-            self.textInputFinished.emit(False, self.pTextEdit.toPlainText())
+            self.textInputFinished.emit(self.currentX, self.currentY, self.currentPageNumber, False, self.pTextEdit.toPlainText())
+            self.textBoxMode = False
+            self.repaint()
+            self.currentPageNumber = -1

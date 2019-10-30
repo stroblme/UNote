@@ -38,13 +38,18 @@ class textModes():
     plainText = 'plainText'
     mdText = 'markdownText'
 
+class EventHelper(QObject):
+    requestTextInput = pyqtSignal(int, int, int)
+
+
 class QPdfView(QGraphicsPixmapItem):
-    requestTextInput = pyqtSignal()
 
     def __init__(self):
         QGraphicsPixmapItem.__init__(self)
         self.blockEdit = False
         self.ongoingEdit = False
+
+        self.eh = EventHelper()
 
     def setQImage(self, qImg):
         self.qImg = qImg
@@ -69,8 +74,9 @@ class QPdfView(QGraphicsPixmapItem):
         self.wOrigin = self.boundingRect().width()
         self.hOrigin = self.boundingRect().height()
 
-    def setPage(self, page):
+    def setPage(self, page, pageNumber):
         self.page = page
+        self.pageNumber = pageNumber
 
     def reloadQImg(self, zoomFactor):
         mat = fitz.Matrix(zoomFactor, zoomFactor)
@@ -79,8 +85,8 @@ class QPdfView(QGraphicsPixmapItem):
     def getVisibleRect(self):
         pass
 
-    def insertText(self, qpos):
-        self.requestTextInput.emit()
+    def insertText(self, qpos, text):
+
         h = float(20)
         w = float(120)
 
@@ -105,9 +111,8 @@ class QPdfView(QGraphicsPixmapItem):
         annot.update(fontsize = 16, border_color=cyan, fill_color=white, text_color=black)
         annot.update()
 
-    @pyqtSlot()
-    def textInputReceived(self, str):
-        print('pdf received text input')
+    def textInputReceived(self, x, y, result, content):
+        self.insertText(QPoint(x, y), content)
 
     def editText(self, qpos):
         # textAnnots = self.page.annots(fitz.PDF_ANNOT_TEXT)
@@ -169,7 +174,10 @@ class QPdfView(QGraphicsPixmapItem):
 
         if event.button() == Qt.LeftButton:
             if editMode == editModes.textBox:
-                self.insertText(self.toPdfCoordinates(event.pos()))
+                relCorrdinates = self.toPdfCoordinates(event.pos())
+                # self.eh.requestTextInput.emit(self.pageNumber, relCorrdinates.x(), relCorrdinates.y())
+
+
             elif editMode == editModes.highlight:
                 self.startHighlightText(self.toPdfCoordinates(event.pos()))
         # elif event.button() == Qt.RightButton:
@@ -181,7 +189,9 @@ class QPdfView(QGraphicsPixmapItem):
 
         if event.button() == Qt.LeftButton:
             if editMode == editModes.textBox:
-                self.insertText(self.toPdfCoordinates(event.pos()))
+                relCorrdinates = self.toPdfCoordinates(event.pos())
+                self.eh.requestTextInput.emit(relCorrdinates.x(), relCorrdinates.y(), self.pageNumber)
+
             elif editMode == editModes.highlight:
                 self.stopHighlightText(self.toPdfCoordinates(event.pos()))
         elif event.button() == Qt.RightButton:
@@ -192,9 +202,7 @@ class QPdfView(QGraphicsPixmapItem):
         self.blockEdit = False
 
         if self.ongoingEdit:
-            if editMode == editModes.textBox:
-                self.insertText(self.toPdfCoordinates(event.pos()))
-            elif editMode == editModes.highlight:
+            if editMode == editModes.highlight:
                 self.updateHighlightText(self.toPdfCoordinates(event.pos()))
 
         QGraphicsPixmapItem.mouseMoveEvent(self, event)
@@ -215,7 +223,7 @@ class GraphicsViewHandler(QGraphicsView):
     absZoomFactor = float(1)
     lowResZoomFactor = float(0.1)
 
-    requestTextInput = pyqtSignal(int)
+    requestTextInput = pyqtSignal(int, int, int)
 
     def __init__(self, parent):
         '''Create the Viewport.
@@ -278,13 +286,14 @@ class GraphicsViewHandler(QGraphicsView):
     def loadPdfPageToCurrentView(self, pageNumber, posX, posY, zoom = None):
 
         pdfView = QPdfView()
-        pdfView.setPage(self.pdf.getPage(pageNumber))
+        pdfView.setPage(self.pdf.getPage(pageNumber), pageNumber)
 
         self.updatePdf(pdfView, zoom = zoom, pageNumber = pageNumber)
 
-        pdfView.requestTextInput.connect(self.toolBoxTextInputRequestedEvent)
 
         self.pages[pageNumber] = pdfView
+
+        self.pages[pageNumber].eh.requestTextInput.connect(self.toolBoxTextInputRequestedEvent)
 
         self.scene.addItem(self.pages[pageNumber])
         self.pages[pageNumber].setPos(posX, posY)
@@ -440,6 +449,7 @@ class GraphicsViewHandler(QGraphicsView):
         self.updateRenderedPages()
 
     def mousePressEvent(self, event):
+        print('test')
         super(GraphicsViewHandler, self).mousePressEvent(event)
 
     def mouseReleaseEvent(self, event):
@@ -464,15 +474,13 @@ class GraphicsViewHandler(QGraphicsView):
     def gestureEvent(self, event):
         print('hi')
 
-    @pyqtSlot(bool, str)
-    def toolBoxTextInputEvent(self, result, content):
-        print(str(result) + ' ' + content)
+    @pyqtSlot(int, int, int, bool, str)
+    def toolBoxTextInputEvent(self, x, y, pageNumber, result, content):
+        self.pages[pageNumber].textInputReceived(x, y, result, content)
 
-    @pyqtSlot()
-    def toolBoxTextInputRequestedEvent(self):
-        print('Requesting input')
-
-        self.requestTextInput.emit()
+    @pyqtSlot(int, int, int)
+    def toolBoxTextInputRequestedEvent(self, x, y, pageNumber):
+        self.requestTextInput.emit(x, y, pageNumber)
 
 # class Renderer(QObject):
 #     finished = pyqtSignal()
