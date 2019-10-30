@@ -106,7 +106,7 @@ class QPdfView(QGraphicsPixmapItem):
         #     print('not enough space')
         # shape.commit()
         border = {"width": 0.4, "dashes": [1]}
-        annot = self.page.addFreetextAnnot(textRect, "Text Annotion")
+        annot = self.page.addFreetextAnnot(textRect, text)
         annot.setBorder(border)
         annot.update(fontsize = 16, border_color=cyan, fill_color=white, text_color=black)
         annot.update()
@@ -477,6 +477,8 @@ class GraphicsViewHandler(QGraphicsView):
     @pyqtSlot(int, int, int, bool, str)
     def toolBoxTextInputEvent(self, x, y, pageNumber, result, content):
         self.pages[pageNumber].textInputReceived(x, y, result, content)
+        self.updateRenderedPages()
+
 
     @pyqtSlot(int, int, int)
     def toolBoxTextInputRequestedEvent(self, x, y, pageNumber):

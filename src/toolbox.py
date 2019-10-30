@@ -72,7 +72,7 @@ class ToolBoxWidget(QWidget):
 
     items = IndexedOrderedDict()
 
-    textInputFinished = pyqtSignal(int, bool, str)
+    textInputFinished = pyqtSignal(int, int, int, bool, str)
     currentPageNumber = -1
     currentX = -1
     currentY = -1
@@ -142,6 +142,7 @@ class ToolBoxWidget(QWidget):
 
         self.pTextEdit.setEnabled(False)
         self.pTextEdit.setVisible(False)
+        self.pTextEdit.setText("")
 
     def drawRectShape(self, event):
         outerRect = self.rect()
