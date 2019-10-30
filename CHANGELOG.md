@@ -1,3 +1,15 @@
+# Changelog
+
+## v2.0
+
+- [ ] Implement markdown formatting annotations
+- [ ] Implement free drawing
+- [ ] Implement arrow based text boxes
+- [ ] Implement basic forms
+- [ ] Implement database structure
+
+## v1.0
+
 - [x] Cleanup and structure
 - [x] Initial pdf rendering
 - [x] Inverting pdf colors
@@ -10,10 +22,7 @@
 - [x] Make loading pdfs faster and safer
 - [x] Implement highlighting
 - [x] Save PDFs
+- [x] Implement plain-text editing
 - [ ] Implement gestures for touch compatibility
-- [ ] Implement annotations
-- [ ] Implement basic forms
-- [ ] Implement free drawing
-- [ ] Implement plain-text editing
-- [ ] Implement markdown formatting annotations
-- [ ] Implement database structure
+- [ ] Comments and code cleaness
+- [ ] Exception safeness

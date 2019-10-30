@@ -1,5 +1,7 @@
 # UNote
 
+## Latest release: v0.3
+
 ## Requirements
 
 - PyQt5

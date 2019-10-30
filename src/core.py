@@ -28,6 +28,9 @@ from indexed import IndexedOrderedDict
 import fitz
 
 class editModes():
+    '''
+    This class contains all available edit modes for the current pdf
+    '''
     none = 'none'
     highlight = 'highlight'
     newTextBox = 'newTextBox'
@@ -40,6 +43,9 @@ class textModes():
     mdText = 'markdownText'
 
 class EventHelper(QObject):
+    '''
+    This class is intended to extend an existing qt class which does not directly inherit from qobject and therefore does not contain signaling
+    '''
     # x, y, pageNumber, currentContent
     requestTextInput = pyqtSignal(int, int, int, str)
 
@@ -52,9 +58,6 @@ class QPdfView(QGraphicsPixmapItem):
         self.ongoingEdit = False
 
         self.eh = EventHelper()
-
-    def setQImage(self, qImg):
-        self.qImg = qImg
 
     def setPixMap(self, qImg, pageNumber):
         self.pageNumber = pageNumber
@@ -84,11 +87,11 @@ class QPdfView(QGraphicsPixmapItem):
         mat = fitz.Matrix(zoomFactor, zoomFactor)
         self.pixImg.convertFromImage(self.qImg)
 
-    def getVisibleRect(self):
-        pass
-
     def insertText(self, qpos, content):
-        h, w = self.calculateTextRectWidth(content)
+        '''
+        Inserts a textBox annotion at a specified position
+        '''
+        h, w = self.calculateTextRectBounds(content)
 
         textRect = fitz.Rect(qpos.x(), qpos.y() - h/2, qpos.x() + w, qpos.y() + h/2)
 
@@ -96,41 +99,20 @@ class QPdfView(QGraphicsPixmapItem):
         black = (0,0,0)
         white = (1,1,1)
 
-        # shape = self.page.newShape()                            # create Shape
-        # shape.drawRect(textRect)                                 # draw rectangles
-        # shape.finish(width = 1, color = cyan, fill = white)
-        # # Now insert text in the rectangles. Font "Helvetica" will be used
-        # # by default. A return code rc < 0 indicates insufficient space (not checked here).
-        # rc = shape.insertTextbox(textRect, fontsize=18, buffer="hi", color = black, rotate=0)
-        # if rc < 0:
-        #     print('not enough space')
-        # shape.commit()
         border = {"width": 0.4, "dashes": [1]}
         annot = self.page.addFreetextAnnot(textRect, content)
         annot.setBorder(border)
         annot.update(fontsize = 14, border_color=cyan, fill_color=white, text_color=black)
         annot.update()
 
-    def textInputReceived(self, x, y, result, content):
-        if editMode == editModes.newTextBox:
-            self.insertText(QPoint(x, y), content)
-            self.resetEditMode()
-        elif editMode == editModes.editTextBox:
-            self.editText(QPoint(x, y), content)
-            self.resetEditMode()
-
-    def resetEditMode(self):
-        global editMode
-        editMode = editModes.none
-
-
     def editText(self, qpos, content):
-
-        # textAnnots = self.page.annots(fitz.PDF_ANNOT_TEXT)
+        '''
+        Searches for a textBox at the current position and updates its content with the provided one
+        '''
         for annot in self.page.annots(types=(fitz.PDF_ANNOT_FREE_TEXT, fitz.PDF_ANNOT_TEXT)):
             if self.pointInArea(qpos, annot.rect):
 
-                h, w = self.calculateTextRectWidth(content)
+                h, w = self.calculateTextRectBounds(content)
 
                 annot.setRect(fitz.Rect(annot.rect.x0, annot.rect.y0, annot.rect.x0 + w, annot.rect.y0 + h))
 
@@ -141,12 +123,37 @@ class QPdfView(QGraphicsPixmapItem):
                 annot.update()
                 return
 
-    def calculateTextRectWidth(self, content):
+    def textInputReceived(self, x, y, result, content):
+        '''
+        Called from the graphicView handler when the user has finished editing text in the toolBox textEdit
+        '''
+
+        # Check weather the user has edited or inserted a textBox
+        if editMode == editModes.newTextBox:
+            self.insertText(QPoint(x, y), content)
+            self.resetEditMode()
+        elif editMode == editModes.editTextBox:
+            self.editText(QPoint(x, y), content)
+            self.resetEditMode()
+
+    def resetEditMode(self):
+        '''
+        Simply abstracts the process clearing the current edit mode to prevent a elevation of method access rights to global variables
+        '''
+        global editMode
+        editMode = editModes.none
+
+
+    def calculateTextRectBounds(self, content):
+        '''
+        Calculates the optimal rect boundaries for the desired content
+        '''
+
         fontwidth = 8
         defaultHeight = 16
         defaultWidth = 130
         numOfLines = content.count('\n') + 1
-        
+
         suggestedWidth = defaultWidth
         suggestedHeight = defaultHeight * numOfLines
 
@@ -164,13 +171,13 @@ class QPdfView(QGraphicsPixmapItem):
                     suggestedHeight += (delta / suggestedWidth) * defaultHeight
 
         return float(suggestedHeight), float(suggestedWidth)
-    
+
 
     def getTextBoxContent(self, qpos):
         for annot in self.page.annots(types=(fitz.PDF_ANNOT_FREE_TEXT, fitz.PDF_ANNOT_TEXT)):
             if self.pointInArea(qpos, annot.rect):
                 info = annot.info
-                
+
                 return info["content"]
 
         return None
@@ -208,6 +215,9 @@ class QPdfView(QGraphicsPixmapItem):
         self.page.addHighlightAnnot(rect)
 
     def wheelEvent(self, event):
+        '''
+        Overrides the default event
+        '''
         if not self.ongoingEdit:
             modifiers = QApplication.keyboardModifiers()
 
@@ -220,6 +230,9 @@ class QPdfView(QGraphicsPixmapItem):
 
 
     def mousePressEvent(self, event):
+        '''
+        Overrides the default event
+        '''
         if self.blockEdit:
             return
 
@@ -231,6 +244,9 @@ class QPdfView(QGraphicsPixmapItem):
         #         self.editText(self.toPdfCoordinates(event.pos()))
 
     def mouseReleaseEvent(self, event):
+        '''
+        Overrides the default event
+        '''
         global editMode
         self.blockEdit = False
 
@@ -252,6 +268,9 @@ class QPdfView(QGraphicsPixmapItem):
                 print("Cannot find a text box under that cursor")
 
     def mouseMoveEvent(self, event):
+        '''
+        Overrides the default event
+        '''
         self.blockEdit = False
 
         if self.ongoingEdit:
@@ -261,6 +280,9 @@ class QPdfView(QGraphicsPixmapItem):
         QGraphicsPixmapItem.mouseMoveEvent(self, event)
 
     def toPdfCoordinates(self, qPos):
+        '''
+        Converts the provided position to relative pdf file coordinates
+        '''
         xDif = self.x() - self.xOrigin
         yDif = self.y() - self.yOrigin
         pPos = QPoint(qPos.x() + xDif, qPos.y() + yDif)
@@ -280,7 +302,8 @@ class GraphicsViewHandler(QGraphicsView):
     requestTextInput = pyqtSignal(int, int, int, str)
 
     def __init__(self, parent):
-        '''Create the Viewport.
+        '''
+        Creates the graphic view handler instance, which is a main feature of the unot application
 
         :param parent: Parent editor widget.
         '''
@@ -303,9 +326,15 @@ class GraphicsViewHandler(QGraphicsView):
         # self.resize(parent.size())
 
     def saveCurrentPdf(self):
+        '''
+        Just handles saving the pdf
+        '''
         self.pdf.savePdf()
 
     def loadPdfToCurrentView(self, pdfFilePath):
+        '''
+        Renderes the whole pdf file in the current graphic view instance
+        '''
         start_time = time.time()
 
         self.pdf.openPdf(pdfFilePath)
@@ -338,7 +367,10 @@ class GraphicsViewHandler(QGraphicsView):
 
 
     def loadPdfPageToCurrentView(self, pageNumber, posX, posY, zoom = None):
-
+        '''
+        Creates a qpdfView instance from the desired page and renders it at the provided position with the zoomfactor.
+        A lower zoomFactor will dramatically improve speed, as it always correlates to the dpi of the page
+        '''
         pdfView = QPdfView()
         pdfView.setPage(self.pdf.getPage(pageNumber), pageNumber)
 
@@ -357,22 +389,33 @@ class GraphicsViewHandler(QGraphicsView):
         return posX, posY + pdfView.hOrigin + self.DEFAULTPAGESPACE
 
     def updateRenderedPages(self):
+        '''
+        Intended to be called repetitively on every ui change to redraw all visible pdf pages
+        '''
+        # Get all visible pages
         try:
             renderedItems = self.scene.items(self.mapToScene(self.viewport().geometry()))
         except Exception as e:
             return
 
+        # get the rectable of the current viewport
         rect = self.mapToScene(self.viewport().geometry()).boundingRect()
+        # Store those properties for easy access
         viewportHeight = rect.height()
         viewportWidth = rect.width()
         viewportX = rect.x()
         viewportY = rect.y()
 
-
+        # Iterate all visible items (shouldn't be that much normally)
         for renderedItem in renderedItems:
+            # Check if we have a pdf view here (visible could be anything)
             if type(renderedItem) != QPdfView:
                 continue
 
+            # There are now a log of switch-case similar things
+            # It looks a bit messy as everything has to be done for both, x and y coordinates
+
+            # Initialize clip start coordinates
             clipX = 0
             clipY = 0
 
@@ -435,6 +478,9 @@ class GraphicsViewHandler(QGraphicsView):
 
 
     def toggleTextMode(self):
+        '''
+        Called from the main ui. Toggles edit mode
+        '''
         global editMode
 
         if editMode == editModes.newTextBox:
@@ -443,6 +489,9 @@ class GraphicsViewHandler(QGraphicsView):
             editMode = editModes.newTextBox
 
     def toggleHighlightMode(self):
+        '''
+        Called from the main ui. Toggles edit mode
+        '''
         global editMode
 
         if editMode == editModes.highlight:
@@ -454,6 +503,10 @@ class GraphicsViewHandler(QGraphicsView):
 
 
     def updatePdf(self, pdf, zoom=absZoomFactor, clip=None, pageNumber = None):
+        '''
+        Update the provided pdf file at the desired page to render only the zoom and clip
+        This methods is used when instantiating the pdf and later, when performance optimzation and zooming is required
+        '''
         mat = fitz.Matrix(zoom, zoom)
 
         fClip = None
@@ -473,9 +526,9 @@ class GraphicsViewHandler(QGraphicsView):
 
 
     def wheelEvent(self, event):
-        """
-        Zoom in or out of the view.
-        """
+        '''
+        Overrides the default event
+        '''
         if not self.scene:
             return
 
@@ -503,35 +556,63 @@ class GraphicsViewHandler(QGraphicsView):
         self.updateRenderedPages()
 
     def mousePressEvent(self, event):
+        '''
+        Overrides the default event
+        '''
         super(GraphicsViewHandler, self).mousePressEvent(event)
 
     def mouseReleaseEvent(self, event):
+        '''
+        Overrides the default event
+        '''
         super(GraphicsViewHandler, self).mouseReleaseEvent(event)
         self.updateRenderedPages()
 
     def mouseMoveEvent(self, event):
+        '''
+        Overrides the default event
+        '''
         self.mousePos = event.localPos()
         super(GraphicsViewHandler, self).mouseMoveEvent(event)
         # self.updateRenderedPages()
 
     def keyPressEvent(self, event):
+        '''
+        Overrides the default event
+        '''
         self.updateRenderedPages()
 
         super(GraphicsViewHandler, self).keyPressEvent(event)
 
     def keyReleaseEvent(self, event):
+        '''
+        Overrides the default event
+        '''
         self.updateRenderedPages()
 
         super(GraphicsViewHandler, self).keyReleaseEvent(event)
 
     def gestureEvent(self, event):
+        '''
+        Overrides the default event
+        '''
         print('gesture event received in core.py ')
 
     @pyqtSlot(int, int, int, bool, str)
     def toolBoxTextInputEvent(self, x, y, pageNumber, result, content):
+        '''
+        Triggered by the toolBox when user finished text editing
+        '''
+        # get the desired page which waits for user input
         self.pages[pageNumber].textInputReceived(x, y, result, content)
+
+        # Redraw all, as there are some changes now
         self.updateRenderedPages()
 
     @pyqtSlot(int, int, int, str)
     def toolBoxTextInputRequestedEvent(self, x, y, pageNumber, currentContent):
+        '''
+        Triggered by the pdfView when user requests text editing
+        '''
+        # Call the class intern signal to forward this request to the toolbox
         self.requestTextInput.emit(x, y, pageNumber, currentContent)
