@@ -23,6 +23,7 @@
 - [x] Implement highlighting
 - [x] Save PDFs
 - [x] Implement plain-text editing
+- [ ] Improve buttons in toolbox
 - [ ] Implement gestures for touch compatibility
 - [ ] Comments and code cleaness
 - [ ] Exception safeness

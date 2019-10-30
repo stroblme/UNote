@@ -159,15 +159,18 @@ class ToolBoxWidget(QWidget):
         outerCircleRect = self.rect()
         outerCircleRect.adjust(+OUTEROFFSET,+OUTEROFFSET,-OUTEROFFSET,-OUTEROFFSET)
 
-        innerCircleRect = self.rect()
-        innerCircleRect.adjust(+INNEROFFSET,+INNEROFFSET,-INNEROFFSET,-INNEROFFSET)
+        topLeft = outerCircleRect.topLeft()
+        topRight = outerCircleRect.topRight()
+        bottomLeft = QPoint(topLeft.x(), topRight.y() + 100)
+        bottomRight = QPoint(topRight.x(), topRight.y() + 100)
 
         shapePainter = QPainter(self)
         shapePainter.setRenderHint(shapePainter.Antialiasing)
         shapePainter.setPen(QPen(QColor(14,125,145),  OUTERLINEWIDTH, Qt.SolidLine))
-        shapePainter.drawArc(outerCircleRect, 0, CIRCLE)
-        shapePainter.setPen(QPen(QColor(14,125,145),  INNERLINEWIDTH, Qt.SolidLine))
-        shapePainter.drawArc(innerCircleRect, 0, CIRCLE)
+        shapePainter.drawArc(outerCircleRect, CIRCLE/2, CIRCLE/2)
+        shapePainter.setPen(QPen(QColor(14,125,145),  OUTERLINEWIDTH, Qt.SolidLine))
+        shapePainter.drawLine(topLeft, bottomLeft)
+        shapePainter.drawLine(topRight, bottomRight)
 
         self.pTextEdit.setEnabled(False)
         self.pTextEdit.setVisible(False)
