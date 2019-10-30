@@ -112,6 +112,12 @@ class UNote(Ui_MainWindow):
         except Exception as identifier:
             print("Unable to restore window size: " + str(identifier))
 
+            try:
+                self.MainWindow.setGeometry(0,0, 1920,1080)
+            except:
+                print("Even unable to restore default window size. Is there even a monitor attached?")
+
+
 
 
 

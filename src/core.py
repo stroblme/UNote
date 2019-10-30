@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------
-# -- CXP Test GUI Core File --
+# -- UNote Core File --
 #
 # Implements core functionality
 #
@@ -215,7 +215,7 @@ class GraphicsViewHandler(QGraphicsView):
     absZoomFactor = float(1)
     lowResZoomFactor = float(0.1)
 
-    requestTextInput = pyqtSignal()
+    requestTextInput = pyqtSignal(int)
 
     def __init__(self, parent):
         '''Create the Viewport.
@@ -464,7 +464,7 @@ class GraphicsViewHandler(QGraphicsView):
     def gestureEvent(self, event):
         print('hi')
 
-    @pyqtSlot()
+    @pyqtSlot(bool, str)
     def toolBoxTextInputEvent(self, result, content):
         print(str(result) + ' ' + content)
 

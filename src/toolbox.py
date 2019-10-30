@@ -72,7 +72,7 @@ class ToolBoxWidget(QWidget):
 
     items = IndexedOrderedDict()
 
-    textInputFinished = pyqtSignal(bool, str, name='textInputFinished')
+    textInputFinished = pyqtSignal(bool, str)
 
 
     def __init__(self, parent):
@@ -193,7 +193,7 @@ class ToolBoxWidget(QWidget):
         QWidget.mouseReleaseEvent(self, event)
 
 
-    @pyqtSlot()
+    @pyqtSlot(int)
     def handleTextInputRequest(self, qpos):
 
         # Switch in to text box mode and redraw Widget

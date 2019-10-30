@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------
-# -- CXP Test GUI Receivers File --
+# -- UNote Receivers File --
 #
 # Receivers for handling events on the cxptest gui
 #
