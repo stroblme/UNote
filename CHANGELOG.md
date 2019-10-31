@@ -1,17 +1,27 @@
 # Changelog
 
+## v3.0
+- [ ] Implement database structure
+- [ ] Implement unlimited space drawing and annotating
+
 ## v2.0
 
+- [ ] Fix Annotation colors for inverted mode
+- [ ] PDF overwriting
 - [ ] Implement markdown formatting annotations
 - [ ] Implement free drawing
 - [ ] Implement basic forms
-- [ ] Implement database structure
 - [ ] Implement button pictures
 - [ ] General UI Improvements
 - [ ] Implement Undo and Redo functionality
-- [ ] PDF overwriting
 - [ ] Implement gestures for touch compatibility
 - [ ] Implement textbox resizing
+- [ ] Improve text wrapping
+- [ ] Reduce Text Size with increasing annotation length
+- [ ] Implement temporary points to indicate ongoing edit
+- [ ] Improve highlighting by reducing noise on y axis
+- [ ] Merge most properties into settings
+- [ ] Improve pdf opening performance
 
 ## v1.0
 
@@ -32,4 +42,6 @@
 - [x] Implement delete button -> Cancel text box
 - [x] Implement arrow based text boxes
 - [o] Comments and code cleaness
-- [ ] Exception safeness
+- [o] Exception safeness
+- [ ] In-Field-Test
+- [ ] Auto-save on exit

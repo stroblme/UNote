@@ -114,9 +114,7 @@ class QPdfView(QGraphicsPixmapItem):
             borderText = {"width": 0.4, "dashes": [1]}
             colors = {"stroke": black, "fill": cyan}
 
-            if self.startPos == self.endPos:
-                print('no arrow')
-            else:
+            if self.startPos != self.endPos:
                 borderLine = {"width": 1}
 
                 fStart, fEnd = self.recalculateLinePoints(textRect)
@@ -129,7 +127,7 @@ class QPdfView(QGraphicsPixmapItem):
 
             textAnnot = self.page.addFreetextAnnot(textRect, content)
             textAnnot.setBorder(borderText)
-            textAnnot.update(fontsize = 14, border_color=cyan, fill_color=white, text_color=black)
+            textAnnot.update(fontsize = 12, border_color=cyan, fill_color=white, text_color=black)
             textAnnot.update()
 
     def recalculateLinePoints(self, textBoxRect):
@@ -200,7 +198,7 @@ class QPdfView(QGraphicsPixmapItem):
         '''
 
         fontwidth = 8
-        defaultHeight = 16
+        defaultHeight = 14
         defaultWidth = 130
         numOfLines = content.count('\n') + 1
 
