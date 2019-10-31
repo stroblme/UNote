@@ -45,5 +45,5 @@
 - [o] Comments and code cleaness
 - [o] Exception safeness
 - [x] In-Field-Test
-- [ ] Auto-save on exit
+- [x] Auto-save on exit
 - [ ] Introducing fman build system

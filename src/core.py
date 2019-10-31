@@ -59,6 +59,8 @@ class QPdfView(QGraphicsPixmapItem):
 
         self.eh = EventHelper()
 
+    
+
     def setPixMap(self, qImg, pageNumber):
         self.pageNumber = pageNumber
 
@@ -369,6 +371,9 @@ class GraphicsViewHandler(QGraphicsView):
 
         # self.grabGesture(QGesture.gestureType(self))
         # self.resize(parent.size())
+
+    def __del__(self):
+        self.saveCurrentPdf()
 
     def saveCurrentPdf(self):
         '''
