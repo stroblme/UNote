@@ -9,8 +9,8 @@
             "name": "UNote",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/src/unote.py",
-            "cwd": "${workspaceFolder}/src",
+            "program": "${workspaceFolder}/src/main/python/main.py",
+            "cwd": "${workspaceFolder}/src/main/python",
             "args": ["-u"],
             "console": "integratedTerminal"
         },
@@ -18,9 +18,9 @@
             "name": "UNote Preload",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/src/unote.py",
+            "program": "${workspaceFolder}/src/main/python/main.py",
             "args": ["-p","test.pdf", "-u"],
-            "cwd": "${workspaceFolder}/src",
+            "cwd": "${workspaceFolder}/src/main/python",
             "console": "integratedTerminal"
         }
     ]

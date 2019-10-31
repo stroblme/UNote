@@ -15,6 +15,7 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import pyqtSignal, QFile, QTextStream, pyqtSlot, QObject
 from PyQt5.QtWidgets import QDialog, QGraphicsView, QGraphicsScene, QWidget
 
+from fbs_runtime.application_context.PyQt5 import ApplicationContext
 
 import argparse  # parsing cmdline arguments
 import os  # launching external python script
@@ -50,7 +51,7 @@ MAINWINDOWSTARTY = 0
 MAINWINDOWWIDTH = 1920
 MAINWINDOWHEIGHT = 1080
 
-class UNote(Ui_MainWindow):
+class UNote():
     '''
     Main class for the UNote
     '''
@@ -81,7 +82,9 @@ class UNote(Ui_MainWindow):
         Initialize mandatory ui components
         '''
         # Create an application context
-        self.app = QtWidgets.QApplication(sys.argv)
+        # self.app = QtWidgets.QApplication(sys.argv)
+        self.appctxt = ApplicationContext()
+
         self.MainWindow = QtWidgets.QMainWindow()
 
         self.ui = Ui_MainWindow()
@@ -112,7 +115,7 @@ class UNote(Ui_MainWindow):
         '''
         self.MainWindow.show()
 
-        result = self.app.exec_()
+        result = self.appctxt.app.exec_()
 
         self.onQApplicationQuit()
 
@@ -134,12 +137,6 @@ class UNote(Ui_MainWindow):
                 self.MainWindow.setGeometry(MAINWINDOWSTARTX, MAINWINDOWSTARTY, MAINWINDOWWIDTH, MAINWINDOWHEIGHT)
             except:
                 print("Even unable to restore default window size. Is there even a monitor attached?")
-
-
-
-
-
-
 
     def onQApplicationQuit(self):
         '''
