@@ -43,5 +43,5 @@
 - [x] Implement arrow based text boxes
 - [o] Comments and code cleaness
 - [o] Exception safeness
-- [ ] In-Field-Test
+- [x] In-Field-Test
 - [ ] Auto-save on exit
