@@ -11,6 +11,7 @@
 - [ ] Implement Undo and Redo functionality
 - [ ] PDF overwriting
 - [ ] Implement gestures for touch compatibility
+- [ ] Implement textbox resizing
 
 ## v1.0
 
