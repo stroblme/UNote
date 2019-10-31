@@ -40,7 +40,7 @@ from preferences import Preferences
 from core import GraphicsViewHandler
 from toolbox import ToolBoxWidget
 
-TOOLBOXWIDTH = 200
+TOOLBOXWIDTH = 160
 TOOLBOXHEIGHT = 200
 TOOLBOXSTARTX = 200
 TOOLBOXSTARTY = 200
@@ -169,8 +169,10 @@ class UNote(Ui_MainWindow):
         self.ui.actionSave_PDF.triggered.connect(lambda:self.receiversInst.savePdf())
 
         # Edit modes available
-        self.ui.actionText_Mode.triggered.connect(lambda:self.receiversInst.toggleTextMode())
-        self.ui.actionHighlight_Mode.triggered.connect(lambda:self.receiversInst.toggleHighlightMode())
+        # self.ui.actionText_Mode.triggered.connect(lambda:self.receiversInst.toggleTextMode())
+        self.ui.floatingToolBox.textButton.clicked.connect(lambda:self.receiversInst.toggleTextMode())
+        # self.ui.actionHighlight_Mode.triggered.connect(lambda:self.receiversInst.toggleHighlightMode())
+        self.ui.floatingToolBox.highlightButton.clicked.connect(lambda:self.receiversInst.toggleTextMode())
 
         # Toolboxspecific events
         self.ui.floatingToolBox.textInputFinished.connect(self.ui.graphicsView.toolBoxTextInputEvent)

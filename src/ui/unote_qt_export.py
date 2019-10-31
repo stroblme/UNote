@@ -29,8 +29,6 @@ class Ui_MainWindow(object):
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
-        self.menuTools = QtWidgets.QMenu(self.menubar)
-        self.menuTools.setObjectName("menuTools")
         MainWindow.setMenuBar(self.menubar)
         self.actionExit = QtWidgets.QAction(MainWindow)
         self.actionExit.setCheckable(False)
@@ -53,10 +51,7 @@ class Ui_MainWindow(object):
         self.menuFile.addAction(self.actionPreferences)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionExit)
-        self.menuTools.addAction(self.actionText_Mode)
-        self.menuTools.addAction(self.actionHighlight_Mode)
         self.menubar.addAction(self.menuFile.menuAction())
-        self.menubar.addAction(self.menuTools.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -65,7 +60,6 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "UNote"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
-        self.menuTools.setTitle(_translate("MainWindow", "Tools"))
         self.actionExit.setText(_translate("MainWindow", "Exit"))
         self.actionExit.setShortcut(_translate("MainWindow", "Ctrl+Q"))
         self.actionPreferences.setText(_translate("MainWindow", "Preferences"))

@@ -8,12 +8,14 @@ from indexed import IndexedOrderedDict
 from math import sin, cos
 
 OUTEROFFSET = 8
-TEXTBOXOFFSET = 10
+TEXTBOXOFFSETTOP = 10
+TEXTBOXOFFSETBOTTOM = 30
 
 OUTERLINEWIDTH = OUTEROFFSET
 INNERLINEWIDTH = 4
 
-BUTTONOFFSET = 10
+BUTTONOFFSETTOP = 17
+BUTTONOFFSETBOTTOM = 10
 
 CIRCLE = 5760
 
@@ -97,15 +99,15 @@ class ToolBoxWidget(QWidget):
         # Create a rectengle from teh given outer dimensions
         outerRect = self.rect()
         # Shrink it for matiching textBox size
-        outerRect.adjust(+TEXTBOXOFFSET,+TEXTBOXOFFSET,-TEXTBOXOFFSET,-TEXTBOXOFFSET)
+        outerRect.adjust(+TEXTBOXOFFSETTOP,+TEXTBOXOFFSETTOP,-TEXTBOXOFFSETTOP,-TEXTBOXOFFSETBOTTOM)
 
-        outerCircleRect = self.rect()
-        outerCircleRect.adjust(+BUTTONOFFSET,+BUTTONOFFSET,-BUTTONOFFSET,-BUTTONOFFSET)
+        outerButtonRect = self.rect()
+        outerButtonRect.adjust(+BUTTONOFFSETTOP,+BUTTONOFFSETTOP,-BUTTONOFFSETTOP,-BUTTONOFFSETBOTTOM)
 
-        topLeft = outerCircleRect.topLeft()
-        topRight = QPoint(outerCircleRect.topRight().x() + 30, outerCircleRect.topRight().y() + 30)
-        bottomLeft = QPoint(topLeft.x(), topRight.y() + 30)
-        bottomRight = QPoint(topRight.x() + 30, topRight.y() + 30)
+        topLeft = outerButtonRect.topLeft()
+        topRight = outerButtonRect.topRight()
+        bottomLeft = QPoint(topLeft.x(), topLeft.y()+160)
+        bottomRight = QPoint(topRight.x(), topRight.y()+160)
 
         # We use a textEdit for making text boxes editable for user
         self.pTextEdit = QTextEdit(self)
@@ -114,7 +116,6 @@ class ToolBoxWidget(QWidget):
         self.pTextEdit.setAutoFormatting(QTextEdit.AutoAll)
         self.pTextEdit.setAcceptRichText(True)
         self.pTextEdit.setPlaceholderText("Text Box Content")
-        self.pTextEdit.setGeometry(outerRect)
 
         # Forward keypressevents from the textEdit to the parent toolBoxWidget
         self.keyPressEvent = self.pTextEdit.keyPressEvent
@@ -123,8 +124,9 @@ class ToolBoxWidget(QWidget):
         # We need a layout to add the textBox to the toolBoxWidget
         widgetLayout = QGridLayout(self)
         widgetLayout.addWidget(self.pTextEdit)
+        self.pTextEdit.setGeometry(outerRect)
 
-        buttonSize = QSize(60,40)
+        buttonSize = QSize(60,30)
 
         self.textButton = QPushButton(self)
         self.textButton.setFixedSize(buttonSize)
@@ -150,12 +152,15 @@ class ToolBoxWidget(QWidget):
 
 
         # Set Shortcuts for the buttons
+        self.textButton.setShortcut("Ctrl+T")
+        self.highlightButton.setShortcut("Ctrl+H")
         self.okButton.setShortcut("Ctrl+Return")
         self.cancelButton.setShortcut("Esc")
 
         # Connect Events for the buttons
         self.okButton.clicked.connect(self.handleOkButton)
         self.cancelButton.clicked.connect(self.handleCancelButton)
+
 
     def paintEvent(self, event):
         '''
@@ -164,13 +169,9 @@ class ToolBoxWidget(QWidget):
         if self.textBoxMode:
             # Draw the text box
             self.drawRectShape(event)
-            # And hide the control elements
-            self.setButtonVisibility(False)
         else:
             # Draw the toolBoxShape
             self.drawCircularShape(event)
-            # And show all buttons
-            self.setButtonVisibility(True)
 
         # Run the parent paint Event
         QWidget.paintEvent(self, event)
@@ -198,6 +199,11 @@ class ToolBoxWidget(QWidget):
         self.pTextEdit.setEnabled(False)
         self.pTextEdit.setVisible(False)
 
+        self.okButton.setVisible(False)
+        self.cancelButton.setVisible(False)
+        self.highlightButton.setVisible(True)
+        self.textButton.setVisible(True)
+
 
     def drawRectShape(self, event):
         '''
@@ -205,7 +211,8 @@ class ToolBoxWidget(QWidget):
         '''
 
         outerRect = self.rect()
-        outerRect.adjust(+OUTEROFFSET,+OUTEROFFSET,-OUTEROFFSET,-OUTEROFFSET)
+        outerRect.adjust(+TEXTBOXOFFSETTOP,+TEXTBOXOFFSETTOP,-TEXTBOXOFFSETTOP,-TEXTBOXOFFSETTOP)
+
 
         moveRect = QRect(0,0, 11,11)
 
@@ -222,6 +229,11 @@ class ToolBoxWidget(QWidget):
         self.pTextEdit.ensureCursorVisible()
         self.pTextEdit.setFocus()
 
+        self.okButton.setVisible(True)
+        self.cancelButton.setVisible(True)
+        self.highlightButton.setVisible(False)
+        self.textButton.setVisible(False)
+
     def insertCurrentContent(self, content):
         '''
         Used to append the provided content to the textEdit box
@@ -232,21 +244,6 @@ class ToolBoxWidget(QWidget):
             self.pTextEdit.setText(content)
         else:
             self.pTextEdit.setText("")
-
-
-    def setButtonVisibility(self, state):
-        '''
-        Sets the button visibility state depending on the param
-
-        :param state: Desired visibility state of the toolBox buttons
-        '''
-        self.textButton.setVisible(state)
-        self.highlightButton.setVisible(state)
-
-        # self.okButton.move(self.rect.bottomRight())
-        # self.cancelButton.move(self.rect.bottomRight())
-        # self.okButton.setVisible(state)
-        # self.cancelButton.setVisible(state)
 
     def mousePressEvent(self, event):
         '''
@@ -276,17 +273,17 @@ class ToolBoxWidget(QWidget):
 
         QWidget.mouseMoveEvent(self, event)
 
-    def mouseReleaseEvent(self, event):
-        '''
-        Overrides the default event
-        '''
-        if self.__mousePressPos is not None:
-            moved = event.globalPos() - self.__mousePressPos
-            if moved.manhattanLength() > 3:
-                event.ignore()
-                return
+    # def mouseReleaseEvent(self, event):
+    #     '''
+    #     Overrides the default event
+    #     '''
+    #     if self.__mousePressPos is not None:
+    #         moved = event.globalPos() - self.__mousePressPos
+    #         if moved.manhattanLength() > 3:
+    #             event.ignore()
+    #             return
 
-        QWidget.mouseReleaseEvent(self, event)
+    #     QWidget.mouseReleaseEvent(self, event)
 
 
     @pyqtSlot(int, int, int, str)
