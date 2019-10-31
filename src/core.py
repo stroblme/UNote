@@ -32,7 +32,7 @@ class editModes():
     This class contains all available edit modes for the current pdf
     '''
     none = 'none'
-    highlight = 'highlight'
+    mark = 'mark'
     newTextBox = 'newTextBox'
     editTextBox = 'editTextBox'
 
@@ -191,25 +191,25 @@ class QPdfView(QGraphicsPixmapItem):
 
         return True
 
-    def startHighlightText(self, qpos):
+    def startMarkText(self, qpos):
         self.ongoingEdit = True
-        self.highLightStart = qpos
+        self.markStart = qpos
 
-    def stopHighlightText(self, qpos):
+    def stopMarkText(self, qpos):
         self.ongoingEdit = False
 
-    def updateHighlightText(self, qpos):
-        self.highLightStop = qpos
+    def updateMarkText(self, qpos):
+        self.markStop = qpos
 
-        yMin = min(self.highLightStart.y(), self.highLightStop.y())
-        yMax = max(self.highLightStart.y(), self.highLightStop.y())
+        yMin = min(self.markStart.y(), self.markStop.y())
+        yMax = max(self.markStart.y(), self.markStop.y())
 
         if abs(yMin - yMax) < 10:
             yMin = yMin - 5
             yMax = yMax + 5
 
-        xMin = min(self.highLightStart.x(), self.highLightStop.x())
-        xMax = max(self.highLightStart.x(), self.highLightStop.x())
+        xMin = min(self.markStart.x(), self.markStop.x())
+        xMax = max(self.markStart.x(), self.markStop.x())
 
         rect = fitz.Rect(xMin, yMin, xMax, yMax)
         self.page.addHighlightAnnot(rect)
@@ -237,8 +237,8 @@ class QPdfView(QGraphicsPixmapItem):
             return
 
         if event.button() == Qt.LeftButton:
-            if editMode == editModes.highlight:
-                self.startHighlightText(self.toPdfCoordinates(event.pos()))
+            if editMode == editModes.mark:
+                self.startMarkText(self.toPdfCoordinates(event.pos()))
         # elif event.button() == Qt.RightButton:
         #     if editMode == editModes.textBox:
         #         self.editText(self.toPdfCoordinates(event.pos()))
@@ -255,8 +255,8 @@ class QPdfView(QGraphicsPixmapItem):
                 relCorrdinates = self.toPdfCoordinates(event.pos())
                 self.eh.requestTextInput.emit(relCorrdinates.x(), relCorrdinates.y(), self.pageNumber, "")
 
-            elif editMode == editModes.highlight:
-                self.stopHighlightText(self.toPdfCoordinates(event.pos()))
+            elif editMode == editModes.mark:
+                self.stopMarkText(self.toPdfCoordinates(event.pos()))
         elif event.button() == Qt.RightButton:
             editMode = editModes.editTextBox
 
@@ -274,8 +274,8 @@ class QPdfView(QGraphicsPixmapItem):
         self.blockEdit = False
 
         if self.ongoingEdit:
-            if editMode == editModes.highlight:
-                self.updateHighlightText(self.toPdfCoordinates(event.pos()))
+            if editMode == editModes.mark:
+                self.updateMarkText(self.toPdfCoordinates(event.pos()))
 
         QGraphicsPixmapItem.mouseMoveEvent(self, event)
 
@@ -488,16 +488,16 @@ class GraphicsViewHandler(QGraphicsView):
         else:
             editMode = editModes.newTextBox
 
-    def toggleHighlightMode(self):
+    def toggleMarkMode(self):
         '''
         Called from the main ui. Toggles edit mode
         '''
         global editMode
 
-        if editMode == editModes.highlight:
+        if editMode == editModes.mark:
             editMode = editModes.none
         else:
-            editMode = editModes.highlight
+            editMode = editModes.mark
 
 
 

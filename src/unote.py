@@ -169,10 +169,8 @@ class UNote(Ui_MainWindow):
         self.ui.actionSave_PDF.triggered.connect(lambda:self.receiversInst.savePdf())
 
         # Edit modes available
-        # self.ui.actionText_Mode.triggered.connect(lambda:self.receiversInst.toggleTextMode())
         self.ui.floatingToolBox.textButton.clicked.connect(lambda:self.receiversInst.toggleTextMode())
-        # self.ui.actionHighlight_Mode.triggered.connect(lambda:self.receiversInst.toggleHighlightMode())
-        self.ui.floatingToolBox.highlightButton.clicked.connect(lambda:self.receiversInst.toggleTextMode())
+        self.ui.floatingToolBox.markButton.clicked.connect(lambda:self.receiversInst.toggleMarkMode())
 
         # Toolboxspecific events
         self.ui.floatingToolBox.textInputFinished.connect(self.ui.graphicsView.toolBoxTextInputEvent)

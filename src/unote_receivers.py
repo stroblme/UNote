@@ -62,10 +62,10 @@ class Receivers(QObject):
 
         # self.uiInst.actionText_Mode.setChecked(not bool(self.uiInst.actionText_Mode.isChecked()))
 
-    def toggleHighlightMode(self):
-        self.uiInst.graphicsView.toggleHighlightMode()
+    def toggleMarkMode(self):
+        self.uiInst.graphicsView.toggleMarkMode()
 
-        # self.uiInst.actionHighlight_Mode.setChecked(not bool(self.uiInst.actionHighlight_Mode.isChecked()))
+        # self.uiInst.actionMark_Mode.setChecked(not bool(self.uiInst.actionMark_Mode.isChecked()))
 
 
     @pyqtSlot(str)

@@ -15,9 +15,20 @@ OUTERLINEWIDTH = OUTEROFFSET
 INNERLINEWIDTH = 4
 
 BUTTONOFFSETTOP = 17
-BUTTONOFFSETBOTTOM = 10
+BUTTONOFFSETBOTTOM = 15
 
 CIRCLE = 5760
+
+class editModes():
+    '''
+    This class contains all available edit modes for the current pdf
+    '''
+    none = 'none'
+    mark = 'mark'
+    newTextBox = 'newTextBox'
+    editTextBox = 'editTextBox'
+
+editMode = editModes.none
 
 class ToolBoxWidget(QWidget):
     '''
@@ -26,11 +37,9 @@ class ToolBoxWidget(QWidget):
     numberOfButtons = 4
 
     textButtonName = 'textButton'
-    highlightButtonName = 'highlightButton'
+    markButtonName = 'markButton'
     okButtonName = 'okButton'
     cancelButtonName = 'cancelButton'
-
-    textBoxMode = False
 
     items = IndexedOrderedDict()
 
@@ -66,8 +75,8 @@ class ToolBoxWidget(QWidget):
 
         topLeft = buttonRect.topLeft()
         topRight = buttonRect.topRight()
-        bottomLeft = QPoint(topLeft.x(), topLeft.y()+160)
-        bottomRight = QPoint(topRight.x(), topRight.y()+160)
+        bottomLeft = QPoint(topLeft.x(), topLeft.y()+155)
+        bottomRight = QPoint(topRight.x(), topRight.y()+155)
 
         # We use a textEdit for making text boxes editable for user
         self.pTextEdit = QTextEdit(self)
@@ -91,12 +100,12 @@ class ToolBoxWidget(QWidget):
         self.textButton = QPushButton(self)
         self.textButton.setFixedSize(buttonSize)
         self.textButton.move(topRight)
-        self.textButton.setText('T')
+        self.textButton.setText('Text')
 
-        self.highlightButton = QPushButton(self)
-        self.highlightButton.setFixedSize(buttonSize)
-        self.highlightButton.move(topLeft)
-        self.highlightButton.setText('H')
+        self.markButton = QPushButton(self)
+        self.markButton.setFixedSize(buttonSize)
+        self.markButton.move(topLeft)
+        self.markButton.setText('Mark')
 
         self.okButton = QPushButton(self)
         self.okButton.setFixedSize(buttonSize)
@@ -108,25 +117,30 @@ class ToolBoxWidget(QWidget):
         self.cancelButton.move(bottomRight)
         self.cancelButton.setText('Cancel')
 
-
+        self.deleteButton = QPushButton(self)
+        self.deleteButton.setFixedSize(buttonSize)
+        self.deleteButton.move(bottomRight)
+        self.deleteButton.setText('Delete')
 
 
         # Set Shortcuts for the buttons
         self.textButton.setShortcut("Ctrl+T")
-        self.highlightButton.setShortcut("Ctrl+H")
+        self.markButton.setShortcut("Ctrl+M")
         self.okButton.setShortcut("Ctrl+Return")
         self.cancelButton.setShortcut("Esc")
+        self.deleteButton.setShortcut("Del")
 
         # Connect Events for the buttons
         self.okButton.clicked.connect(self.handleOkButton)
         self.cancelButton.clicked.connect(self.handleCancelButton)
 
+        self.setButtonState()
 
     def paintEvent(self, event):
         '''
         Overrides the default paint event to either draw a textBox or a toolBox
         '''
-        if self.textBoxMode:
+        if editMode != editModes.none:
             # Draw the text box
             self.drawRectShape(event)
         else:
@@ -159,10 +173,7 @@ class ToolBoxWidget(QWidget):
         self.pTextEdit.setEnabled(False)
         self.pTextEdit.setVisible(False)
 
-        self.okButton.setVisible(False)
-        self.cancelButton.setVisible(False)
-        self.highlightButton.setVisible(True)
-        self.textButton.setVisible(True)
+
 
 
     def drawRectShape(self, event):
@@ -189,10 +200,27 @@ class ToolBoxWidget(QWidget):
         self.pTextEdit.ensureCursorVisible()
         self.pTextEdit.setFocus()
 
-        self.okButton.setVisible(True)
-        self.cancelButton.setVisible(True)
-        self.highlightButton.setVisible(False)
-        self.textButton.setVisible(False)
+
+
+    def setButtonState(self):
+        if editMode == editModes.newTextBox:
+            self.okButton.setVisible(True)
+            self.deleteButton.setVisible(False)
+            self.cancelButton.setVisible(True)
+            self.markButton.setVisible(False)
+            self.textButton.setVisible(False)
+        elif editMode == editModes.editTextBox:
+            self.okButton.setVisible(True)
+            self.deleteButton.setVisible(True)
+            self.cancelButton.setVisible(False)
+            self.markButton.setVisible(False)
+            self.textButton.setVisible(False)
+        else:
+            self.okButton.setVisible(False)
+            self.deleteButton.setVisible(False)
+            self.cancelButton.setVisible(False)
+            self.markButton.setVisible(True)
+            self.textButton.setVisible(True)
 
     def insertCurrentContent(self, content):
         '''
@@ -202,8 +230,10 @@ class ToolBoxWidget(QWidget):
         '''
         if content != "":
             self.pTextEdit.setText(content)
+            return True
         else:
             self.pTextEdit.setText("")
+            return False
 
     def mousePressEvent(self, event):
         '''
@@ -251,9 +281,16 @@ class ToolBoxWidget(QWidget):
         '''
         Slot when toolBox receives a textInput request. This is the case, when the user wants to insert a new or edit an existing textBox
         '''
+        global editMode
+
         # Switch in to text box mode and redraw Widget
         self.currentPageNumber = pageNumber
-        self.insertCurrentContent(currentContent)
+        if self.insertCurrentContent(currentContent):
+            editMode = editModes.editTextBox
+        else:
+            editMode = editModes.newTextBox
+        self.setButtonState()
+
         self.currentX = x
         self.currentY = y
         self.textBoxMode = True
@@ -263,9 +300,13 @@ class ToolBoxWidget(QWidget):
         '''
         This method handles all the stuff that neees to be done, when the user successfully finished textEditing
         '''
-        if self.textBoxMode:
+        global editMode
+
+        if editMode != editModes.none:
             self.textInputFinished.emit(self.currentX, self.currentY, self.currentPageNumber, True, self.pTextEdit.toPlainText())
-            self.textBoxMode = False
+            editMode = editModes.none
+            self.setButtonState()
+
             self.repaint()
             self.currentPageNumber = -1
             self.currentX = -1
@@ -275,9 +316,13 @@ class ToolBoxWidget(QWidget):
         '''
         This method handles all the stuff that neees to be done, when the user canceled textEditing
         '''
-        if self.textBoxMode:
+        global editMode
+
+        if editMode != editModes.none:
             self.textInputFinished.emit(self.currentX, self.currentY, self.currentPageNumber, False, self.pTextEdit.toPlainText())
-            self.textBoxMode = False
+            editMode = editModes.none
+            self.setButtonState()
+
             self.repaint()
             self.currentPageNumber = -1
             self.currentX = -1
