@@ -29,6 +29,6 @@
 - [x] Implement plain-text editing
 - [x] Improve buttons in toolbox
 - [x] Implement delete button -> Cancel text box
-- [ ] Implement arrow based text boxes
+- [x] Implement arrow based text boxes
 - [o] Comments and code cleaness
 - [ ] Exception safeness

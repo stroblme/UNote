@@ -119,8 +119,7 @@ class QPdfView(QGraphicsPixmapItem):
             else:
                 borderLine = {"width": 1}
 
-                fStart = fitz.Point(self.startPos.x(), self.startPos.y())
-                fEnd = fitz.Point(self.endPos.x(), self.endPos.y())
+                fStart, fEnd = self.recalculateLinePoints(textRect)
 
                 lineAnnot = self.page.addLineAnnot(fStart, fEnd)
                 lineAnnot.setBorder(borderLine)
@@ -133,8 +132,25 @@ class QPdfView(QGraphicsPixmapItem):
             textAnnot.update(fontsize = 14, border_color=cyan, fill_color=white, text_color=black)
             textAnnot.update()
 
+    def recalculateLinePoints(self, textBoxRect):
+        if self.startPos.x() > textBoxRect.x1:
+            fEndX = textBoxRect.x1
+        elif self.startPos.x() < textBoxRect.x0:
+            fEndX = textBoxRect.x0
+        else:
+            fEndX = textBoxRect.x0 + (textBoxRect.x1 - textBoxRect.x0) / 2
 
+        if self.startPos.y() > textBoxRect.y1:
+            fEndY = textBoxRect.y1
+        elif self.startPos.y() < textBoxRect.y0:
+            fEndY = textBoxRect.y0
+        else:
+            fEndY = textBoxRect.y0 + (textBoxRect.y1 - textBoxRect.y0) / 2
 
+        fStart = fitz.Point(self.startPos.x(), self.startPos.y())
+        fEnd = fitz.Point(fEndX, fEndY)
+
+        return fStart, fEnd
 
     def editText(self, qpos, content):
         '''
