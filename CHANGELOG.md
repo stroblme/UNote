@@ -10,6 +10,7 @@
 - [ ] Implement button pictures
 - [ ] Implement Undo and Redo functionality
 - [ ] PDF overwriting
+- [ ] Implement gestures for touch compatibility
 
 ## v1.0
 
@@ -28,6 +29,5 @@
 - [x] Implement plain-text editing
 - [x] Improve buttons in toolbox
 - [x] Implement delete button -> Cancel text box
-- [ ] Implement gestures for touch compatibility
 - [o] Comments and code cleaness
 - [ ] Exception safeness
