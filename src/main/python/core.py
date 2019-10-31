@@ -393,7 +393,9 @@ class GraphicsViewHandler(QGraphicsView):
         '''
         Just handles saving the pdf
         '''
-        self.pdf.savePdf()
+        if self.pdf.filename:
+            self.pdf.savePdf()
+            print('PDF saved')
 
     def loadPdfToCurrentView(self, pdfFilePath):
         '''

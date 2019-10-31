@@ -5,6 +5,9 @@ import os
 
 
 class pdfEngine():
+    filename = None
+    doc = None
+
     def __init__(self):
         super().__init__()
 
