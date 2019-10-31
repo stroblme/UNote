@@ -89,10 +89,10 @@ class QPdfView(QGraphicsPixmapItem):
 
     def startNewTextBox(self, qpos):
         self.ongoingEdit = True
-        self.startPos = qpos
+        self.startPos = self.toPdfCoordinates(qpos)
 
     def stopNewTextBox(self, qpos):
-        self.endPos = qpos
+        self.endPos = self.toPdfCoordinates(qpos)
         self.ongoingEdit = False
         relCorrdinates = self.toPdfCoordinates(qpos)
 
@@ -111,23 +111,25 @@ class QPdfView(QGraphicsPixmapItem):
             black = (0,0,0)
             white = (1,1,1)
 
-            border = {"width": 0.4, "dashes": [1]}
+            borderText = {"width": 0.4, "dashes": [1]}
             colors = {"stroke": black, "fill": cyan}
 
             if self.startPos == self.endPos:
                 print('no arrow')
             else:
+                borderLine = {"width": 1}
+
                 fStart = fitz.Point(self.startPos.x(), self.startPos.y())
                 fEnd = fitz.Point(self.endPos.x(), self.endPos.y())
 
-                lineAnnot = self.page.addPolygonAnnot([fStart, fEnd])
-                lineAnnot.setBorder(border)
-                lineAnnot.setColors(colors)
-                lineAnnot.setLineEnds(fitz.ANNOT_LE_Diamond, fitz.ANNOT_LE_Circle)
+                lineAnnot = self.page.addLineAnnot(fStart, fEnd)
+                lineAnnot.setBorder(borderLine)
+                lineAnnot.setLineEnds(fitz.ANNOT_LE_Circle, fitz.ANNOT_LE_Circle)
+                lineAnnot.update(border_color=cyan, fill_color=cyan)
                 lineAnnot.update()
 
             textAnnot = self.page.addFreetextAnnot(textRect, content)
-            textAnnot.setBorder(border)
+            textAnnot.setBorder(borderText)
             textAnnot.update(fontsize = 14, border_color=cyan, fill_color=white, text_color=black)
             textAnnot.update()
 
