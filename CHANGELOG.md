@@ -1,6 +1,7 @@
 # Changelog/ Roadmap
 
 ## Features for v3.0
+
 - [ ] Implement database structure
 - [ ] Implement unlimited space drawing and annotating
 - [ ] Set up testing environment
@@ -24,7 +25,7 @@
 - [ ] Merge most properties into settings
 - [ ] Improve pdf opening performance
 
-## Features for v1.0
+## Features for v1.0 - Completed
 
 - [x] Cleanup and structure
 - [x] Initial pdf rendering

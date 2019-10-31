@@ -8,9 +8,9 @@ from indexed import IndexedOrderedDict
 from math import sin, cos
 
 OUTEROFFSETTOP = 25
-OUTEROFFSETBOTTOM = 8
+OUTEROFFSETBOTTOM = 14
 
-TEXTBOXOFFSETTOP = 10
+TEXTBOXOFFSETTOP = 5
 TEXTBOXOFFSETBOTTOM = 30
 
 OUTERLINEWIDTH = OUTEROFFSETBOTTOM
@@ -70,15 +70,15 @@ class ToolBoxWidget(QWidget):
         # Create a rectengle from teh given outer dimensions
         textBoxRect = self.rect()
         # Shrink it for matiching textBox size
-        textBoxRect.adjust(+TEXTBOXOFFSETTOP,+TEXTBOXOFFSETTOP,-TEXTBOXOFFSETTOP,-TEXTBOXOFFSETBOTTOM)
+        textBoxRect.adjust(+30,+30,-12,-12)
 
         buttonRect = self.rect()
-        buttonRect.adjust(+BUTTONOFFSETTOP,+BUTTONOFFSETTOP,-BUTTONOFFSETTOP,-BUTTONOFFSETBOTTOM)
+        buttonRect.adjust(+35,+30,5,-20)
 
         topLeft = buttonRect.topLeft()
         topRight = buttonRect.topRight()
-        bottomLeft = QPoint(topLeft.x(), topLeft.y()+155)
-        bottomRight = QPoint(topRight.x(), topRight.y()+155)
+        bottomLeft = QPoint(topLeft.x(), topLeft.y()+130)
+        bottomRight = QPoint(topRight.x(), topRight.y()+130)
 
         # We use a textEdit for making text boxes editable for user
         self.pTextEdit = QTextEdit(self)
@@ -160,19 +160,20 @@ class ToolBoxWidget(QWidget):
         outerCircleRect = self.rect()
         outerCircleRect.adjust(+OUTEROFFSETBOTTOM,+OUTEROFFSETTOP,-OUTEROFFSETBOTTOM,-OUTEROFFSETBOTTOM)
 
-        topLeft = outerCircleRect.topLeft()
-        topRight = outerCircleRect.topRight()
-        bottomLeft = QPoint(topLeft.x(), topRight.y() + 80)
-        bottomRight = QPoint(topRight.x(), topRight.y() + 80)
+        topMiddle = (outerCircleRect.topRight() - outerCircleRect.topLeft()) / 2 + outerCircleRect.topLeft()
+        bottomMiddle = (outerCircleRect.bottomRight() - outerCircleRect.bottomLeft()) / 2 + outerCircleRect.bottomLeft()
 
         shapePainter = QPainter(self)
         shapePainter.setRenderHint(shapePainter.Antialiasing)
-        shapePainter.setPen(QPen(QColor(14,125,145),  OUTERLINEWIDTH, Qt.SolidLine))
-        shapePainter.drawArc(outerCircleRect, CIRCLE/2, CIRCLE/2)
+        # shapePainter.setPen(QPen(QColor(14,125,145),  OUTERLINEWIDTH, Qt.SolidLine))
+        # shapePainter.drawArc(outerCircleRect, CIRCLE/2, CIRCLE/2)
 
-        shapePainter.setPen(QPen(QColor(14,125,145),  OUTERLINEWIDTH, Qt.SolidLine))
-        shapePainter.drawLine(topLeft, bottomLeft)
-        shapePainter.drawLine(topRight, bottomRight)
+        shapePainter.setPen(QPen(QColor(14,125,145),  5, Qt.SolidLine))
+        shapePainter.drawLine(topMiddle, bottomMiddle)
+
+        shapePainter.setPen(QPen(QColor(14,125,145),  2, Qt.SolidLine))
+        arcRect = QRect(bottomMiddle.x() - 6, bottomMiddle.y()+1, 12, 12)
+        shapePainter.drawArc(arcRect, 0, CIRCLE)
 
         self.pTextEdit.setEnabled(False)
         self.pTextEdit.setVisible(False)
@@ -186,17 +187,24 @@ class ToolBoxWidget(QWidget):
         '''
 
         textBoxRect = self.rect()
-        textBoxRect.adjust(+TEXTBOXOFFSETTOP,+TEXTBOXOFFSETTOP,-TEXTBOXOFFSETTOP,-TEXTBOXOFFSETTOP)
+        outerCircleRect = self.rect()
+        textBoxRect.adjust(+30,+30,-12,-12)
+        outerCircleRect.adjust(+8,+8,-8,-15)
 
 
         moveRect = QRect(0,0, 11,11)
 
         shapePainter = QPainter(self)
         shapePainter.setRenderHint(shapePainter.Antialiasing)
-        shapePainter.setPen(QPen(QColor(14,125,145),  OUTERLINEWIDTH, Qt.SolidLine))
-        shapePainter.drawRect(textBoxRect)
-        shapePainter.setPen(QPen(QColor(14,125,145),  2, Qt.SolidLine))
-        shapePainter.drawArc(moveRect, 0, CIRCLE)
+        # shapePainter.setPen(QPen(QColor(14,125,145),  5, Qt.SolidLine))
+        # shapePainter.drawRect(textBoxRect)
+
+        shapePainter.setPen(QPen(QColor(14,125,145),  5, Qt.SolidLine))
+        shapePainter.drawLine(outerCircleRect.topLeft(), outerCircleRect.bottomLeft())
+
+        # shapePainter.setPen(QPen(QColor(14,125,145),  2, Qt.SolidLine))
+        # arcRect = QRect(outerCircleRect.bottomLeft().x() - 6, outerCircleRect.bottomLeft().y()+1, 12, 12)
+        # shapePainter.drawArc(arcRect, 0, CIRCLE)
 
         self.pTextEdit.setEnabled(True)
         self.pTextEdit.setVisible(True)

@@ -41,7 +41,7 @@ from preferences import Preferences
 from core import GraphicsViewHandler
 from toolbox import ToolBoxWidget
 
-TOOLBOXWIDTH = 160
+TOOLBOXWIDTH = 200
 TOOLBOXHEIGHT = 200
 TOOLBOXSTARTX = 200
 TOOLBOXSTARTY = 200
@@ -93,7 +93,7 @@ class UNote():
         self.ui.setupUi(self.MainWindow)
 
         # Load the icon
-        self.MainWindow.setWindowIcon(QtGui.QIcon("icon.png"))
+        self.MainWindow.setWindowIcon(QtGui.QIcon("./assets/icon.png"))
 
         # Initialize graphicviewhandler. This is a core component of unote
         self.ui.graphicsView = GraphicsViewHandler(self.ui.centralwidget)
@@ -106,7 +106,7 @@ class UNote():
         self.ui.floatingToolBox.setObjectName("floatingToolBox")
         self.ui.floatingToolBox.setGeometry(QtCore.QRect(TOOLBOXSTARTX, TOOLBOXSTARTY, TOOLBOXWIDTH, TOOLBOXHEIGHT))
         self.ui.floatingToolBox.show()
-
+        # self.ui.floatingToolBox.setStyleSheet("background-color:black")
 
 
     def run(self, args):
