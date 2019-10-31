@@ -1,11 +1,13 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtGui import QPixmap, QPainter, QPen, QBrush, QColor, QPolygon
+from PyQt5.QtGui import QPixmap, QPainter, QPen, QBrush, QColor, QPolygon, QIcon
 from PyQt5.QtCore import pyqtSignal, QFile, QTextStream, pyqtSlot, QObject, QPoint, Qt, QRect, QSize
 from PyQt5.QtWidgets import QDialog, QGraphicsView, QGraphicsScene, QWidget, QPushButton, QVBoxLayout, QTextEdit, QGridLayout
 
 from indexed import IndexedOrderedDict
 
 from math import sin, cos
+
+import assets
 
 OUTEROFFSETTOP = 25
 OUTEROFFSETBOTTOM = 14
@@ -77,6 +79,8 @@ class ToolBoxWidget(QWidget):
 
         topLeft = buttonRect.topLeft()
         topRight = buttonRect.topRight()
+        middleLeft = QPoint(topLeft.x(), topLeft.y()+35)
+        middleRight = QPoint(topRight.x(), topRight.y()+35)
         bottomLeft = QPoint(topLeft.x(), topLeft.y()+130)
         bottomRight = QPoint(topRight.x(), topRight.y()+130)
 
@@ -102,12 +106,22 @@ class ToolBoxWidget(QWidget):
         self.textButton = QPushButton(self)
         self.textButton.setFixedSize(buttonSize)
         self.textButton.move(topRight)
-        self.textButton.setText('Text')
+        self.textButton.setIcon(QIcon(":/assets/text.png"))
 
         self.markButton = QPushButton(self)
         self.markButton.setFixedSize(buttonSize)
         self.markButton.move(topLeft)
-        self.markButton.setText('Mark')
+        self.markButton.setIcon(QIcon(":/assets/marker.png"))
+
+        self.freeHandButton = QPushButton(self)
+        self.freeHandButton.setFixedSize(buttonSize)
+        self.freeHandButton.move(middleLeft)
+        self.freeHandButton.setIcon(QIcon(":/assets/freehand.png"))
+
+        self.markdownButton = QPushButton(self)
+        self.markdownButton.setFixedSize(buttonSize)
+        self.markdownButton.move(middleRight)
+        self.markdownButton.setIcon(QIcon(":/assets/markdown.png"))
 
         self.okButton = QPushButton(self)
         self.okButton.setFixedSize(buttonSize)
