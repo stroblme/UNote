@@ -7,11 +7,13 @@ from indexed import IndexedOrderedDict
 
 from math import sin, cos
 
-OUTEROFFSET = 8
+OUTEROFFSETTOP = 25
+OUTEROFFSETBOTTOM = 8
+
 TEXTBOXOFFSETTOP = 10
 TEXTBOXOFFSETBOTTOM = 30
 
-OUTERLINEWIDTH = OUTEROFFSET
+OUTERLINEWIDTH = OUTEROFFSETBOTTOM
 INNERLINEWIDTH = 4
 
 BUTTONOFFSETTOP = 17
@@ -156,17 +158,18 @@ class ToolBoxWidget(QWidget):
         Draws the circular toolBox shape
         '''
         outerCircleRect = self.rect()
-        outerCircleRect.adjust(+OUTEROFFSET,+OUTEROFFSET,-OUTEROFFSET,-OUTEROFFSET)
+        outerCircleRect.adjust(+OUTEROFFSETBOTTOM,+OUTEROFFSETTOP,-OUTEROFFSETBOTTOM,-OUTEROFFSETBOTTOM)
 
         topLeft = outerCircleRect.topLeft()
         topRight = outerCircleRect.topRight()
-        bottomLeft = QPoint(topLeft.x(), topRight.y() + 100)
-        bottomRight = QPoint(topRight.x(), topRight.y() + 100)
+        bottomLeft = QPoint(topLeft.x(), topRight.y() + 80)
+        bottomRight = QPoint(topRight.x(), topRight.y() + 80)
 
         shapePainter = QPainter(self)
         shapePainter.setRenderHint(shapePainter.Antialiasing)
         shapePainter.setPen(QPen(QColor(14,125,145),  OUTERLINEWIDTH, Qt.SolidLine))
         shapePainter.drawArc(outerCircleRect, CIRCLE/2, CIRCLE/2)
+
         shapePainter.setPen(QPen(QColor(14,125,145),  OUTERLINEWIDTH, Qt.SolidLine))
         shapePainter.drawLine(topLeft, bottomLeft)
         shapePainter.drawLine(topRight, bottomRight)
