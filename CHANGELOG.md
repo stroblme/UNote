@@ -9,6 +9,7 @@
 - [ ] Implement database structure
 - [ ] Implement button pictures
 - [ ] Implement Undo and Redo functionality
+- [ ] PDF overwriting
 
 ## v1.0
 
@@ -26,7 +27,6 @@
 - [x] Save PDFs
 - [x] Implement plain-text editing
 - [x] Improve buttons in toolbox
-- [ ] PDF overriding
 - [ ] Implement delete button -> Cancel text box
 - [ ] Implement gestures for touch compatibility
 - [o] Comments and code cleaness

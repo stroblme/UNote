@@ -91,19 +91,21 @@ class QPdfView(QGraphicsPixmapItem):
         '''
         Inserts a textBox annotion at a specified position
         '''
-        h, w = self.calculateTextRectBounds(content)
+        if content != "":
+            h, w = self.calculateTextRectBounds(content)
 
-        textRect = fitz.Rect(qpos.x(), qpos.y() - h/2, qpos.x() + w, qpos.y() + h/2)
+            textRect = fitz.Rect(qpos.x(), qpos.y() - h/2, qpos.x() + w, qpos.y() + h/2)
 
-        cyan  = (14/255,125/255,145/255)                                   # some colors
-        black = (0,0,0)
-        white = (1,1,1)
+            cyan  = (14/255,125/255,145/255)                                   # some colors
+            black = (0,0,0)
+            white = (1,1,1)
 
-        border = {"width": 0.4, "dashes": [1]}
-        annot = self.page.addFreetextAnnot(textRect, content)
-        annot.setBorder(border)
-        annot.update(fontsize = 14, border_color=cyan, fill_color=white, text_color=black)
-        annot.update()
+            border = {"width": 0.4, "dashes": [1]}
+            annot = self.page.addFreetextAnnot(textRect, content)
+            annot.setBorder(border)
+            annot.update(fontsize = 14, border_color=cyan, fill_color=white, text_color=black)
+            annot.update()
+
 
     def editText(self, qpos, content):
         '''
@@ -111,16 +113,19 @@ class QPdfView(QGraphicsPixmapItem):
         '''
         for annot in self.page.annots(types=(fitz.PDF_ANNOT_FREE_TEXT, fitz.PDF_ANNOT_TEXT)):
             if self.pointInArea(qpos, annot.rect):
+                if content != "":
+                    h, w = self.calculateTextRectBounds(content)
 
-                h, w = self.calculateTextRectBounds(content)
+                    annot.setRect(fitz.Rect(annot.rect.x0, annot.rect.y0, annot.rect.x0 + w, annot.rect.y0 + h))
 
-                annot.setRect(fitz.Rect(annot.rect.x0, annot.rect.y0, annot.rect.x0 + w, annot.rect.y0 + h))
+                    info = annot.info
+                    info["content"] = content
+                    info["subject"] = textModes.plainText
+                    annot.setInfo(info)
+                    annot.update()
+                else:
+                    self.page.deleteAnnot(annot)
 
-                info = annot.info
-                info["content"] = content
-                info["subject"] = textModes.plainText
-                annot.setInfo(info)
-                annot.update()
                 return
 
     def textInputReceived(self, x, y, result, content):

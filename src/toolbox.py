@@ -133,6 +133,7 @@ class ToolBoxWidget(QWidget):
         # Connect Events for the buttons
         self.okButton.clicked.connect(self.handleOkButton)
         self.cancelButton.clicked.connect(self.handleCancelButton)
+        self.deleteButton.clicked.connect(self.handleDeleteButton)
 
         self.setButtonState()
 
@@ -285,6 +286,7 @@ class ToolBoxWidget(QWidget):
 
         # Switch in to text box mode and redraw Widget
         self.currentPageNumber = pageNumber
+        self.currentContent = currentContent
         if self.insertCurrentContent(currentContent):
             editMode = editModes.editTextBox
         else:
@@ -319,7 +321,24 @@ class ToolBoxWidget(QWidget):
         global editMode
 
         if editMode != editModes.none:
-            self.textInputFinished.emit(self.currentX, self.currentY, self.currentPageNumber, False, self.pTextEdit.toPlainText())
+            self.textInputFinished.emit(self.currentX, self.currentY, self.currentPageNumber, False, self.currentContent)
+            editMode = editModes.none
+            self.setButtonState()
+
+            self.repaint()
+            self.currentPageNumber = -1
+            self.currentX = -1
+            self.currentY = -1
+
+
+    def handleDeleteButton(self):
+        '''
+        This method handles all the stuff that neees to be done, when the user canceled textEditing
+        '''
+        global editMode
+
+        if editMode != editModes.none:
+            self.textInputFinished.emit(self.currentX, self.currentY, self.currentPageNumber, False, "")
             editMode = editModes.none
             self.setButtonState()
 
