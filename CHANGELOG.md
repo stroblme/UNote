@@ -4,10 +4,10 @@
 
 - [ ] Implement markdown formatting annotations
 - [ ] Implement free drawing
-- [ ] Implement arrow based text boxes
 - [ ] Implement basic forms
 - [ ] Implement database structure
 - [ ] Implement button pictures
+- [ ] General UI Improvements
 - [ ] Implement Undo and Redo functionality
 - [ ] PDF overwriting
 - [ ] Implement gestures for touch compatibility
@@ -29,5 +29,6 @@
 - [x] Implement plain-text editing
 - [x] Improve buttons in toolbox
 - [x] Implement delete button -> Cancel text box
+- [ ] Implement arrow based text boxes
 - [o] Comments and code cleaness
 - [ ] Exception safeness

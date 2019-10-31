@@ -87,6 +87,17 @@ class QPdfView(QGraphicsPixmapItem):
         mat = fitz.Matrix(zoomFactor, zoomFactor)
         self.pixImg.convertFromImage(self.qImg)
 
+    def startNewTextBox(self, qpos):
+        self.ongoingEdit = True
+        self.startPos = qpos
+
+    def stopNewTextBox(self, qpos):
+        self.endPos = qpos
+        self.ongoingEdit = False
+        relCorrdinates = self.toPdfCoordinates(qpos)
+
+        self.eh.requestTextInput.emit(relCorrdinates.x(), relCorrdinates.y(), self.pageNumber, "")
+
     def insertText(self, qpos, content):
         '''
         Inserts a textBox annotion at a specified position
@@ -101,10 +112,26 @@ class QPdfView(QGraphicsPixmapItem):
             white = (1,1,1)
 
             border = {"width": 0.4, "dashes": [1]}
-            annot = self.page.addFreetextAnnot(textRect, content)
-            annot.setBorder(border)
-            annot.update(fontsize = 14, border_color=cyan, fill_color=white, text_color=black)
-            annot.update()
+            colors = {"stroke": black, "fill": cyan}
+
+            if self.startPos == self.endPos:
+                print('no arrow')
+            else:
+                fStart = fitz.Point(self.startPos.x(), self.startPos.y())
+                fEnd = fitz.Point(self.endPos.x(), self.endPos.y())
+
+                lineAnnot = self.page.addPolygonAnnot([fStart, fEnd])
+                lineAnnot.setBorder(border)
+                lineAnnot.setColors(colors)
+                lineAnnot.setLineEnds(fitz.ANNOT_LE_Diamond, fitz.ANNOT_LE_Circle)
+                lineAnnot.update()
+
+            textAnnot = self.page.addFreetextAnnot(textRect, content)
+            textAnnot.setBorder(border)
+            textAnnot.update(fontsize = 14, border_color=cyan, fill_color=white, text_color=black)
+            textAnnot.update()
+
+
 
 
     def editText(self, qpos, content):
@@ -198,23 +225,23 @@ class QPdfView(QGraphicsPixmapItem):
 
     def startMarkText(self, qpos):
         self.ongoingEdit = True
-        self.markStart = qpos
+        self.startPos = qpos
 
     def stopMarkText(self, qpos):
         self.ongoingEdit = False
 
     def updateMarkText(self, qpos):
-        self.markStop = qpos
+        self.endPos = qpos
 
-        yMin = min(self.markStart.y(), self.markStop.y())
-        yMax = max(self.markStart.y(), self.markStop.y())
+        yMin = min(self.startPos.y(), self.endPos.y())
+        yMax = max(self.startPos.y(), self.endPos.y())
 
         if abs(yMin - yMax) < 10:
             yMin = yMin - 5
             yMax = yMax + 5
 
-        xMin = min(self.markStart.x(), self.markStop.x())
-        xMax = max(self.markStart.x(), self.markStop.x())
+        xMin = min(self.startPos.x(), self.endPos.x())
+        xMax = max(self.startPos.x(), self.endPos.x())
 
         rect = fitz.Rect(xMin, yMin, xMax, yMax)
         self.page.addHighlightAnnot(rect)
@@ -244,9 +271,8 @@ class QPdfView(QGraphicsPixmapItem):
         if event.button() == Qt.LeftButton:
             if editMode == editModes.mark:
                 self.startMarkText(self.toPdfCoordinates(event.pos()))
-        # elif event.button() == Qt.RightButton:
-        #     if editMode == editModes.textBox:
-        #         self.editText(self.toPdfCoordinates(event.pos()))
+            elif editMode == editModes.newTextBox:
+                self.startNewTextBox(self.toPdfCoordinates(event.pos()))
 
     def mouseReleaseEvent(self, event):
         '''
@@ -257,9 +283,7 @@ class QPdfView(QGraphicsPixmapItem):
 
         if event.button() == Qt.LeftButton:
             if editMode == editModes.newTextBox:
-                relCorrdinates = self.toPdfCoordinates(event.pos())
-                self.eh.requestTextInput.emit(relCorrdinates.x(), relCorrdinates.y(), self.pageNumber, "")
-
+                self.stopNewTextBox(self.toPdfCoordinates(event.pos()))
             elif editMode == editModes.mark:
                 self.stopMarkText(self.toPdfCoordinates(event.pos()))
         elif event.button() == Qt.RightButton:
