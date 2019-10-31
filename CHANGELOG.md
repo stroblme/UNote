@@ -27,7 +27,7 @@
 - [x] Save PDFs
 - [x] Implement plain-text editing
 - [x] Improve buttons in toolbox
-- [ ] Implement delete button -> Cancel text box
+- [x] Implement delete button -> Cancel text box
 - [ ] Implement gestures for touch compatibility
 - [o] Comments and code cleaness
 - [ ] Exception safeness
