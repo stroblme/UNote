@@ -207,6 +207,10 @@ class ToolBoxWidget(QWidget):
 
 
     def setButtonState(self):
+        '''
+        Sets the button state depending on the current edit mode
+        '''
+
         if editMode == editModes.newTextBox:
             self.okButton.setVisible(True)
             self.deleteButton.setVisible(False)
@@ -225,6 +229,7 @@ class ToolBoxWidget(QWidget):
             self.cancelButton.setVisible(False)
             self.markButton.setVisible(True)
             self.textButton.setVisible(True)
+
 
     def insertCurrentContent(self, content):
         '''

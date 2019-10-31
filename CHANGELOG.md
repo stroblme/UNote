@@ -46,4 +46,5 @@
 - [o] Exception safeness
 - [x] In-Field-Test
 - [x] Auto-save on exit
+- [x] Improve text box positioning
 - [ ] Introducing fman build system

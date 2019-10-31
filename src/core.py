@@ -59,7 +59,7 @@ class QPdfView(QGraphicsPixmapItem):
 
         self.eh = EventHelper()
 
-    
+
 
     def setPixMap(self, qImg, pageNumber):
         self.pageNumber = pageNumber
@@ -108,6 +108,8 @@ class QPdfView(QGraphicsPixmapItem):
             h, w = self.calculateTextRectBounds(content)
 
             textRect = fitz.Rect(qpos.x(), qpos.y() - h/2, qpos.x() + w, qpos.y() + h/2)
+
+            textRect = self.calculateTextRectPos(textRect)
 
             cyan  = (14/255,125/255,145/255)                                   # some colors
             black = (0,0,0)
@@ -222,6 +224,18 @@ class QPdfView(QGraphicsPixmapItem):
 
         return float(suggestedHeight), float(suggestedWidth)
 
+    def calculateTextRectPos(self, frect):
+        if frect.x1 > self.wOrigin:
+            deltaX = frect.x1 - self.wOrigin
+            frect.x1 -= deltaX
+            frect.x0 -= deltaX
+
+        if frect.y1 > self.hOrigin:
+            deltaY = frect.y1 - self.hOrigin
+            frect.y1 -= deltaY
+            frect.y0 -= deltaY
+
+        return frect
 
     def getTextBoxContent(self, qpos):
         for annot in self.page.annots(types=(fitz.PDF_ANNOT_FREE_TEXT, fitz.PDF_ANNOT_TEXT)):
