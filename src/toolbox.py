@@ -19,50 +19,10 @@ BUTTONOFFSETBOTTOM = 10
 
 CIRCLE = 5760
 
-# class ToolBoxButton(QPushButton):
-#     def __init__(self, parent, start, length):
-#         '''
-#         Creates a ToolBoxButton instance as a arc
-
-#         :param start: starting point of the arc
-#         :param length: length of the arc
-#         '''
-#         self.setArc(start, length)
-#         # print('1')
-#         QPushButton.__init__(self, parent)
-
-#     def setArc(self, start, length):
-#         self.start = start
-#         self.length = length
-
-#     def paintEvent(self, event):
-#         self.drawPiePiece(event)
-
-#         QPushButton.paintEvent(self, event)
-
-
-#     def drawPiePiece(self, event):
-#         outerPieRect = self.rect()
-#         outerPieRect.adjust(+INNEROFFSET,+INNEROFFSET,-INNEROFFSET,-INNEROFFSET)
-
-#         shapePainter = QPainter(self)
-#         shapePainter.setRenderHint(shapePainter.Antialiasing)
-#         shapePainter.setPen(QPen(QColor(14,125,145),  BOTTOMLINEWIDTH, Qt.SolidLine))
-#         shapePainter.drawPie(outerPieRect, self.start, self.length)
-
-#         self.move(BOTTOMOFFSET*sin((self.start+self.length)*CIRCLE), BOTTOMOFFSET*cos((self.start+self.length)*CIRCLE))
-
-
-#     def mousePressEvent(self, event):
-#         QPushButton.mousePressEvent(self, event)
-
-#     def mouseMoveEvent(self, event):
-#         QPushButton.mouseMoveEvent(self, event)
-
-#     def mouseReleaseEvent(self, event):
-#         QPushButton.mouseReleaseEvent(self, event)
-
 class ToolBoxWidget(QWidget):
+    '''
+    Class which creates a toolbox storing all available tools and handles text input
+    '''
     numberOfButtons = 4
 
     textButtonName = 'textButton'
@@ -97,15 +57,15 @@ class ToolBoxWidget(QWidget):
         '''
 
         # Create a rectengle from teh given outer dimensions
-        outerRect = self.rect()
+        textBoxRect = self.rect()
         # Shrink it for matiching textBox size
-        outerRect.adjust(+TEXTBOXOFFSETTOP,+TEXTBOXOFFSETTOP,-TEXTBOXOFFSETTOP,-TEXTBOXOFFSETBOTTOM)
+        textBoxRect.adjust(+TEXTBOXOFFSETTOP,+TEXTBOXOFFSETTOP,-TEXTBOXOFFSETTOP,-TEXTBOXOFFSETBOTTOM)
 
-        outerButtonRect = self.rect()
-        outerButtonRect.adjust(+BUTTONOFFSETTOP,+BUTTONOFFSETTOP,-BUTTONOFFSETTOP,-BUTTONOFFSETBOTTOM)
+        buttonRect = self.rect()
+        buttonRect.adjust(+BUTTONOFFSETTOP,+BUTTONOFFSETTOP,-BUTTONOFFSETTOP,-BUTTONOFFSETBOTTOM)
 
-        topLeft = outerButtonRect.topLeft()
-        topRight = outerButtonRect.topRight()
+        topLeft = buttonRect.topLeft()
+        topRight = buttonRect.topRight()
         bottomLeft = QPoint(topLeft.x(), topLeft.y()+160)
         bottomRight = QPoint(topRight.x(), topRight.y()+160)
 
@@ -124,7 +84,7 @@ class ToolBoxWidget(QWidget):
         # We need a layout to add the textBox to the toolBoxWidget
         widgetLayout = QGridLayout(self)
         widgetLayout.addWidget(self.pTextEdit)
-        self.pTextEdit.setGeometry(outerRect)
+        self.pTextEdit.setGeometry(textBoxRect)
 
         buttonSize = QSize(60,30)
 
@@ -210,8 +170,8 @@ class ToolBoxWidget(QWidget):
         Draws a rectangle for the textEdit box
         '''
 
-        outerRect = self.rect()
-        outerRect.adjust(+TEXTBOXOFFSETTOP,+TEXTBOXOFFSETTOP,-TEXTBOXOFFSETTOP,-TEXTBOXOFFSETTOP)
+        textBoxRect = self.rect()
+        textBoxRect.adjust(+TEXTBOXOFFSETTOP,+TEXTBOXOFFSETTOP,-TEXTBOXOFFSETTOP,-TEXTBOXOFFSETTOP)
 
 
         moveRect = QRect(0,0, 11,11)
@@ -219,7 +179,7 @@ class ToolBoxWidget(QWidget):
         shapePainter = QPainter(self)
         shapePainter.setRenderHint(shapePainter.Antialiasing)
         shapePainter.setPen(QPen(QColor(14,125,145),  OUTERLINEWIDTH, Qt.SolidLine))
-        shapePainter.drawRect(outerRect)
+        shapePainter.drawRect(textBoxRect)
         shapePainter.setPen(QPen(QColor(14,125,145),  2, Qt.SolidLine))
         shapePainter.drawArc(moveRect, 0, CIRCLE)
 

@@ -7,6 +7,8 @@
 - [ ] Implement arrow based text boxes
 - [ ] Implement basic forms
 - [ ] Implement database structure
+- [ ] Implement button pictures
+- [ ] Implement Undo and Redo functionality
 
 ## v1.0
 
@@ -24,6 +26,8 @@
 - [x] Save PDFs
 - [x] Implement plain-text editing
 - [x] Improve buttons in toolbox
+- [ ] PDF overriding
+- [ ] Implement delete button -> Cancel text box
 - [ ] Implement gestures for touch compatibility
-- [ ] Comments and code cleaness
+- [o] Comments and code cleaness
 - [ ] Exception safeness
