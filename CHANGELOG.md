@@ -1,10 +1,11 @@
-# Changelog
+# Changelog/ Roadmap
 
-## v3.0
+## Features for v3.0
 - [ ] Implement database structure
 - [ ] Implement unlimited space drawing and annotating
+- [ ] Set up testing environment
 
-## v2.0
+## Features for v2.0
 
 - [ ] Fix Annotation colors for inverted mode
 - [ ] PDF overwriting
@@ -23,11 +24,11 @@
 - [ ] Merge most properties into settings
 - [ ] Improve pdf opening performance
 
-## v1.0
+## Features for v1.0
 
 - [x] Cleanup and structure
 - [x] Initial pdf rendering
-- [x] Inverting pdf colors
+- [x] Inverting pdf colors, dark mode capability
 - [x] Implement file loading menu
 - [x] Implement scrolling and full pdf load
 - [x] Implement zooming
@@ -44,4 +45,5 @@
 - [o] Comments and code cleaness
 - [o] Exception safeness
 - [x] In-Field-Test
-- [ ] Auto-save on exit
+- [x] Auto-save on exit
+- [ ] Introducing fman build system
