@@ -490,8 +490,6 @@ class ToolBoxWidget(QWidget):
         '''
         This method handles all the stuff that needs to be done, when the user successfully finished textEditing
         '''
-
-
         if self.editMode == editModes.newTextBox or self.editMode == editModes.editTextBox:
             self.textInputFinished.emit(self.currentX, self.currentY, self.currentPageNumber, True, self.pTextEdit.toPlainText())
             self.editMode = editModes.none
@@ -507,8 +505,6 @@ class ToolBoxWidget(QWidget):
         '''
         This method handles all the stuff that needs to be done, when the user canceled textEditing
         '''
-
-
         if self.editMode == editModes.newTextBox or self.editMode == editModes.editTextBox:
             self.textInputFinished.emit(self.currentX, self.currentY, self.currentPageNumber, False, self.currentContent)
             self.editMode = editModes.none
@@ -525,8 +521,6 @@ class ToolBoxWidget(QWidget):
         '''
         This method handles all the stuff that needs to be done, when the user canceled textEditing
         '''
-
-
         if self.editMode == editModes.newTextBox or self.editMode == editModes.editTextBox:
             self.textInputFinished.emit(self.currentX, self.currentY, self.currentPageNumber, False, "")
             self.editMode = editModes.none

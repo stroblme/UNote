@@ -10,6 +10,7 @@
 
 - [x] Button UI Improvement
 - [x] Style Optimization
+- [ ] Implement color palettes
 - [ ] Improve deletion of objects
 - [ ] Create new PDF
 - [ ] Fix Annotation colors for inverted mode

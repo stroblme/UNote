@@ -28,6 +28,7 @@ from indexed import IndexedOrderedDict
 import fitz
 
 from editHelper import editModes
+from style.colors import norm_rgb
 
 editMode = editModes.none
 
@@ -104,9 +105,9 @@ class QPdfView(QGraphicsPixmapItem):
 
             textRect = self.calculateTextRectPos(textRect)
 
-            cyan  = (14/255,125/255,145/255)                                   # some colors
-            black = (0,0,0)
-            white = (1,1,1)
+            cyan  = norm_rgb.main
+            black = norm_rgb.black
+            white = norm_rgb.white
 
             borderText = {"width": 0.4, "dashes": [1]}
             colors = {"stroke": black, "fill": cyan}
