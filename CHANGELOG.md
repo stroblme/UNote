@@ -14,6 +14,7 @@
 - [x] Style Optimization
 - [x] Abstract pdf annot properties
 - [o] Implement color palettes; workaround, see above
+- [x] Implement object moving
 - [ ] Get more abstraction by splitting up core script
 - [ ] Improve deletion of objects
 - [ ] Create new PDF
@@ -26,7 +27,6 @@
 - [ ] Implement Undo and Redo functionality
 - [ ] Implement gestures for touch compatibility
 - [ ] Implement object resizing
-- [ ] Implement object moving
 - [ ] Improve text wrapping
 - [ ] Reduce Text Size with increasing annotation length
 - [ ] Implement temporary points to indicate ongoing edit
