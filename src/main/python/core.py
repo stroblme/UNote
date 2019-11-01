@@ -28,7 +28,7 @@ from indexed import IndexedOrderedDict
 import fitz
 
 from editHelper import editModes
-from style.colors import norm_rgb
+from style.style import norm_rgb, pdf_annots
 
 editMode = editModes.none
 
@@ -109,11 +109,11 @@ class QPdfView(QGraphicsPixmapItem):
             black = norm_rgb.black
             white = norm_rgb.white
 
-            borderText = {"width": 0.4, "dashes": [1]}
+            borderText = {"width": pdf_annots.lineWidth, "dashes": [pdf_annots.dashLevel]}
             colors = {"stroke": black, "fill": cyan}
 
             if self.startPos != self.endPos:
-                borderLine = {"width": 1}
+                borderLine = {"width": pdf_annots.borderWidth}
 
                 fStart, fEnd = self.recalculateLinePoints(textRect)
 
@@ -125,7 +125,7 @@ class QPdfView(QGraphicsPixmapItem):
 
             textAnnot = self.page.addFreetextAnnot(textRect, content)
             textAnnot.setBorder(borderText)
-            textAnnot.update(fontsize = 12, border_color=cyan, fill_color=white, text_color=black)
+            textAnnot.update(fontsize = pdf_annots.defaultTextSize, border_color=cyan, fill_color=white, text_color=black)
             textAnnot.update()
 
     def recalculateLinePoints(self, textBoxRect):
