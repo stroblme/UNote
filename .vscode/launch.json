@@ -4,24 +4,39 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-
         {
-            "name": "UNote",
+            "name": "UNote Test",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/main/python/main.py",
             "cwd": "${workspaceFolder}/src/main/python",
-            "args": ["-u"],
-            "console": "integratedTerminal"
+            "args": [],
+            "console": "integratedTerminal",
         },
         {
-            "name": "UNote Preload",
+            "name": "UNote Update UI",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/main/python/main.py",
-            "args": ["-p","test.pdf", "-u"],
+            "cwd": "${workspaceFolder}/src/main/python",
+            "args": [],
+            "console": "integratedTerminal",
+            "preLaunchTask": {
+                "task": "update ui"
+            }
+        },
+        {
+            "name": "UNote Update UI and Preload",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/main/python/main.py",
+            "args": ["-p","test.pdf"],
             "cwd": "${workspaceFolder}/src/main/python",
             "console": "integratedTerminal"
+            // "preLaunchTask": {
+            //     "task": "Update UI",
+            //     "type": "shell"
+            // }
         }
     ]
 }

@@ -1,0 +1,42 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "freeze",
+            "group": "build",
+            "type": "shell",
+            "command": "fbs",
+            "args": [
+                "freeze"
+            ],
+            "presentation": {
+                // Reveal the output only if unrecognized errors occur.
+                "reveal": "silent"
+            }
+        },
+        {
+            "label": "install",
+            "group": "build",
+            "type": "shell",
+            "command": "fbs",
+            "args": [
+                "installer"
+            ],
+            "presentation": {
+                // Reveal the output only if unrecognized errors occur.
+                "reveal": "silent"
+            }
+        },
+        {
+            "label": "Update UI",
+            "type": "shell",
+            "command": "${workspaceFolder}/src/main/python/updatUI.py",
+            "presentation": {
+                // Reveal the output only if unrecognized errors occur.
+                "reveal": "silent"
+            }
+        }
+    ]
+}

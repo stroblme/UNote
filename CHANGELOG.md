@@ -8,13 +8,14 @@
 
 ## Features for v2.0
 
+- [ ] Button UI Improvement
+- [ ] Style Optimization
 - [ ] Fix Annotation colors for inverted mode
 - [ ] PDF overwriting
 - [ ] Implement markdown formatting annotations
 - [ ] Implement free drawing
 - [ ] Implement basic forms
 - [ ] Implement button pictures
-- [ ] General UI Improvements
 - [ ] Implement Undo and Redo functionality
 - [ ] Implement gestures for touch compatibility
 - [ ] Implement textbox resizing

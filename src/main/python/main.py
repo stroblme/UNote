@@ -196,9 +196,6 @@ def argumentHelper():
     # Create ArgumentParser instance
     argparser = argparse.ArgumentParser(description=helpText)
 
-    argparser.add_argument('-u', '--updateUI', action="store_true",
-                        help='Index, specifing the sheet number')
-
     argparser.add_argument('-p', '--pdf',
                         help='Load pdf')
 
@@ -235,14 +232,6 @@ def main():
         args = argumentHelper()
     except ValueError as e:
         sys.exit("Unable to parse arguments:\n" + str(e))
-
-    if args.updateUI:
-        subprocess.run('py -3 -m PyQt5.uic.pyuic .\\ui\\unote_gui.ui -o .\\ui\\unote_qt_export.py -x')
-        subprocess.run('py -3 -m PyQt5.uic.pyuic .\\ui\\preferences_gui.ui -o .\\ui\\preferences_qt_export.py -x')
-        subprocess.run('pyrcc5 .\\style\\BreezeStyleSheets\\breeze.qrc -o .\\style\\BreezeStyleSheets\\breeze_resources.py')
-        subprocess.run('pyrcc5 .\\assets.qrc -o .\\assets.py')
-
-    from ui.unote_qt_export import Ui_MainWindow
 
     UNoteGUI = UNote(args.pdf)
     UNoteGUI.run(args)
