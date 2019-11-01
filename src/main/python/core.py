@@ -460,7 +460,7 @@ class QPdfView(QGraphicsPixmapItem):
             # Check if there is not currently an active editing mode
             if editMode == editModes.none:
                 # Now, check if there is an object under the curser
-                annot = self.getAnnotAtPos(event.pos())
+                annot = self.getAnnotAtPos(self.toPdfCoordinates(event.pos()))
                 if annot:
                     # Start moving this obj
                     self.startMoveObject(event.pos(), annot)
@@ -487,7 +487,7 @@ class QPdfView(QGraphicsPixmapItem):
             if self.startPos == self.endPos:
                 # Check if there is an object under the curser
                 relCorrdinates = event.pos()
-                curContent = self.getTextBoxContent(event.pos())
+                curContent = self.getTextBoxContent(self.toPdfCoordinates(event.pos()))
                 if curContent:
                     # Start requesting edit text box
                     editMode = editModes.editTextBox
