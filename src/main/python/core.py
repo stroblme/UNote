@@ -88,8 +88,8 @@ class QPdfView(QGraphicsPixmapItem):
         self.startPos = self.toPdfCoordinates(qpos)
 
     def stopNewTextBox(self, qpos):
-        self.endPos = self.toPdfCoordinates(qpos)
         self.ongoingEdit = False
+        self.endPos = self.toPdfCoordinates(qpos)
         relCorrdinates = self.toPdfCoordinates(qpos)
 
         self.eh.requestTextInput.emit(relCorrdinates.x(), relCorrdinates.y(), self.pageNumber, "")
@@ -127,6 +127,8 @@ class QPdfView(QGraphicsPixmapItem):
             textAnnot.setBorder(borderText)
             textAnnot.update(fontsize = pdf_annots.defaultTextSize, border_color=cyan, fill_color=white, text_color=black)
             textAnnot.update()
+
+            print(textAnnot.xref)
 
     def recalculateLinePoints(self, textBoxRect):
         if self.startPos.x() > textBoxRect.x1:
@@ -245,7 +247,7 @@ class QPdfView(QGraphicsPixmapItem):
             deltaX = frect.x1 - self.wOrigin
             frect.x1 -= deltaX
             frect.x0 -= deltaX
-        elif frect.x0 < self.xOrigin:
+        elif frect.x0 < 0:
             deltaX = self.xOrigin
             frect.x1 += deltaX
             frect.x0 += deltaX
@@ -254,7 +256,7 @@ class QPdfView(QGraphicsPixmapItem):
             deltaY = frect.y1 - self.hOrigin
             frect.y1 -= deltaY
             frect.y0 -= deltaY
-        elif frect.y0 < self.yOrigin:
+        elif frect.y0 < 0:
             deltaY = self.yOrigin
             frect.y1 += deltaY
             frect.y0 += deltaY
