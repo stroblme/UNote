@@ -433,32 +433,56 @@ class ToolBoxWidget(QWidget):
         self.repaint()
 
     def handleTextButton(self):
-        self.editMode = editModes.newTextBox
+        if self.textButton.isChecked():
+            self.editMode = editModes.newTextBox
+        else:
+            self.editMode = editModes.none
+
         self.editModeChange.emit(self.editMode)
         self.setButtonState()
 
     def handleMarkerButton(self):
-        self.editMode = editModes.marker
+        if self.markerButton.isChecked():
+            self.editMode = editModes.marker
+        else:
+            self.editMode = editModes.none
+
         self.editModeChange.emit(self.editMode)
         self.setButtonState()
 
     def handleClipboardButton(self):
-        self.editMode = editModes.clipboard
+        if self.clipboardButton.isChecked():
+            self.editMode = editModes.clipboard
+        else:
+            self.editMode = editModes.none
+
         self.editModeChange.emit(self.editMode)
         self.setButtonState()
 
     def handleFormsButton(self):
-        self.editMode = editModes.forms
+        if self.formsButton.isChecked():
+            self.editMode = editModes.forms
+        else:
+            self.editMode = editModes.none
+
         self.editModeChange.emit(self.editMode)
         self.setButtonState()
 
     def handleFreehandButton(self):
-        self.editMode = editModes.freehand
+        if self.freehandButton.isChecked():
+            self.editMode = editModes.freehand
+        else:
+            self.editMode = editModes.none
+
         self.editModeChange.emit(self.editMode)
         self.setButtonState()
 
     def handleMarkdownButton(self):
-        self.editMode = editModes.markdown
+        if self.markdownButton.isChecked():
+            self.editMode = editModes.markdown
+        else:
+            self.editMode = editModes.none
+
         self.editModeChange.emit(self.editMode)
         self.setButtonState()
 
