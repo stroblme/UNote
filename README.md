@@ -1,6 +1,6 @@
 # UNote
 
-**Latest release: v0.4**
+**Latest release: v1.1**
 
 Fills the lack of an open-source PDF Editor with the capability to draw and add notes not only on the PDF page.
 

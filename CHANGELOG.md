@@ -9,7 +9,8 @@
 ## Features for v2.0
 
 - [x] Button UI Improvement
-- [ ] Style Optimization
+- [x] Style Optimization
+- [ ] Improve deletion of objects
 - [ ] Create new PDF
 - [ ] Fix Annotation colors for inverted mode
 - [ ] PDF overwriting
