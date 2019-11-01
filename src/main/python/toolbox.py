@@ -330,6 +330,16 @@ class ToolBoxWidget(QWidget):
             self.formsButton.setEnabled(True)
             self.clipboardButton.setEnabled(False)
             self.textButton.setEnabled(False)
+        elif self.editMode == editModes.markdown:
+            self.okButton.setEnabled(False)
+            self.deleteButton.setEnabled(False)
+            self.cancelButton.setEnabled(False)
+            self.markerButton.setEnabled(False)
+            self.markdownButton.setEnabled(True)
+            self.freehandButton.setEnabled(False)
+            self.formsButton.setEnabled(False)
+            self.clipboardButton.setEnabled(False)
+            self.textButton.setEnabled(False)
         elif self.editMode == editModes.none:
             self.okButton.setVisible(False)
             self.deleteButton.setVisible(False)
