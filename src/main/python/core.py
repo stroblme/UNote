@@ -6,9 +6,9 @@
 # Author: Melvin Strobl
 # ---------------------------------------------------------------
 
-from PyQt5.QtWidgets import QSizePolicy, QFrame, QDialog, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGesture, QGraphicsLineItem
+from PyQt5.QtWidgets import QSizePolicy, QFrame, QDialog, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGesture, QGraphicsLineItem, QGraphicsEllipseItem
 from PyQt5.QtCore import Qt, QRectF, QEvent, QThread, pyqtSignal, pyqtSlot, QObject, QPoint
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QBrush, QColor
 
 import threading
 from interfaces import IregCon, IcsrCtrl
@@ -28,7 +28,7 @@ from indexed import IndexedOrderedDict
 import fitz
 
 from editHelper import editModes
-from style.style import norm_rgb, pdf_annots
+from style.style import rgb, norm_rgb, pdf_annots
 
 editMode = editModes.none
 
@@ -42,6 +42,8 @@ class EventHelper(QObject):
     '''
     # x, y, pageNumber, currentContent
     requestTextInput = pyqtSignal(int, int, int, str)
+    addIndicatorPoint = pyqtSignal(int, int)
+    deleteLastIndicatorPoint = pyqtSignal()
 
 
 class QPdfView(QGraphicsPixmapItem):
@@ -138,6 +140,10 @@ class QPdfView(QGraphicsPixmapItem):
                 textAnnotInfo = textAnnot.info
                 textAnnotInfo["subject"] = str(lineXref)
                 textAnnot.setInfo(textAnnotInfo)
+
+                self.eh.deleteLastIndicatorPoint.emit()
+
+            self.eh.deleteLastIndicatorPoint.emit()
 
             textAnnot.update()
 
@@ -459,6 +465,9 @@ class QPdfView(QGraphicsPixmapItem):
             if editMode == editModes.marker:
                 self.startMarkText(self.toPdfCoordinates(event.pos()))
             elif editMode == editModes.newTextBox:
+                scenePoint = self.toSceneCoordinates(event.pos())
+                self.eh.addIndicatorPoint.emit(scenePoint.x(), scenePoint.y())
+
                 self.startNewTextBox(self.toPdfCoordinates(event.pos()))
         elif event.button() == Qt.RightButton:
             # Check if there is not currently an active editing mode
@@ -466,6 +475,9 @@ class QPdfView(QGraphicsPixmapItem):
                 # Now, check if there is an object under the curser
                 annot = self.getAnnotAtPos(self.toPdfCoordinates(event.pos()))
                 if annot:
+                    scenePoint = self.toSceneCoordinates(event.pos())
+                    self.eh.addIndicatorPoint.emit(scenePoint.x(), scenePoint.y())
+
                     # Start moving this obj
                     self.startMoveObject(self.toPdfCoordinates(event.pos()), annot)
 
@@ -478,12 +490,16 @@ class QPdfView(QGraphicsPixmapItem):
 
         if event.button() == Qt.LeftButton:
             if editMode == editModes.newTextBox:
+                scenePoint = self.toSceneCoordinates(event.pos())
+                self.eh.addIndicatorPoint.emit(scenePoint.x(), scenePoint.y())
+
                 self.stopNewTextBox(self.toPdfCoordinates(event.pos()))
             elif editMode == editModes.marker:
                 self.stopMarkText(self.toPdfCoordinates(event.pos()))
         elif event.button() == Qt.RightButton:
             #Check if there is currently an ongoing edit (like moving an object)
             if self.ongoingEdit:
+                self.eh.deleteLastIndicatorPoint.emit()
                 # Stop moving the object
                 self.stopMoveObject(self.toPdfCoordinates(event.pos()))
 
@@ -519,6 +535,13 @@ class QPdfView(QGraphicsPixmapItem):
 
         return pPos
 
+    def toSceneCoordinates(self, qPos):
+        xDif = self.xOrigin
+        yDif = self.yOrigin
+        sPos = QPoint(qPos.x() + xDif, qPos.y() + yDif)
+
+        return sPos
+
 
 class GraphicsViewHandler(QGraphicsView):
     pages = IndexedOrderedDict()
@@ -530,6 +553,8 @@ class GraphicsViewHandler(QGraphicsView):
 
     # x, y, pageNumber, currentContent
     requestTextInput = pyqtSignal(int, int, int, str)
+
+    tempObj = list()
 
     def __init__(self, parent):
         '''
@@ -615,6 +640,8 @@ class GraphicsViewHandler(QGraphicsView):
         self.pages[pageNumber] = pdfView
 
         self.pages[pageNumber].eh.requestTextInput.connect(self.toolBoxTextInputRequestedEvent)
+        self.pages[pageNumber].eh.addIndicatorPoint.connect(self.addIndicatorPoint)
+        self.pages[pageNumber].eh.deleteLastIndicatorPoint.connect(self.deleteLastIndicatorPoint)
 
         self.scene.addItem(self.pages[pageNumber])
         self.pages[pageNumber].setPos(posX, posY)
@@ -832,3 +859,14 @@ class GraphicsViewHandler(QGraphicsView):
         global editMode
 
         editMode = editModeUpdate
+
+    @pyqtSlot(int, int)
+    def addIndicatorPoint(self, x, y):
+        self.tempObj.append(QGraphicsEllipseItem(x,y,8,8))
+        self.tempObj[-1].setBrush(QBrush(QColor(*rgb.fore), style = Qt.SolidPattern))
+        self.scene.addItem(self.tempObj[-1])
+
+    @pyqtSlot()
+    def deleteLastIndicatorPoint(self):
+        self.scene.removeItem(self.tempObj[-1])
+        del self.tempObj[-1]

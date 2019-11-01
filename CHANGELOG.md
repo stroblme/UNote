@@ -18,6 +18,7 @@
 - [x] Improve deletion of objects
 - [x] Improve moving of objects (lines)
 - [-] Improve text wrapping; no issues currently
+- [ ] Implement temporary points to indicate ongoing edit
 - [ ] Implement Undo and Redo functionality
 - [ ] Reduce Text Size with increasing annotation length
 - [ ] Implement object resizing
@@ -31,7 +32,6 @@
 - [ ] Implement basic forms
 - [ ] Implement button pictures
 - [ ] Implement gestures for touch compatibility
-- [ ] Implement temporary points to indicate ongoing edit
 - [ ] Improve highlighting by reducing noise on y axis
 
 ## Features for v1.0 - Completed
