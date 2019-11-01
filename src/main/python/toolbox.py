@@ -41,7 +41,7 @@ class ToolBoxWidget(QWidget):
     numberOfButtons = 4
 
     textButtonName = 'textButton'
-    markButtonName = 'markButton'
+    markerButtonName = 'markerButton'
     okButtonName = 'okButton'
     cancelButtonName = 'cancelButton'
 
@@ -77,12 +77,14 @@ class ToolBoxWidget(QWidget):
         buttonRect = self.rect()
         buttonRect.adjust(+35,+30,5,-20)
 
-        topLeft = buttonRect.topLeft()
-        topRight = buttonRect.topRight()
-        middleLeft = QPoint(topLeft.x(), topLeft.y()+35)
-        middleRight = QPoint(topRight.x(), topRight.y()+35)
-        bottomLeft = QPoint(topLeft.x(), topLeft.y()+130)
-        bottomRight = QPoint(topRight.x(), topRight.y()+130)
+        row1Left = buttonRect.topLeft()
+        row1Right = buttonRect.topRight()
+        row2Left = QPoint(row1Left.x(), row1Left.y()+35)
+        row2Right = QPoint(row1Right.x(), row1Right.y()+35)
+        row3Left = QPoint(row2Left.x(), row2Left.y()+35)
+        row3Right = QPoint(row2Right.x(), row2Right.y()+35)
+        bottomLeft = QPoint(buttonRect.topLeft().x(), buttonRect.topLeft().y()+130)
+        bottomRight = QPoint(row1Right.x(), row1Right.y()+130)
 
         # We use a textEdit for making text boxes editable for user
         self.pTextEdit = QTextEdit(self)
@@ -105,43 +107,53 @@ class ToolBoxWidget(QWidget):
 
         self.textButton = QPushButton(self)
         self.textButton.setFixedSize(buttonSize)
-        self.textButton.move(topRight)
+        self.textButton.move(row1Right)
         self.textButton.setIcon(QIcon(":/assets/text.png"))
 
-        self.markButton = QPushButton(self)
-        self.markButton.setFixedSize(buttonSize)
-        self.markButton.move(topLeft)
-        self.markButton.setIcon(QIcon(":/assets/marker.png"))
+        self.markerButton = QPushButton(self)
+        self.markerButton.setFixedSize(buttonSize)
+        self.markerButton.move(row1Left)
+        self.markerButton.setIcon(QIcon(":/assets/marker.png"))
 
         self.freeHandButton = QPushButton(self)
         self.freeHandButton.setFixedSize(buttonSize)
-        self.freeHandButton.move(middleLeft)
+        self.freeHandButton.move(row2Left)
         self.freeHandButton.setIcon(QIcon(":/assets/freehand.png"))
 
         self.markdownButton = QPushButton(self)
         self.markdownButton.setFixedSize(buttonSize)
-        self.markdownButton.move(middleRight)
+        self.markdownButton.move(row2Right)
         self.markdownButton.setIcon(QIcon(":/assets/markdown.png"))
+
+        self.formsButton = QPushButton(self)
+        self.formsButton.setFixedSize(buttonSize)
+        self.formsButton.move(row3Left)
+        self.formsButton.setIcon(QIcon(":/assets/forms.png"))
+
+        self.clipboardButton = QPushButton(self)
+        self.clipboardButton.setFixedSize(buttonSize)
+        self.clipboardButton.move(row3Right)
+        self.clipboardButton.setIcon(QIcon(":/assets/clipboard.png"))
 
         self.okButton = QPushButton(self)
         self.okButton.setFixedSize(buttonSize)
         self.okButton.move(bottomLeft)
-        self.okButton.setText('Ok')
+        self.okButton.setIcon(QIcon(":/assets/ok.png"))
 
         self.cancelButton = QPushButton(self)
         self.cancelButton.setFixedSize(buttonSize)
         self.cancelButton.move(bottomRight)
-        self.cancelButton.setText('Cancel')
+        self.cancelButton.setIcon(QIcon(":/assets/cancel.png"))
 
         self.deleteButton = QPushButton(self)
         self.deleteButton.setFixedSize(buttonSize)
         self.deleteButton.move(bottomRight)
-        self.deleteButton.setText('Delete')
+        self.deleteButton.setIcon(QIcon(":/assets/delete.png"))
 
 
         # Set Shortcuts for the buttons
         self.textButton.setShortcut("Ctrl+T")
-        self.markButton.setShortcut("Ctrl+M")
+        self.markerButton.setShortcut("Ctrl+M")
         self.okButton.setShortcut("Ctrl+Return")
         self.cancelButton.setShortcut("Esc")
         self.deleteButton.setShortcut("Del")
@@ -237,27 +249,33 @@ class ToolBoxWidget(QWidget):
             self.okButton.setVisible(True)
             self.deleteButton.setVisible(False)
             self.cancelButton.setVisible(True)
-            self.markButton.setVisible(False)
+            self.markerButton.setVisible(False)
             self.markdownButton.setVisible(False)
             self.freeHandButton.setVisible(False)
+            self.formsButton.setVisible(False)
+            self.clipboardButton.setVisible(False)
             self.textButton.setVisible(False)
             self.textButton.setChecked(True)
         elif editMode == editModes.editTextBox:
             self.okButton.setVisible(True)
             self.deleteButton.setVisible(True)
             self.cancelButton.setVisible(False)
-            self.markButton.setVisible(False)
+            self.markerButton.setVisible(False)
             self.markdownButton.setVisible(False)
             self.freeHandButton.setVisible(False)
+            self.formsButton.setVisible(False)
+            self.clipboardButton.setVisible(False)
             self.textButton.setVisible(False)
             self.textButton.setChecked(True)
         else:
             self.okButton.setVisible(False)
             self.deleteButton.setVisible(False)
             self.cancelButton.setVisible(False)
-            self.markButton.setVisible(True)
+            self.markerButton.setVisible(True)
             self.markdownButton.setVisible(True)
             self.freeHandButton.setVisible(True)
+            self.formsButton.setVisible(True)
+            self.clipboardButton.setVisible(True)
             self.textButton.setVisible(True)
             self.textButton.setChecked(False)
 

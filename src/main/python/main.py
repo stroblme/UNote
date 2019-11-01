@@ -167,7 +167,7 @@ class UNote():
 
         # Edit modes available
         self.ui.floatingToolBox.textButton.clicked.connect(lambda:self.receiversInst.toggleTextMode())
-        self.ui.floatingToolBox.markButton.clicked.connect(lambda:self.receiversInst.toggleMarkMode())
+        self.ui.floatingToolBox.markerButton.clicked.connect(lambda:self.receiversInst.toggleMarkMode())
 
         # Toolboxspecific events
         self.ui.floatingToolBox.textInputFinished.connect(self.ui.graphicsView.toolBoxTextInputEvent)

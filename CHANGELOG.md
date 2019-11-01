@@ -8,8 +8,9 @@
 
 ## Features for v2.0
 
-- [ ] Button UI Improvement
+- [x] Button UI Improvement
 - [ ] Style Optimization
+- [ ] Create new PDF
 - [ ] Fix Annotation colors for inverted mode
 - [ ] PDF overwriting
 - [ ] Implement markdown formatting annotations

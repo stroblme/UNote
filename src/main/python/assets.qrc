@@ -4,5 +4,9 @@
     <file>./assets/marker.png</file>
     <file>./assets/freehand.png</file>
     <file>./assets/markdown.png</file>
+    <file>./assets/forms.png</file>
+    <file>./assets/clipboard.png</file>
+    <file>./assets/ok.png</file>
+    <file>./assets/cancel.png</file>
 </qresource>
 </RCC>
