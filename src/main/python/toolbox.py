@@ -238,19 +238,28 @@ class ToolBoxWidget(QWidget):
             self.deleteButton.setVisible(False)
             self.cancelButton.setVisible(True)
             self.markButton.setVisible(False)
+            self.markdownButton.setVisible(False)
+            self.freeHandButton.setVisible(False)
             self.textButton.setVisible(False)
+            self.textButton.setChecked(True)
         elif editMode == editModes.editTextBox:
             self.okButton.setVisible(True)
             self.deleteButton.setVisible(True)
             self.cancelButton.setVisible(False)
             self.markButton.setVisible(False)
+            self.markdownButton.setVisible(False)
+            self.freeHandButton.setVisible(False)
             self.textButton.setVisible(False)
+            self.textButton.setChecked(True)
         else:
             self.okButton.setVisible(False)
             self.deleteButton.setVisible(False)
             self.cancelButton.setVisible(False)
             self.markButton.setVisible(True)
+            self.markdownButton.setVisible(True)
+            self.freeHandButton.setVisible(True)
             self.textButton.setVisible(True)
+            self.textButton.setChecked(False)
 
 
     def insertCurrentContent(self, content):
