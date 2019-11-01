@@ -161,7 +161,7 @@ class ToolBoxWidget(QWidget):
         self.markerButton.setShortcut("Ctrl+M")
         self.okButton.setShortcut("Ctrl+Return")
         self.cancelButton.setShortcut("Esc")
-        self.deleteButton.setShortcut("Ctrl-Del")
+        self.deleteButton.setShortcut("Ctrl+Del")
 
         # Connect Events for the buttons
         self.okButton.clicked.connect(self.handleOkButton)
