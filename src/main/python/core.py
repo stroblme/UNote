@@ -45,6 +45,10 @@ class EventHelper(QObject):
 
 
 class QPdfView(QGraphicsPixmapItem):
+    startPos = 0
+    endPos = 0
+    ongoingEdit = False
+    blockEdit = False
 
     def __init__(self):
         QGraphicsPixmapItem.__init__(self)
@@ -96,11 +100,11 @@ class QPdfView(QGraphicsPixmapItem):
 
     def startNewTextBox(self, qpos):
         self.ongoingEdit = True
-        self.startPos = self.toPdfCoordinates(qpos)
+        self.startPos = qpos
 
     def stopNewTextBox(self, qpos):
         self.ongoingEdit = False
-        self.endPos = self.toPdfCoordinates(qpos)
+        self.endPos = qpos
 
         self.eh.requestTextInput.emit(self.endPos.x(), self.endPos.y(), self.pageNumber, "")
 
@@ -190,7 +194,6 @@ class QPdfView(QGraphicsPixmapItem):
 
                     info = annot.info
                     info["content"] = content
-                    info["subject"] = textModes.plainText
                     annot.setInfo(info)
                     annot.update()
                 else:
@@ -245,12 +248,12 @@ class QPdfView(QGraphicsPixmapItem):
 
     def startMoveObject(self, qpos, annot):
         self.ongoingEdit = True
-        self.startPos = self.toPdfCoordinates(qpos)
+        self.startPos = qpos
         self.currAnnot = annot
 
     def stopMoveObject(self, qpos):
         self.ongoingEdit = False
-        self.endPos = self.toPdfCoordinates(qpos)
+        self.endPos = qpos
         self.moveAnnotByDelta(self.startPos, self.endPos, self.currAnnot)
 
     def moveAnnotByDelta(self, startQPos, endQPos, annot):
@@ -302,12 +305,13 @@ class QPdfView(QGraphicsPixmapItem):
 
     def stopMarkText(self, qpos):
         self.ongoingEdit = False
+        self.endPos = qpos
 
     def updateMarkText(self, qpos):
         '''
         Called updates the currently ongoing marking to match the latest, provided position
         '''
-        self.endPos = self.toPdfCoordinates(qpos)
+        self.endPos = qpos
 
         yMin = min(self.startPos.y(), self.endPos.y())
         yMax = max(self.startPos.y(), self.endPos.y())
@@ -453,9 +457,9 @@ class QPdfView(QGraphicsPixmapItem):
 
         if event.button() == Qt.LeftButton:
             if editMode == editModes.marker:
-                self.startMarkText(event.pos())
+                self.startMarkText(self.toPdfCoordinates(event.pos()))
             elif editMode == editModes.newTextBox:
-                self.startNewTextBox(event.pos())
+                self.startNewTextBox(self.toPdfCoordinates(event.pos()))
         elif event.button() == Qt.RightButton:
             # Check if there is not currently an active editing mode
             if editMode == editModes.none:
@@ -463,7 +467,7 @@ class QPdfView(QGraphicsPixmapItem):
                 annot = self.getAnnotAtPos(self.toPdfCoordinates(event.pos()))
                 if annot:
                     # Start moving this obj
-                    self.startMoveObject(event.pos(), annot)
+                    self.startMoveObject(self.toPdfCoordinates(event.pos()), annot)
 
     def mouseReleaseEvent(self, event):
         '''
@@ -474,19 +478,19 @@ class QPdfView(QGraphicsPixmapItem):
 
         if event.button() == Qt.LeftButton:
             if editMode == editModes.newTextBox:
-                self.stopNewTextBox(event.pos())
+                self.stopNewTextBox(self.toPdfCoordinates(event.pos()))
             elif editMode == editModes.marker:
-                self.stopMarkText(event.pos())
+                self.stopMarkText(self.toPdfCoordinates(event.pos()))
         elif event.button() == Qt.RightButton:
             #Check if there is currently an ongoing edit (like moving an object)
             if self.ongoingEdit:
                 # Stop moving the object
-                self.stopMoveObject(event.pos())
+                self.stopMoveObject(self.toPdfCoordinates(event.pos()))
 
             #If there was no delta shift in start and end pos, the user don't want to move the annot
             if self.startPos == self.endPos:
                 # Check if there is an object under the curser
-                relCorrdinates = event.pos()
+                relCorrdinates = self.toPdfCoordinates(event.pos())
                 curContent = self.getTextBoxContent(self.toPdfCoordinates(event.pos()))
                 if curContent:
                     # Start requesting edit text box
@@ -501,7 +505,7 @@ class QPdfView(QGraphicsPixmapItem):
 
         if self.ongoingEdit:
             if editMode == editModes.marker:
-                self.updateMarkText(event.pos())
+                self.updateMarkText(self.toPdfCoordinates(event.pos()))
 
         QGraphicsPixmapItem.mouseMoveEvent(self, event)
 
