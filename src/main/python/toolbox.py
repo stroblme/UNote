@@ -339,7 +339,7 @@ class ToolBoxWidget(QWidget):
 
     def handleOkButton(self):
         '''
-        This method handles all the stuff that neees to be done, when the user successfully finished textEditing
+        This method handles all the stuff that needs to be done, when the user successfully finished textEditing
         '''
         global editMode
 
@@ -355,7 +355,7 @@ class ToolBoxWidget(QWidget):
 
     def handleCancelButton(self):
         '''
-        This method handles all the stuff that neees to be done, when the user canceled textEditing
+        This method handles all the stuff that needs to be done, when the user canceled textEditing
         '''
         global editMode
 
@@ -372,7 +372,7 @@ class ToolBoxWidget(QWidget):
 
     def handleDeleteButton(self):
         '''
-        This method handles all the stuff that neees to be done, when the user canceled textEditing
+        This method handles all the stuff that needs to be done, when the user canceled textEditing
         '''
         global editMode
 
