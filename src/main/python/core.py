@@ -90,9 +90,8 @@ class QPdfView(QGraphicsPixmapItem):
     def stopNewTextBox(self, qpos):
         self.ongoingEdit = False
         self.endPos = self.toPdfCoordinates(qpos)
-        relCorrdinates = self.toPdfCoordinates(qpos)
 
-        self.eh.requestTextInput.emit(relCorrdinates.x(), relCorrdinates.y(), self.pageNumber, "")
+        self.eh.requestTextInput.emit(self.endPos.x(), self.endPos.y(), self.pageNumber, "")
 
     def insertText(self, qpos, content):
         '''
@@ -112,6 +111,10 @@ class QPdfView(QGraphicsPixmapItem):
             borderText = {"width": pdf_annots.lineWidth, "dashes": [pdf_annots.dashLevel]}
             colors = {"stroke": black, "fill": cyan}
 
+            textAnnot = self.page.addFreetextAnnot(textRect, content)
+            textAnnot.setBorder(borderText)
+            textAnnot.update(fontsize = pdf_annots.defaultTextSize, border_color=cyan, fill_color=white, text_color=black)
+
             if self.startPos != self.endPos:
                 borderLine = {"width": pdf_annots.borderWidth}
 
@@ -123,12 +126,13 @@ class QPdfView(QGraphicsPixmapItem):
                 lineAnnot.update(border_color=cyan, fill_color=cyan)
                 lineAnnot.update()
 
-            textAnnot = self.page.addFreetextAnnot(textRect, content)
-            textAnnot.setBorder(borderText)
-            textAnnot.update(fontsize = pdf_annots.defaultTextSize, border_color=cyan, fill_color=white, text_color=black)
+                textAnnotInfo = textAnnot.info
+                textAnnotInfo["subject"] = str(lineAnnot.xref)
+                textAnnot.setInfo(textAnnotInfo)
+
             textAnnot.update()
 
-            print(textAnnot.xref)
+
 
     def recalculateLinePoints(self, textBoxRect):
         if self.startPos.x() > textBoxRect.x1:
@@ -167,22 +171,48 @@ class QPdfView(QGraphicsPixmapItem):
                     annot.setInfo(info)
                     annot.update()
                 else:
-                    self.page.deleteAnnot(annot)
+                    self.deleteAnnot(annot)
 
                 return
 
+    def deleteAnnot(self, annot):
+        '''
+        Deletes the desired annot and the corresponding line if one is found
+        '''
+        info = annot.info
+        lineXRef = None
+        # Try to get the corresponding xref for the line
+        try:
+            lineXRef = int(info["subject"])
+        except Exception as e:
+            print(e)
+
+        if lineXRef:
+            lineAnnot = self.getAnnotWithXref(lineXRef)
+            self.page.deleteAnnot(lineAnnot)
+
+        self.page.deleteAnnot(annot)
+
+
     def startMoveObject(self, qpos, annot):
         self.ongoingEdit = True
-        self.startPos = qpos
+        self.startPos = self.toPdfCoordinates(qpos)
         self.currAnnot = annot
 
     def stopMoveObject(self, qpos):
         self.ongoingEdit = False
-        self.moveAnnotByDelta(self.startPos, qpos, self.currAnnot)
+        self.endPos = self.toPdfCoordinates(qpos)
+        self.moveAnnotByDelta(self.startPos, self.endPos, self.currAnnot)
 
     def moveAnnotByDelta(self, startQPos, endQPos, annot):
+        '''
+        Moves an annot by the delta of the two provided positions.
+        '''
         dx = endQPos.x() - startQPos.x()
         dy = endQPos.y() - startQPos.y()
+
+        if dx == 0 and dy == 0:
+            return
 
         # Calculate new text
         nRect = fitz.Rect(annot.rect.x0 + dx, annot.rect.y0 + dy, annot.rect.x1 + dx, annot.rect.y1 + dy)
@@ -270,6 +300,13 @@ class QPdfView(QGraphicsPixmapItem):
 
         return None
 
+    def getAnnotWithXref(self, xRef):
+        for annot in self.page.annots():
+            if annot.xref == xRef:
+                return annot
+
+        return None
+
     def getTextBoxContent(self, qpos):
         for annot in self.page.annots(types=(fitz.PDF_ANNOT_FREE_TEXT, fitz.PDF_ANNOT_TEXT)):
             if self.pointInArea(qpos, annot.rect):
@@ -296,7 +333,7 @@ class QPdfView(QGraphicsPixmapItem):
         self.ongoingEdit = False
 
     def updateMarkText(self, qpos):
-        self.endPos = qpos
+        self.endPos = self.toPdfCoordinates(qpos)
 
         yMin = min(self.startPos.y(), self.endPos.y())
         yMax = max(self.startPos.y(), self.endPos.y())
@@ -335,9 +372,9 @@ class QPdfView(QGraphicsPixmapItem):
 
         if event.button() == Qt.LeftButton:
             if editMode == editModes.marker:
-                self.startMarkText(self.toPdfCoordinates(event.pos()))
+                self.startMarkText(event.pos())
             elif editMode == editModes.newTextBox:
-                self.startNewTextBox(self.toPdfCoordinates(event.pos()))
+                self.startNewTextBox(event.pos())
         elif event.button() == Qt.RightButton:
             # Check if there is not currently an active editing mode
             if editMode == editModes.none:
@@ -345,7 +382,7 @@ class QPdfView(QGraphicsPixmapItem):
                 annot = self.getAnnotAtPos(event.pos())
                 if annot:
                     # Start moving this obj
-                    self.startMoveObject(self.toPdfCoordinates(event.pos()), annot)
+                    self.startMoveObject(event.pos(), annot)
 
     def mouseReleaseEvent(self, event):
         '''
@@ -356,19 +393,19 @@ class QPdfView(QGraphicsPixmapItem):
 
         if event.button() == Qt.LeftButton:
             if editMode == editModes.newTextBox:
-                self.stopNewTextBox(self.toPdfCoordinates(event.pos()))
+                self.stopNewTextBox(event.pos())
             elif editMode == editModes.marker:
-                self.stopMarkText(self.toPdfCoordinates(event.pos()))
+                self.stopMarkText(event.pos())
         elif event.button() == Qt.RightButton:
             #Check if there is currently an ongoing edit (like moving an object)
             if self.ongoingEdit:
                 # Stop moving the object
-                self.stopMoveObject(self.toPdfCoordinates(event.pos()))
+                self.stopMoveObject(event.pos())
 
-            #If not, that's the hin to enter edit mode
-            else:
+            #If there was no delta shift in start and end pos, the user don't want to move the annot
+            if self.startPos == self.endPos:
                 # Check if there is an object under the curser
-                relCorrdinates = self.toPdfCoordinates(event.pos())
+                relCorrdinates = event.pos()
                 curContent = self.getTextBoxContent(event.pos())
                 if curContent:
                     # Start requesting edit text box
@@ -383,7 +420,7 @@ class QPdfView(QGraphicsPixmapItem):
 
         if self.ongoingEdit:
             if editMode == editModes.marker:
-                self.updateMarkText(self.toPdfCoordinates(event.pos()))
+                self.updateMarkText(event.pos())
 
         QGraphicsPixmapItem.mouseMoveEvent(self, event)
 
