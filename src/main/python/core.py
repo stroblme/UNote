@@ -169,6 +169,28 @@ class QPdfView(QGraphicsPixmapItem):
 
                 return
 
+    def startMoveObject(self, qpos, annot):
+        self.ongoingEdit = True
+        self.startPos = qpos
+        self.currAnnot = annot
+
+    def stopMoveObject(self, qpos):
+        self.ongoingEdit = False
+        self.moveAnnotByDelta(self.startPos, qpos, self.currAnnot)
+
+    def moveAnnotByDelta(self, startQPos, endQPos, annot):
+        dx = endQPos.x() - startQPos.x()
+        dy = endQPos.y() - startQPos.y()
+
+        # Calculate new text
+        nRect = fitz.Rect(annot.rect.x0 + dx, annot.rect.y0 + dy, annot.rect.x1 + dx, annot.rect.y1 + dy)
+
+        # Check if destination is outside page. Correct if so
+        nRect = self.calculateTextRectPos(nRect)
+
+        annot.setRect(nRect)
+        annot.update()
+
     def textInputReceived(self, x, y, result, content):
         '''
         Called from the graphicView handler when the user has finished editing text in the toolBox textEdit
@@ -223,13 +245,28 @@ class QPdfView(QGraphicsPixmapItem):
             deltaX = frect.x1 - self.wOrigin
             frect.x1 -= deltaX
             frect.x0 -= deltaX
+        elif frect.x0 < self.xOrigin:
+            deltaX = self.xOrigin
+            frect.x1 += deltaX
+            frect.x0 += deltaX
 
         if frect.y1 > self.hOrigin:
             deltaY = frect.y1 - self.hOrigin
             frect.y1 -= deltaY
             frect.y0 -= deltaY
+        elif frect.y0 < self.yOrigin:
+            deltaY = self.yOrigin
+            frect.y1 += deltaY
+            frect.y0 += deltaY
 
         return frect
+
+    def getAnnotAtPos(self, qpos):
+        for annot in self.page.annots():
+            if self.pointInArea(qpos, annot.rect):
+                return annot
+
+        return None
 
     def getTextBoxContent(self, qpos):
         for annot in self.page.annots(types=(fitz.PDF_ANNOT_FREE_TEXT, fitz.PDF_ANNOT_TEXT)):
@@ -299,6 +336,14 @@ class QPdfView(QGraphicsPixmapItem):
                 self.startMarkText(self.toPdfCoordinates(event.pos()))
             elif editMode == editModes.newTextBox:
                 self.startNewTextBox(self.toPdfCoordinates(event.pos()))
+        elif event.button() == Qt.RightButton:
+            # Check if there is not currently an active editing mode
+            if editMode == editModes.none:
+                # Now, check if there is an object under the curser
+                annot = self.getAnnotAtPos(event.pos())
+                if annot:
+                    # Start moving this obj
+                    self.startMoveObject(self.toPdfCoordinates(event.pos()), annot)
 
     def mouseReleaseEvent(self, event):
         '''
@@ -313,14 +358,20 @@ class QPdfView(QGraphicsPixmapItem):
             elif editMode == editModes.marker:
                 self.stopMarkText(self.toPdfCoordinates(event.pos()))
         elif event.button() == Qt.RightButton:
-            editMode = editModes.editTextBox
+            #Check if there is currently an ongoing edit (like moving an object)
+            if self.ongoingEdit:
+                # Stop moving the object
+                self.stopMoveObject(self.toPdfCoordinates(event.pos()))
 
-            relCorrdinates = self.toPdfCoordinates(event.pos())
-            curContent = self.getTextBoxContent(event.pos())
-            if curContent:
-                self.eh.requestTextInput.emit(relCorrdinates.x(), relCorrdinates.y(), self.pageNumber, curContent)
+            #If not, that's the hin to enter edit mode
             else:
-                print("Cannot find a text box under that cursor")
+                # Check if there is an object under the curser
+                relCorrdinates = self.toPdfCoordinates(event.pos())
+                curContent = self.getTextBoxContent(event.pos())
+                if curContent:
+                    # Start requesting edit text box
+                    editMode = editModes.editTextBox
+                    self.eh.requestTextInput.emit(relCorrdinates.x(), relCorrdinates.y(), self.pageNumber, curContent)
 
     def mouseMoveEvent(self, event):
         '''
