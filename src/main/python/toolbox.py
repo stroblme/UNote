@@ -108,31 +108,37 @@ class ToolBoxWidget(QWidget):
         self.textButton.setFixedSize(buttonSize)
         self.textButton.move(row1Right)
         self.textButton.setIcon(QIcon(":/assets/text.png"))
+        self.textButton.setCheckable(True)
 
         self.markerButton = QPushButton(self)
         self.markerButton.setFixedSize(buttonSize)
         self.markerButton.move(row1Left)
         self.markerButton.setIcon(QIcon(":/assets/marker.png"))
+        self.markerButton.setCheckable(True)
 
         self.freehandButton = QPushButton(self)
         self.freehandButton.setFixedSize(buttonSize)
         self.freehandButton.move(row2Left)
         self.freehandButton.setIcon(QIcon(":/assets/freehand.png"))
+        self.freehandButton.setCheckable(True)
 
         self.markdownButton = QPushButton(self)
         self.markdownButton.setFixedSize(buttonSize)
         self.markdownButton.move(row2Right)
         self.markdownButton.setIcon(QIcon(":/assets/markdown.png"))
+        self.markdownButton.setCheckable(True)
 
         self.formsButton = QPushButton(self)
         self.formsButton.setFixedSize(buttonSize)
         self.formsButton.move(row3Left)
         self.formsButton.setIcon(QIcon(":/assets/forms.png"))
+        self.formsButton.setCheckable(True)
 
         self.clipboardButton = QPushButton(self)
         self.clipboardButton.setFixedSize(buttonSize)
         self.clipboardButton.move(row3Right)
         self.clipboardButton.setIcon(QIcon(":/assets/clipboard.png"))
+        self.clipboardButton.setCheckable(True)
 
         self.okButton = QPushButton(self)
         self.okButton.setFixedSize(buttonSize)
@@ -155,7 +161,7 @@ class ToolBoxWidget(QWidget):
         self.markerButton.setShortcut("Ctrl+M")
         self.okButton.setShortcut("Ctrl+Return")
         self.cancelButton.setShortcut("Esc")
-        self.deleteButton.setShortcut("Del")
+        self.deleteButton.setShortcut("Ctrl-Del")
 
         # Connect Events for the buttons
         self.okButton.clicked.connect(self.handleOkButton)
@@ -248,8 +254,10 @@ class ToolBoxWidget(QWidget):
         '''
         Sets the button state depending on the current edit mode
         '''
-
-        if self.editMode == editModes.newTextBox:
+        if self.editTextBox and self.editMode == editModes.newTextBox:
+            self.okButton.setEnabled(True)
+            self.cancelButton.setEnabled(True)
+            self.deleteButton.setEnabled(False)
             self.okButton.setVisible(True)
             self.deleteButton.setVisible(False)
             self.cancelButton.setVisible(True)
@@ -259,7 +267,10 @@ class ToolBoxWidget(QWidget):
             self.formsButton.setVisible(False)
             self.clipboardButton.setVisible(False)
             self.textButton.setVisible(False)
-        elif self.editMode == editModes.editTextBox:
+        elif self.editTextBox and self.editMode == editModes.editTextBox:
+            self.okButton.setEnabled(True)
+            self.cancelButton.setEnabled(False)
+            self.deleteButton.setEnabled(True)
             self.okButton.setVisible(True)
             self.deleteButton.setVisible(True)
             self.cancelButton.setVisible(False)
@@ -269,6 +280,56 @@ class ToolBoxWidget(QWidget):
             self.formsButton.setVisible(False)
             self.clipboardButton.setVisible(False)
             self.textButton.setVisible(False)
+        elif self.editMode == editModes.newTextBox:
+            self.okButton.setEnabled(False)
+            self.deleteButton.setEnabled(False)
+            self.cancelButton.setEnabled(False)
+            self.markerButton.setEnabled(False)
+            self.markdownButton.setEnabled(False)
+            self.freehandButton.setEnabled(False)
+            self.formsButton.setEnabled(False)
+            self.clipboardButton.setEnabled(False)
+            self.textButton.setEnabled(True)
+        elif self.editMode == editModes.marker:
+            self.okButton.setEnabled(False)
+            self.deleteButton.setEnabled(False)
+            self.cancelButton.setEnabled(False)
+            self.markerButton.setEnabled(True)
+            self.markdownButton.setEnabled(False)
+            self.freehandButton.setEnabled(False)
+            self.formsButton.setEnabled(False)
+            self.clipboardButton.setEnabled(False)
+            self.textButton.setEnabled(False)
+        elif self.editMode == editModes.freehand:
+            self.okButton.setEnabled(False)
+            self.deleteButton.setEnabled(False)
+            self.cancelButton.setEnabled(False)
+            self.markerButton.setEnabled(False)
+            self.markdownButton.setEnabled(False)
+            self.freehandButton.setEnabled(True)
+            self.formsButton.setEnabled(False)
+            self.clipboardButton.setEnabled(False)
+            self.textButton.setEnabled(False)
+        elif self.editMode == editModes.clipboard:
+            self.okButton.setEnabled(False)
+            self.deleteButton.setEnabled(False)
+            self.cancelButton.setEnabled(False)
+            self.markerButton.setEnabled(False)
+            self.markdownButton.setEnabled(False)
+            self.freehandButton.setEnabled(False)
+            self.formsButton.setEnabled(False)
+            self.clipboardButton.setEnabled(True)
+            self.textButton.setEnabled(False)
+        elif self.editMode == editModes.forms:
+            self.okButton.setEnabled(False)
+            self.deleteButton.setEnabled(False)
+            self.cancelButton.setEnabled(False)
+            self.markerButton.setEnabled(False)
+            self.markdownButton.setEnabled(False)
+            self.freehandButton.setEnabled(False)
+            self.formsButton.setEnabled(True)
+            self.clipboardButton.setEnabled(False)
+            self.textButton.setEnabled(False)
         elif self.editMode == editModes.none:
             self.okButton.setVisible(False)
             self.deleteButton.setVisible(False)
@@ -279,7 +340,19 @@ class ToolBoxWidget(QWidget):
             self.formsButton.setVisible(True)
             self.clipboardButton.setVisible(True)
             self.textButton.setVisible(True)
+
+            self.okButton.setEnabled(False)
+            self.deleteButton.setEnabled(False)
+            self.cancelButton.setEnabled(False)
+            self.markerButton.setEnabled(True)
+            self.markdownButton.setEnabled(True)
+            self.freehandButton.setEnabled(True)
+            self.formsButton.setEnabled(True)
+            self.clipboardButton.setEnabled(True)
+            self.textButton.setEnabled(True)
+
             self.textButton.setChecked(False)
+
 
     def insertCurrentContent(self, content):
         '''
@@ -345,52 +418,49 @@ class ToolBoxWidget(QWidget):
         # Switch in to text box mode and redraw Widget
         self.currentPageNumber = pageNumber
         self.currentContent = currentContent
+
+
         if self.insertCurrentContent(currentContent):
             self.editMode = editModes.editTextBox
         else:
             self.editMode = editModes.newTextBox
+
+        self.editTextBox = True
         self.setButtonState()
 
         self.currentX = x
         self.currentY = y
-        self.editTextBox = True
         self.repaint()
 
     def handleTextButton(self):
-        self.textButton.setChecked(True)
-
         self.editMode = editModes.newTextBox
         self.editModeChange.emit(self.editMode)
+        self.setButtonState()
 
     def handleMarkerButton(self):
-        self.markerButton.setChecked(True)
-
         self.editMode = editModes.marker
         self.editModeChange.emit(self.editMode)
+        self.setButtonState()
 
     def handleClipboardButton(self):
-        self.clipboardButton.setChecked(True)
-
         self.editMode = editModes.clipboard
         self.editModeChange.emit(self.editMode)
+        self.setButtonState()
 
     def handleFormsButton(self):
-        self.formsButton.setChecked(True)
-
         self.editMode = editModes.forms
         self.editModeChange.emit(self.editMode)
+        self.setButtonState()
 
     def handleFreehandButton(self):
-        self.freehandButton.setChecked(True)
-
         self.editMode = editModes.freehand
         self.editModeChange.emit(self.editMode)
+        self.setButtonState()
 
     def handleMarkdownButton(self):
-        self.markdownButton.setChecked(True)
-
         self.editMode = editModes.markdown
         self.editModeChange.emit(self.editMode)
+        self.setButtonState()
 
     def handleOkButton(self):
         '''
@@ -398,11 +468,11 @@ class ToolBoxWidget(QWidget):
         '''
 
 
-        if self.editMode != editModes.none:
+        if self.editMode == editModes.newTextBox or self.editMode == editModes.editTextBox:
             self.textInputFinished.emit(self.currentX, self.currentY, self.currentPageNumber, True, self.pTextEdit.toPlainText())
             self.editMode = editModes.none
-            self.setButtonState()
             self.editTextBox = False
+            self.setButtonState()
 
             self.repaint()
             self.currentPageNumber = -1
@@ -415,11 +485,11 @@ class ToolBoxWidget(QWidget):
         '''
 
 
-        if self.editMode != editModes.none:
+        if self.editMode == editModes.newTextBox or self.editMode == editModes.editTextBox:
             self.textInputFinished.emit(self.currentX, self.currentY, self.currentPageNumber, False, self.currentContent)
             self.editMode = editModes.none
-            self.setButtonState()
             self.editTextBox = False
+            self.setButtonState()
 
             self.repaint()
             self.currentPageNumber = -1
@@ -433,11 +503,11 @@ class ToolBoxWidget(QWidget):
         '''
 
 
-        if self.editMode != editModes.none:
+        if self.editMode == editModes.newTextBox or self.editMode == editModes.editTextBox:
             self.textInputFinished.emit(self.currentX, self.currentY, self.currentPageNumber, False, "")
             self.editMode = editModes.none
-            self.setButtonState()
             self.editTextBox = False
+            self.setButtonState()
 
             self.repaint()
             self.currentPageNumber = -1
