@@ -149,12 +149,15 @@ class UNote():
 
         self.preferencesGui.storeSettings()
 
+        sys.exit("\n\nExiting UNote\n")
+
+
     def connectReceivers(self):
         '''
         Connects all the buttons to the right receivers
         '''
         # Add the exit method
-        self.ui.actionExit.triggered.connect(exitMethod)
+        self.ui.actionExit.triggered.connect(self.appctxt.app.quit)
 
         # Open Preferences
         self.ui.actionPreferences.triggered.connect(lambda:self.receiversInst.openPreferencesReceiver(self.preferencesGui))
