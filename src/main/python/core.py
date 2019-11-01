@@ -27,14 +27,7 @@ from indexed import IndexedOrderedDict
 
 import fitz
 
-class editModes():
-    '''
-    This class contains all available edit modes for the current pdf
-    '''
-    none = 'none'
-    mark = 'mark'
-    newTextBox = 'newTextBox'
-    editTextBox = 'editTextBox'
+from editHelper import editModes
 
 editMode = editModes.none
 
@@ -301,7 +294,7 @@ class QPdfView(QGraphicsPixmapItem):
             return
 
         if event.button() == Qt.LeftButton:
-            if editMode == editModes.mark:
+            if editMode == editModes.marker:
                 self.startMarkText(self.toPdfCoordinates(event.pos()))
             elif editMode == editModes.newTextBox:
                 self.startNewTextBox(self.toPdfCoordinates(event.pos()))
@@ -316,7 +309,7 @@ class QPdfView(QGraphicsPixmapItem):
         if event.button() == Qt.LeftButton:
             if editMode == editModes.newTextBox:
                 self.stopNewTextBox(self.toPdfCoordinates(event.pos()))
-            elif editMode == editModes.mark:
+            elif editMode == editModes.marker:
                 self.stopMarkText(self.toPdfCoordinates(event.pos()))
         elif event.button() == Qt.RightButton:
             editMode = editModes.editTextBox
@@ -335,7 +328,7 @@ class QPdfView(QGraphicsPixmapItem):
         self.blockEdit = False
 
         if self.ongoingEdit:
-            if editMode == editModes.mark:
+            if editMode == editModes.marker:
                 self.updateMarkText(self.toPdfCoordinates(event.pos()))
 
         QGraphicsPixmapItem.mouseMoveEvent(self, event)
@@ -543,31 +536,6 @@ class GraphicsViewHandler(QGraphicsView):
             renderedItem.setPos(rItx, rIty)
 
 
-    def toggleTextMode(self):
-        '''
-        Called from the main ui. Toggles edit mode
-        '''
-        global editMode
-
-        if editMode == editModes.newTextBox:
-            editMode = editModes.none
-        else:
-            editMode = editModes.newTextBox
-
-    def toggleMarkMode(self):
-        '''
-        Called from the main ui. Toggles edit mode
-        '''
-        global editMode
-
-        if editMode == editModes.mark:
-            editMode = editModes.none
-        else:
-            editMode = editModes.mark
-
-
-
-
     def updatePdf(self, pdf, zoom=absZoomFactor, clip=None, pageNumber = None):
         '''
         Update the provided pdf file at the desired page to render only the zoom and clip
@@ -682,3 +650,9 @@ class GraphicsViewHandler(QGraphicsView):
         '''
         # Call the class intern signal to forward this request to the toolbox
         self.requestTextInput.emit(x, y, pageNumber, currentContent)
+
+    @pyqtSlot(str)
+    def editModeChangeRequest(self, editModeUpdate):
+        global editMode
+
+        editMode = editModeUpdate

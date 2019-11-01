@@ -166,8 +166,7 @@ class UNote():
         self.ui.actionSave_PDF.triggered.connect(lambda:self.receiversInst.savePdf())
 
         # Edit modes available
-        self.ui.floatingToolBox.textButton.clicked.connect(lambda:self.receiversInst.toggleTextMode())
-        self.ui.floatingToolBox.markerButton.clicked.connect(lambda:self.receiversInst.toggleMarkMode())
+        self.ui.floatingToolBox.editModeChange.connect(self.ui.graphicsView.editModeChangeRequest)
 
         # Toolboxspecific events
         self.ui.floatingToolBox.textInputFinished.connect(self.ui.graphicsView.toolBoxTextInputEvent)

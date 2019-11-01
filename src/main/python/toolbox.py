@@ -9,6 +9,8 @@ from math import sin, cos
 
 import assets
 
+from editHelper import editModes
+
 OUTEROFFSETTOP = 25
 OUTEROFFSETBOTTOM = 14
 
@@ -23,16 +25,6 @@ BUTTONOFFSETBOTTOM = 15
 
 CIRCLE = 5760
 
-class editModes():
-    '''
-    This class contains all available edit modes for the current pdf
-    '''
-    none = 'none'
-    mark = 'mark'
-    newTextBox = 'newTextBox'
-    editTextBox = 'editTextBox'
-
-editMode = editModes.none
 
 class ToolBoxWidget(QWidget):
     '''
@@ -51,6 +43,13 @@ class ToolBoxWidget(QWidget):
     currentPageNumber = -1
     currentX = -1
     currentY = -1
+
+    editMode = editModes.none
+
+
+    editModeChange = pyqtSignal(str)
+
+    editTextBox = False
 
     def __init__(self, parent):
         '''
@@ -115,10 +114,10 @@ class ToolBoxWidget(QWidget):
         self.markerButton.move(row1Left)
         self.markerButton.setIcon(QIcon(":/assets/marker.png"))
 
-        self.freeHandButton = QPushButton(self)
-        self.freeHandButton.setFixedSize(buttonSize)
-        self.freeHandButton.move(row2Left)
-        self.freeHandButton.setIcon(QIcon(":/assets/freehand.png"))
+        self.freehandButton = QPushButton(self)
+        self.freehandButton.setFixedSize(buttonSize)
+        self.freehandButton.move(row2Left)
+        self.freehandButton.setIcon(QIcon(":/assets/freehand.png"))
 
         self.markdownButton = QPushButton(self)
         self.markdownButton.setFixedSize(buttonSize)
@@ -160,6 +159,12 @@ class ToolBoxWidget(QWidget):
 
         # Connect Events for the buttons
         self.okButton.clicked.connect(self.handleOkButton)
+        self.markerButton.clicked.connect(self.handleMarkerButton)
+        self.textButton.clicked.connect(self.handleTextButton)
+        self.formsButton.clicked.connect(self.handleFormsButton)
+        self.freehandButton.clicked.connect(self.handleFreehandButton)
+        self.clipboardButton.clicked.connect(self.handleClipboardButton)
+        self.markdownButton.clicked.connect(self.handleMarkdownButton)
         self.cancelButton.clicked.connect(self.handleCancelButton)
         self.deleteButton.clicked.connect(self.handleDeleteButton)
 
@@ -169,11 +174,10 @@ class ToolBoxWidget(QWidget):
         '''
         Overrides the default paint event to either draw a textBox or a toolBox
         '''
-        if editMode != editModes.none:
-            # Draw the text box
+        if self.editTextBox:
+            # Draw the toolBoxShape
             self.drawRectShape(event)
         else:
-            # Draw the toolBoxShape
             self.drawCircularShape(event)
 
         # Run the parent paint Event
@@ -245,40 +249,37 @@ class ToolBoxWidget(QWidget):
         Sets the button state depending on the current edit mode
         '''
 
-        if editMode == editModes.newTextBox:
+        if self.editMode == editModes.newTextBox:
             self.okButton.setVisible(True)
             self.deleteButton.setVisible(False)
             self.cancelButton.setVisible(True)
             self.markerButton.setVisible(False)
             self.markdownButton.setVisible(False)
-            self.freeHandButton.setVisible(False)
+            self.freehandButton.setVisible(False)
             self.formsButton.setVisible(False)
             self.clipboardButton.setVisible(False)
             self.textButton.setVisible(False)
-            self.textButton.setChecked(True)
-        elif editMode == editModes.editTextBox:
+        elif self.editMode == editModes.editTextBox:
             self.okButton.setVisible(True)
             self.deleteButton.setVisible(True)
             self.cancelButton.setVisible(False)
             self.markerButton.setVisible(False)
             self.markdownButton.setVisible(False)
-            self.freeHandButton.setVisible(False)
+            self.freehandButton.setVisible(False)
             self.formsButton.setVisible(False)
             self.clipboardButton.setVisible(False)
             self.textButton.setVisible(False)
-            self.textButton.setChecked(True)
-        else:
+        elif self.editMode == editModes.none:
             self.okButton.setVisible(False)
             self.deleteButton.setVisible(False)
             self.cancelButton.setVisible(False)
             self.markerButton.setVisible(True)
             self.markdownButton.setVisible(True)
-            self.freeHandButton.setVisible(True)
+            self.freehandButton.setVisible(True)
             self.formsButton.setVisible(True)
             self.clipboardButton.setVisible(True)
             self.textButton.setVisible(True)
             self.textButton.setChecked(False)
-
 
     def insertCurrentContent(self, content):
         '''
@@ -339,32 +340,69 @@ class ToolBoxWidget(QWidget):
         '''
         Slot when toolBox receives a textInput request. This is the case, when the user wants to insert a new or edit an existing textBox
         '''
-        global editMode
+
 
         # Switch in to text box mode and redraw Widget
         self.currentPageNumber = pageNumber
         self.currentContent = currentContent
         if self.insertCurrentContent(currentContent):
-            editMode = editModes.editTextBox
+            self.editMode = editModes.editTextBox
         else:
-            editMode = editModes.newTextBox
+            self.editMode = editModes.newTextBox
         self.setButtonState()
 
         self.currentX = x
         self.currentY = y
-        self.textBoxMode = True
+        self.editTextBox = True
         self.repaint()
+
+    def handleTextButton(self):
+        self.textButton.setChecked(True)
+
+        self.editMode = editModes.newTextBox
+        self.editModeChange.emit(self.editMode)
+
+    def handleMarkerButton(self):
+        self.markerButton.setChecked(True)
+
+        self.editMode = editModes.marker
+        self.editModeChange.emit(self.editMode)
+
+    def handleClipboardButton(self):
+        self.clipboardButton.setChecked(True)
+
+        self.editMode = editModes.clipboard
+        self.editModeChange.emit(self.editMode)
+
+    def handleFormsButton(self):
+        self.formsButton.setChecked(True)
+
+        self.editMode = editModes.forms
+        self.editModeChange.emit(self.editMode)
+
+    def handleFreehandButton(self):
+        self.freehandButton.setChecked(True)
+
+        self.editMode = editModes.freehand
+        self.editModeChange.emit(self.editMode)
+
+    def handleMarkdownButton(self):
+        self.markdownButton.setChecked(True)
+
+        self.editMode = editModes.markdown
+        self.editModeChange.emit(self.editMode)
 
     def handleOkButton(self):
         '''
         This method handles all the stuff that needs to be done, when the user successfully finished textEditing
         '''
-        global editMode
 
-        if editMode != editModes.none:
+
+        if self.editMode != editModes.none:
             self.textInputFinished.emit(self.currentX, self.currentY, self.currentPageNumber, True, self.pTextEdit.toPlainText())
-            editMode = editModes.none
+            self.editMode = editModes.none
             self.setButtonState()
+            self.editTextBox = False
 
             self.repaint()
             self.currentPageNumber = -1
@@ -375,12 +413,13 @@ class ToolBoxWidget(QWidget):
         '''
         This method handles all the stuff that needs to be done, when the user canceled textEditing
         '''
-        global editMode
 
-        if editMode != editModes.none:
+
+        if self.editMode != editModes.none:
             self.textInputFinished.emit(self.currentX, self.currentY, self.currentPageNumber, False, self.currentContent)
-            editMode = editModes.none
+            self.editMode = editModes.none
             self.setButtonState()
+            self.editTextBox = False
 
             self.repaint()
             self.currentPageNumber = -1
@@ -392,12 +431,13 @@ class ToolBoxWidget(QWidget):
         '''
         This method handles all the stuff that needs to be done, when the user canceled textEditing
         '''
-        global editMode
 
-        if editMode != editModes.none:
+
+        if self.editMode != editModes.none:
             self.textInputFinished.emit(self.currentX, self.currentY, self.currentPageNumber, False, "")
-            editMode = editModes.none
+            self.editMode = editModes.none
             self.setButtonState()
+            self.editTextBox = False
 
             self.repaint()
             self.currentPageNumber = -1
