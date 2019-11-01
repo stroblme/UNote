@@ -16,6 +16,7 @@
 - [o] Implement color palettes; workaround, see above
 - [x] Implement object moving
 - [x] Improve deletion of objects
+- [x] Improve moving of objects (lines)
 - [-] Improve text wrapping; no issues currently
 - [ ] Implement Undo and Redo functionality
 - [ ] Reduce Text Size with increasing annotation length

@@ -83,6 +83,17 @@ class QPdfView(QGraphicsPixmapItem):
         mat = fitz.Matrix(zoomFactor, zoomFactor)
         self.pixImg.convertFromImage(self.qImg)
 
+    def qPointToFPoint(self, qPoint):
+        return fitz.Point(qPoint.x(), qPoint.y())
+
+    def fPointToQPoint(self, fPoint):
+        return QPoint(fPoint.x, fPoint.y)
+
+
+    #-----------------------------------------------------------------------
+    # Text Box
+    #-----------------------------------------------------------------------
+
     def startNewTextBox(self, qpos):
         self.ongoingEdit = True
         self.startPos = self.toPdfCoordinates(qpos)
@@ -116,40 +127,52 @@ class QPdfView(QGraphicsPixmapItem):
             textAnnot.update(fontsize = pdf_annots.defaultTextSize, border_color=cyan, fill_color=white, text_color=black)
 
             if self.startPos != self.endPos:
-                borderLine = {"width": pdf_annots.borderWidth}
+                fStart, fEnd = self.recalculateLinePoints(textRect, self.startPos)
 
-                fStart, fEnd = self.recalculateLinePoints(textRect)
-
-                lineAnnot = self.page.addLineAnnot(fStart, fEnd)
-                lineAnnot.setBorder(borderLine)
-                lineAnnot.setLineEnds(fitz.ANNOT_LE_Circle, fitz.ANNOT_LE_Circle)
-                lineAnnot.update(border_color=cyan, fill_color=cyan)
-                lineAnnot.update()
+                lineXref = self.insertLine(fStart, fEnd, "")
 
                 textAnnotInfo = textAnnot.info
-                textAnnotInfo["subject"] = str(lineAnnot.xref)
+                textAnnotInfo["subject"] = str(lineXref)
                 textAnnot.setInfo(textAnnotInfo)
 
             textAnnot.update()
 
+    def insertLine(self, fStart, fEnd, subj):
+        cyan  = norm_rgb.main
+        borderLine = {"width": pdf_annots.borderWidth}
 
+        lineAnnot = self.page.addLineAnnot(fStart, fEnd)
 
-    def recalculateLinePoints(self, textBoxRect):
-        if self.startPos.x() > textBoxRect.x1:
+        lineAnnotInfo = lineAnnot.info
+        lineAnnotInfo["subject"] = subj
+        lineAnnot.setInfo(lineAnnotInfo)
+
+        lineAnnot.setBorder(borderLine)
+        lineAnnot.setLineEnds(fitz.ANNOT_LE_Circle, fitz.ANNOT_LE_Circle)
+        lineAnnot.update(border_color=cyan, fill_color=cyan)
+        lineAnnot.update()
+
+        return lineAnnot.xref
+
+    def recalculateLinePoints(self, textBoxRect, startPoint):
+        '''
+        Returns the start and end points of a line connected to the provided rect so, that the line won't intersect the rect
+        '''
+        if startPoint.x() > textBoxRect.x1:
             fEndX = textBoxRect.x1
-        elif self.startPos.x() < textBoxRect.x0:
+        elif startPoint.x() < textBoxRect.x0:
             fEndX = textBoxRect.x0
         else:
             fEndX = textBoxRect.x0 + (textBoxRect.x1 - textBoxRect.x0) / 2
 
-        if self.startPos.y() > textBoxRect.y1:
+        if startPoint.y() > textBoxRect.y1:
             fEndY = textBoxRect.y1
-        elif self.startPos.y() < textBoxRect.y0:
+        elif startPoint.y() < textBoxRect.y0:
             fEndY = textBoxRect.y0
         else:
             fEndY = textBoxRect.y0 + (textBoxRect.y1 - textBoxRect.y0) / 2
 
-        fStart = fitz.Point(self.startPos.x(), self.startPos.y())
+        fStart = fitz.Point(startPoint.x(), startPoint.y())
         fEnd = fitz.Point(fEndX, fEndY)
 
         return fStart, fEnd
@@ -175,24 +198,50 @@ class QPdfView(QGraphicsPixmapItem):
 
                 return
 
+    def textInputReceived(self, x, y, result, content):
+        '''
+        Called from the graphicView handler when the user has finished editing text in the toolBox textEdit
+        '''
+
+        # Check weather the user has edited or inserted a textBox
+        if editMode == editModes.newTextBox:
+            self.insertText(QPoint(x, y), content)
+            self.resetEditMode()
+        elif editMode == editModes.editTextBox:
+            self.editText(QPoint(x, y), content)
+            self.resetEditMode()
+
+
+
     def deleteAnnot(self, annot):
         '''
         Deletes the desired annot and the corresponding line if one is found
         '''
+        # Check if there is a corresponding line annot
+        corrAnnot = self.getCorrespondingAnnot(annot)
+        if corrAnnot:
+            self.page.deleteAnnot(corrAnnot)
+
+        self.page.deleteAnnot(annot)
+
+    def getCorrespondingAnnot(self, annot):
         info = annot.info
         lineXRef = None
         # Try to get the corresponding xref for the line
         try:
             lineXRef = int(info["subject"])
+        except ValueError as e:
+            # This can and should happen, when the obj has no child
+            return None
         except Exception as e:
-            print(e)
+            print('While deleting Annot\t' + str(e))
+            return None
 
         if lineXRef:
             lineAnnot = self.getAnnotWithXref(lineXRef)
-            self.page.deleteAnnot(lineAnnot)
+            return lineAnnot
 
-        self.page.deleteAnnot(annot)
-
+        return None
 
     def startMoveObject(self, qpos, annot):
         self.ongoingEdit = True
@@ -223,25 +272,55 @@ class QPdfView(QGraphicsPixmapItem):
         annot.setRect(nRect)
         annot.update()
 
-    def textInputReceived(self, x, y, result, content):
-        '''
-        Called from the graphicView handler when the user has finished editing text in the toolBox textEdit
-        '''
+        # Now check if there is a line which needs to be redrawn
+        corrAnnot = self.getCorrespondingAnnot(annot)
+        if corrAnnot:
+            lineInfo = corrAnnot.info
+            lineSubj = lineInfo["subject"]
 
-        # Check weather the user has edited or inserted a textBox
-        if editMode == editModes.newTextBox:
-            self.insertText(QPoint(x, y), content)
-            self.resetEditMode()
-        elif editMode == editModes.editTextBox:
-            self.editText(QPoint(x, y), content)
-            self.resetEditMode()
+            corrVertices = corrAnnot.vertices
+            startPos = corrVertices[0]
+            endPos = corrVertices[1]
 
-    def resetEditMode(self):
+            fStart, fEnd = self.recalculateLinePoints(annot.rect, QPoint(*startPos))
+
+            self.deleteAnnot(corrAnnot)
+            newXRef = self.insertLine(fStart, fEnd, lineSubj)
+
+            textInfo = annot.info
+            textInfo["subject"] = str(newXRef)
+            annot.setInfo(textInfo)
+            annot.update()
+
+    #-----------------------------------------------------------------------
+    # Marker
+    #-----------------------------------------------------------------------
+
+    def startMarkText(self, qpos):
+        self.ongoingEdit = True
+        self.startPos = qpos
+
+    def stopMarkText(self, qpos):
+        self.ongoingEdit = False
+
+    def updateMarkText(self, qpos):
         '''
-        Simply abstracts the process clearing the current edit mode to prevent a elevation of method access rights to global variables
+        Called updates the currently ongoing marking to match the latest, provided position
         '''
-        global editMode
-        editMode = editModes.none
+        self.endPos = self.toPdfCoordinates(qpos)
+
+        yMin = min(self.startPos.y(), self.endPos.y())
+        yMax = max(self.startPos.y(), self.endPos.y())
+
+        if abs(yMin - yMax) < 10:
+            yMin = yMin - 5
+            yMax = yMax + 5
+
+        xMin = min(self.startPos.x(), self.endPos.x())
+        xMax = max(self.startPos.x(), self.endPos.x())
+
+        rect = fitz.Rect(xMin, yMin, xMax, yMax)
+        self.page.addHighlightAnnot(rect)
 
 
     def calculateTextRectBounds(self, content):
@@ -273,6 +352,11 @@ class QPdfView(QGraphicsPixmapItem):
         return float(suggestedHeight), float(suggestedWidth)
 
     def calculateTextRectPos(self, frect):
+        '''
+        Checks that the boundaries of the provided rect do not exceed page boundaries.
+        It returns the closest rect, which would meet this requirement
+        '''
+        # Check for x
         if frect.x1 > self.wOrigin:
             deltaX = frect.x1 - self.wOrigin
             frect.x1 -= deltaX
@@ -282,6 +366,7 @@ class QPdfView(QGraphicsPixmapItem):
             frect.x1 += deltaX
             frect.x0 += deltaX
 
+        # Check for y
         if frect.y1 > self.hOrigin:
             deltaY = frect.y1 - self.hOrigin
             frect.y1 -= deltaY
@@ -294,6 +379,9 @@ class QPdfView(QGraphicsPixmapItem):
         return frect
 
     def getAnnotAtPos(self, qpos):
+        '''
+        Return the annot of the current page which is the first at the desired position
+        '''
         for annot in self.page.annots():
             if self.pointInArea(qpos, annot.rect):
                 return annot
@@ -301,6 +389,9 @@ class QPdfView(QGraphicsPixmapItem):
         return None
 
     def getAnnotWithXref(self, xRef):
+        '''
+        Return the annot of the current page, which matches the provided xRef
+        '''
         for annot in self.page.annots():
             if annot.xref == xRef:
                 return annot
@@ -308,6 +399,9 @@ class QPdfView(QGraphicsPixmapItem):
         return None
 
     def getTextBoxContent(self, qpos):
+        '''
+        Return the content of the annot of the current page which is the first at the desired position
+        '''
         for annot in self.page.annots(types=(fitz.PDF_ANNOT_FREE_TEXT, fitz.PDF_ANNOT_TEXT)):
             if self.pointInArea(qpos, annot.rect):
                 info = annot.info
@@ -317,6 +411,9 @@ class QPdfView(QGraphicsPixmapItem):
         return None
 
     def pointInArea(self, qpos, frect):
+        '''
+        Checks if the provided point is insided the rect
+        '''
         if qpos.x() < frect.x0 or qpos.y() < frect.y0:
             return False
 
@@ -325,28 +422,12 @@ class QPdfView(QGraphicsPixmapItem):
 
         return True
 
-    def startMarkText(self, qpos):
-        self.ongoingEdit = True
-        self.startPos = qpos
-
-    def stopMarkText(self, qpos):
-        self.ongoingEdit = False
-
-    def updateMarkText(self, qpos):
-        self.endPos = self.toPdfCoordinates(qpos)
-
-        yMin = min(self.startPos.y(), self.endPos.y())
-        yMax = max(self.startPos.y(), self.endPos.y())
-
-        if abs(yMin - yMax) < 10:
-            yMin = yMin - 5
-            yMax = yMax + 5
-
-        xMin = min(self.startPos.x(), self.endPos.x())
-        xMax = max(self.startPos.x(), self.endPos.x())
-
-        rect = fitz.Rect(xMin, yMin, xMax, yMax)
-        self.page.addHighlightAnnot(rect)
+    def resetEditMode(self):
+        '''
+        Simply abstracts the process clearing the current edit mode to prevent a elevation of method access rights to global variables
+        '''
+        global editMode
+        editMode = editModes.none
 
     def wheelEvent(self, event):
         '''
