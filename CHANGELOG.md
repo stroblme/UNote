@@ -15,24 +15,23 @@
 - [x] Abstract pdf annot properties
 - [o] Implement color palettes; workaround, see above
 - [x] Implement object moving
+- [x] Improve deletion of objects
+- [-] Improve text wrapping; no issues currently
+- [ ] Implement Undo and Redo functionality
+- [ ] Reduce Text Size with increasing annotation length
+- [ ] Implement object resizing
 - [ ] Get more abstraction by splitting up core script
-- [ ] Improve deletion of objects
 - [ ] Create new PDF
 - [ ] Fix Annotation colors for inverted mode
 - [ ] PDF overwriting
+- [ ] Improve pdf opening performance
 - [ ] Implement markdown formatting annotations
 - [ ] Implement free drawing
 - [ ] Implement basic forms
 - [ ] Implement button pictures
-- [ ] Implement Undo and Redo functionality
 - [ ] Implement gestures for touch compatibility
-- [ ] Implement object resizing
-- [ ] Improve text wrapping
-- [ ] Reduce Text Size with increasing annotation length
 - [ ] Implement temporary points to indicate ongoing edit
 - [ ] Improve highlighting by reducing noise on y axis
-- [ ] Merge most properties into settings
-- [ ] Improve pdf opening performance
 
 ## Features for v1.0 - Completed
 
