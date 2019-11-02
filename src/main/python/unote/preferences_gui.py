@@ -44,7 +44,7 @@ class PreferencesGUI(Ui_PreferencesDialog):
         self.MainWindow = QtWidgets.QDialog()
         self.ui = Ui_PreferencesDialog()
         self.ui.setupUi(self.MainWindow)
-        self.MainWindow.setWindowIcon(QtGui.QIcon("icon.png"))
+        self.MainWindow.setWindowIcon(QtGui.QIcon("./assets/icon.png"))
         # self.MainWindow.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.FramelessWindowHint)
 
         # self.MainWindow.setAttribute(QtCore.Qt.WA_DeleteOnClose)
@@ -78,7 +78,7 @@ class PreferencesGUI(Ui_PreferencesDialog):
             print("Settings saved")
         #settings discarded
         else:
-            pass
+            self.loadSettings()
 
     def connectReceivers(self, receiversInst):
         '''
