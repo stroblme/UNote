@@ -636,7 +636,7 @@ QToolBar::separator:vertical
 
 QPushButton
 {
-    color: #E7F1F3;
+    color: #052126;
     background-color: #D7D3D3;
     border-width: 0.1ex;
     border-color: #76797c;
@@ -662,12 +662,12 @@ QPushButton:disabled
 
 QPushButton:focus
 {
-    color: #E7F1F3;
+    background-color: #0A5766;
 }
 
 QPushButton:pressed
 {
-    background-color: #020B0D;
+    background-color: #118DA6;
     padding-top: -1.5ex;
     padding-bottom: -1.7ex;
 }
@@ -1638,6 +1638,7 @@ QPushButton:hover
 {
     border: 0.1ex solid #3daef3;
     color: #31363B;
+    background-color: #118DA6;
 }
 
 QPushButton:focus
