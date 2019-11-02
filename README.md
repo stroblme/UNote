@@ -24,6 +24,8 @@ Installer files will be updated once, a major version (vX.0) is achieved.
 - PyQt5
 - Pillow
 - PyMuPDF
+- fbs
+- indexed.py
 
 ## Building
 

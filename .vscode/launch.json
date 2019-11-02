@@ -8,8 +8,8 @@
             "name": "UNote Test",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/src/main/python/main.py",
-            "cwd": "${workspaceFolder}/src/main/python",
+            "program": "${workspaceFolder}/src/main/python/unote/main.py",
+            "cwd": "${workspaceFolder}/src/main/python/unote",
             "args": [],
             "console": "integratedTerminal",
         },
@@ -17,8 +17,8 @@
             "name": "UNote Update UI",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/src/main/python/main.py",
-            "cwd": "${workspaceFolder}/src/main/python",
+            "program": "${workspaceFolder}/src/main/python/unote/main.py",
+            "cwd": "${workspaceFolder}/src/main/python/unote",
             "args": [],
             "console": "integratedTerminal",
             "preLaunchTask": {
@@ -29,9 +29,9 @@
             "name": "UNote Update UI and Preload",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/src/main/python/main.py",
+            "program": "${workspaceFolder}/src/main/python/unote/main.py",
             "args": ["-p","test.pdf"],
-            "cwd": "${workspaceFolder}/src/main/python",
+            "cwd": "${workspaceFolder}/src/main/python/unote",
             "console": "integratedTerminal"
             // "preLaunchTask": {
             //     "task": "Update UI",
