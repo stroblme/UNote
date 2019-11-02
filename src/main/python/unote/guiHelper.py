@@ -15,6 +15,7 @@ from PyQt5.QtCore import QSettings, QFile, QTextStream
 from PyQt5.QtWidgets import QApplication
 
 sys.path.append('./style')
+sys.path.append('./style/BreezeStyleSheets')
 from style.BreezeStyleSheets import breeze_resources
 
 class GuiHelper(QWidget):
