@@ -49,6 +49,8 @@ class pdfEngine():
 
         page = self.doc.newPage(pageNumber, width=width, height=height)
 
+        return page
+
     def extractPage(self, doc, pageNumber):
         page = doc.loadPage(pageNumber)
 

@@ -621,13 +621,16 @@ class GraphicsViewHandler(QGraphicsView):
             if pIt > 2:
                 posX, posY = self.loadBlankImageToCurrentView(pIt, posX, posY, width, height)
             else:
-
                 # Load each page to a new position in the current view.
                 posX, posY = self.loadPdfPageToCurrentView(pIt, posX, posY, self.absZoomFactor)
 
         print("--- Loaded PDF within %s seconds ---" % (time.time() - start_time))
 
     def loadBlankImageToCurrentView(self, pageNumber, posX, posY, width, height):
+        '''
+        Creates a qpdf instance and loads an empty image.
+        This is intended to be used in combination with the initial pdf loading
+        '''
         # Create a qpdf instance
         pdfView = QPdfView()
         pdfView.setPage(self.pdf.getPage(pageNumber), pageNumber)
@@ -894,8 +897,20 @@ class GraphicsViewHandler(QGraphicsView):
             if type(renderedItem) != QPdfView:
                 continue
 
-            self.pdf.insertPage(renderedItem.pageNumber)
+            newPage = self.pdf.insertPage(renderedItem.pageNumber)
+
+            for pIt in range(len(self.pages),0):
+                if pIt == renderedItem.pageNumber + 1:
+                    self.loadPdfPageToCurrentView(pIt, renderedItem.xOrigin, renderedItem.yOrigin, self.absZoomFactor)
+                    break
+                else:
+                    self.pages[pIt] = self.pages[pIt-1]
+
+
             break
+
+
+
 
 
     def pageDeleteActive(self):
