@@ -1,6 +1,6 @@
 # Changelog/ Roadmap
 
-## Features for v3.0
+## Features for v3.x
 
 - [ ] Implement database structure
 - [ ] Implement unlimited space drawing and annotating
@@ -8,9 +8,15 @@
 - [ ] Implement custom settings for shortcuts, annots etc
 - [ ] Implement custom colors for annots and drawings
 - [ ] Drag&Drop PDF load
+- [ ] Custom file opening and saving dialog
+- [ ] Insert, extract and split pages in PDF
+- [ ] Smooth scrolling using QTimeLine
+- [ ] Implement bookmarks view pane
+- [ ] Add tooltips
 
-## Features for v2.0
+## Features for v2.x
 
+- [x] Creating venv to support fbs
 - [x] Button UI Improvement
 - [x] Style Optimization
 - [x] Abstract PDF annotation properties
@@ -25,18 +31,19 @@
 - [ ] Implement object resizing
 - [ ] Get more abstraction by splitting up core script
 - [ ] Create new PDF
+- [ ] Save as dialog
 - [ ] Fix Annotation colors for inverted mode
 - [ ] PDF overwriting
 - [ ] Improve PDF opening performance
 - [ ] PDF loading indicator
-- [ ] Implement markdown formatting annotations
+- [ ] Implement markdown formatted annotations
 - [ ] Implement free drawing
 - [ ] Implement basic forms
 - [ ] Implement button pictures
 - [ ] Implement gestures for touch compatibility
-- [ ] Improve highlighting by reducing noise on y axis
+- [ ] Improve highlighting by reducing noise on y axis (Kalman?)
 
-## Features for v1.0 - Completed
+## Features for v1.x - Completed
 
 - [x] Cleanup and structure
 - [x] Initial PDF rendering
@@ -59,4 +66,4 @@
 - [x] In-Field-Test
 - [x] Auto-save on exit
 - [x] Improve text box positioning
-- [-] Introducing fman build system; suspended due to lack of py 3.7 support
+- [-] Introducing fman build system (fbs); suspended due to lack of py 3.7 support
