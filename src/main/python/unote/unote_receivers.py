@@ -57,6 +57,12 @@ class Receivers(QObject):
     def savePdf(self):
         self.uiInst.graphicsView.saveCurrentPdf()
 
+    def pageInsertHere(self):
+        self.uiInst.graphicsView.pageInsertHere()
+
+    def pageDeleteActive(self):
+        self.uiInst.graphicsView.pageDeleteActive()
+
     def toggleTextMode(self):
         self.uiInst.graphicsView.toggleTextMode()
 

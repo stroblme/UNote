@@ -40,6 +40,18 @@ class pdfEngine():
 
         return qimage
 
+    def insertPage(self, pageNumber, pageSize = None):
+        width = height = None
+
+        page = self.extractPage(self.doc, pageNumber)
+
+        if pageSize:
+            pass
+        else:
+            width = page.bound().width
+            height = page.bound().height
+
+        page = self.doc.newPage(pageNumber, width=width, height=height)
 
     def extractPage(self, doc, pageNumber):
         page = doc.loadPage(pageNumber)

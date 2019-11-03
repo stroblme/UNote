@@ -11,7 +11,6 @@ from PyQt5.QtCore import Qt, QRectF, QEvent, QThread, pyqtSignal, pyqtSlot, QObj
 from PyQt5.QtGui import QPixmap, QBrush, QColor
 
 import threading
-from interfaces import IregCon, IcsrCtrl
 from preferences import Preferences
 
 from pdfEngine import pdfEngine
@@ -634,21 +633,26 @@ class GraphicsViewHandler(QGraphicsView):
         Creates a qpdfView instance from the desired page and renders it at the provided position with the zoomfactor.
         A lower zoomFactor will dramatically improve speed, as it always correlates to the dpi of the page
         '''
+        # Create a qpdf instance
         pdfView = QPdfView()
         pdfView.setPage(self.pdf.getPage(pageNumber), pageNumber)
 
+        # Render according to the parameters
         self.updatePdf(pdfView, zoom = zoom, pageNumber = pageNumber)
 
-
+        # Store instance locally
         self.pages[pageNumber] = pdfView
 
+        # Connect event handlers
         self.pages[pageNumber].eh.requestTextInput.connect(self.toolBoxTextInputRequestedEvent)
         self.pages[pageNumber].eh.addIndicatorPoint.connect(self.addIndicatorPoint)
         self.pages[pageNumber].eh.deleteLastIndicatorPoint.connect(self.deleteLastIndicatorPoint)
 
+        # add and arrange the new page in the scene
         self.scene.addItem(self.pages[pageNumber])
         self.pages[pageNumber].setPos(posX, posY)
 
+        # some stuff to tell the instance that the current position is the original one
         pdfView.setAsOrigin()
 
         return posX, posY + pdfView.hOrigin + self.DEFAULTPAGESPACE
@@ -837,6 +841,26 @@ class GraphicsViewHandler(QGraphicsView):
         Overrides the default event
         '''
         print('gesture event received in core.py ')
+
+    def pageInsertHere(self):
+        # Get all visible pages
+        try:
+            renderedItems = self.scene.items(self.mapToScene(self.viewport().geometry()))
+        except Exception as e:
+            return
+
+        # Iterate all visible items (shouldn't be that much normally)
+        for renderedItem in renderedItems:
+            # Check if we have a pdf view here (visible could be anything)
+            if type(renderedItem) != QPdfView:
+                continue
+
+            self.pdf.insertPage(renderedItem.pageNumber)
+            break
+
+
+    def pageDeleteActive(self):
+        pass
 
     @pyqtSlot(int, int, int, bool, str)
     def toolBoxTextInputEvent(self, x, y, pageNumber, result, content):

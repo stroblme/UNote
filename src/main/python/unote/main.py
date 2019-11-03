@@ -168,7 +168,13 @@ class UNote():
         # Save PDF
         self.ui.actionSave_PDF.triggered.connect(lambda:self.receiversInst.savePdf())
 
-        # Edit modes available
+        # Insert PDF Page
+        self.ui.actionPageInsertHere.triggered.connect(lambda:self.receiversInst.pageInsertHere())
+
+        # Delete Active PDF Page
+        self.ui.actionPageInsertHere.triggered.connect(lambda:self.receiversInst.pageDeleteActive())
+
+        # Toolbox Edit modes available
         self.ui.floatingToolBox.editModeChange.connect(self.ui.graphicsView.editModeChangeRequest)
 
         # Toolboxspecific events

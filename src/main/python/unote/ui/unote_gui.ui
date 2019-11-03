@@ -50,7 +50,31 @@
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
+   <widget class="QMenu" name="menuPage">
+    <property name="title">
+     <string>Page</string>
+    </property>
+    <widget class="QMenu" name="menuPageMove">
+     <property name="title">
+      <string>Move Active</string>
+     </property>
+     <addaction name="actionPageMoveUp"/>
+     <addaction name="actionPageMoveDown"/>
+     <addaction name="actionPageMoveTo_Page"/>
+    </widget>
+    <addaction name="actionPageInsertHere"/>
+    <addaction name="actionPageDeleteActive"/>
+    <addaction name="menuPageMove"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionHelpAbout"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuPage"/>
+   <addaction name="menuHelp"/>
   </widget>
   <action name="actionExit">
    <property name="checkable">
@@ -107,6 +131,41 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionPageInsertHere">
+   <property name="text">
+    <string>Insert Here</string>
+   </property>
+  </action>
+  <action name="actionExtract">
+   <property name="text">
+    <string>Extract</string>
+   </property>
+  </action>
+  <action name="actionPageDeleteActive">
+   <property name="text">
+    <string>Delete Active</string>
+   </property>
+  </action>
+  <action name="actionPageMoveUp">
+   <property name="text">
+    <string>Up</string>
+   </property>
+  </action>
+  <action name="actionPageMoveDown">
+   <property name="text">
+    <string>Down</string>
+   </property>
+  </action>
+  <action name="actionPageMoveTo_Page">
+   <property name="text">
+    <string>To Page</string>
+   </property>
+  </action>
+  <action name="actionHelpAbout">
+   <property name="text">
+    <string>About</string>
    </property>
   </action>
  </widget>
