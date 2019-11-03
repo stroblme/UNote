@@ -40,16 +40,12 @@ class pdfEngine():
 
         return qimage
 
-    def insertPage(self, pageNumber, pageSize = None):
+    def insertPage(self, pageNumber):
         width = height = None
 
         page = self.extractPage(self.doc, pageNumber)
 
-        if pageSize:
-            pass
-        else:
-            width = page.bound().width
-            height = page.bound().height
+        width, height = self.getPageSize(self.doc, pageNumber)
 
         page = self.doc.newPage(pageNumber, width=width, height=height)
 
@@ -57,6 +53,14 @@ class pdfEngine():
         page = doc.loadPage(pageNumber)
 
         return page
+
+    def getPageSize(self, doc, pageNumber = None):
+        if pageNumber:
+            page = self.extractPage(doc, pageNumber)
+        else:
+            page = self.extractPage(doc, 0)
+
+        return page.bound().width, page.bound().height
 
     def renderPixmap(self, page, mat = None, clip = None, alpha = False):
         pixmap = page.getPixmap(matrix = mat, clip = clip, alpha = alpha)

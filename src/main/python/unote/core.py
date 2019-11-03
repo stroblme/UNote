@@ -8,7 +8,7 @@
 
 from PyQt5.QtWidgets import QSizePolicy, QFrame, QDialog, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGesture, QGraphicsLineItem, QGraphicsEllipseItem
 from PyQt5.QtCore import Qt, QRectF, QEvent, QThread, pyqtSignal, pyqtSlot, QObject, QPoint
-from PyQt5.QtGui import QPixmap, QBrush, QColor
+from PyQt5.QtGui import QPixmap, QBrush, QColor, QImage
 
 import threading
 from preferences import Preferences
@@ -614,19 +614,43 @@ class GraphicsViewHandler(QGraphicsView):
         # self.thread = QThread
         # self.moveToThread(self.thread)
 
+        width, height = self.pdf.getPageSize(self.pdf.doc)
+
         for pIt in range(self.pdf.doc.pageCount):
 
             if pIt > 2:
-                posX, posY = self.loadPdfPageToCurrentView(pIt, posX, posY, self.lowResZoomFactor)
+                posX, posY = self.loadBlankImageToCurrentView(pIt, posX, posY, width, height)
             else:
-                if pIt == 2:
-                    print('Boosting renderer..')
 
                 # Load each page to a new position in the current view.
                 posX, posY = self.loadPdfPageToCurrentView(pIt, posX, posY, self.absZoomFactor)
 
         print("--- Loaded PDF within %s seconds ---" % (time.time() - start_time))
 
+    def loadBlankImageToCurrentView(self, pageNumber, posX, posY, width, height):
+        # Create a qpdf instance
+        pdfView = QPdfView()
+        pdfView.setPage(self.pdf.getPage(pageNumber), pageNumber)
+
+        # Render a blank image
+        self.updateEmptyPdf(pdfView, width, height, pageNumber)
+
+        # Store instance locally
+        self.pages[pageNumber] = pdfView
+
+        # Connect event handlers
+        self.pages[pageNumber].eh.requestTextInput.connect(self.toolBoxTextInputRequestedEvent)
+        self.pages[pageNumber].eh.addIndicatorPoint.connect(self.addIndicatorPoint)
+        self.pages[pageNumber].eh.deleteLastIndicatorPoint.connect(self.deleteLastIndicatorPoint)
+
+        # add and arrange the new page in the scene
+        self.scene.addItem(self.pages[pageNumber])
+        self.pages[pageNumber].setPos(posX, posY)
+
+        # some stuff to tell the instance that the current position is the original one
+        pdfView.setAsOrigin()
+
+        return posX, posY + pdfView.hOrigin + self.DEFAULTPAGESPACE
 
     def loadPdfPageToCurrentView(self, pageNumber, posX, posY, zoom = None):
         '''
@@ -767,6 +791,21 @@ class GraphicsViewHandler(QGraphicsView):
             pdf.setPixMap(qImg, pageNumber)
         else:
             pdf.updatePixMap(qImg)
+
+    def updateEmptyPdf(self, pdf, width, height, pageNumber = None):
+        '''
+        Update the provided pdf file at the desired page to render only the zoom and clip
+        This methods is used when instantiating the pdf and later, when performance optimzation and zooming is required
+        '''
+
+        qImg = QImage(width, height, QImage.Format_Mono)
+        qImg.fill(0)
+
+        if pageNumber:
+            pdf.setPixMap(qImg, pageNumber)
+        else:
+            pdf.updatePixMap(qImg)
+
 
 
     def wheelEvent(self, event):
