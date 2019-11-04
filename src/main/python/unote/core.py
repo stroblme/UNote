@@ -218,9 +218,12 @@ class QPdfView(QGraphicsPixmapItem):
         if editMode == editModes.newTextBox:
             self.insertText(QPoint(x, y), content)
             self.resetEditMode()
+            self.eh.deleteLastIndicatorPoint.emit()
+
         elif editMode == editModes.editTextBox:
             self.editText(QPoint(x, y), content)
             self.resetEditMode()
+            self.removeVisualCorners()
 
 
 
@@ -511,9 +514,31 @@ class QPdfView(QGraphicsPixmapItem):
                 relCorrdinates = self.toPdfCoordinates(event.pos())
                 curContent = self.getTextBoxContent(self.toPdfCoordinates(event.pos()))
                 if curContent:
+                    annot = self.getAnnotAtPos(self.toPdfCoordinates(event.pos()))
+                    self.visualizeCorners(annot)
+
                     # Start requesting edit text box
                     editMode = editModes.editTextBox
                     self.eh.requestTextInput.emit(relCorrdinates.x(), relCorrdinates.y(), self.pageNumber, curContent)
+
+    def visualizeCorners(self, annot):
+        rect = annot.rect
+        tl = self.toSceneCoordinates(self.toQPos(rect.tl))
+        tr = self.toSceneCoordinates(self.toQPos(rect.tr))
+        bl = self.toSceneCoordinates(self.toQPos(rect.bl))
+        br = self.toSceneCoordinates(self.toQPos(rect.br))
+
+
+        self.eh.addIndicatorPoint.emit(tl.x(), tl.y())
+        self.eh.addIndicatorPoint.emit(tr.x(), tr.y())
+        self.eh.addIndicatorPoint.emit(bl.x(), bl.y())
+        self.eh.addIndicatorPoint.emit(br.x(), br.y())
+
+    def removeVisualCorners(self):
+        self.eh.deleteLastIndicatorPoint.emit()
+        self.eh.deleteLastIndicatorPoint.emit()
+        self.eh.deleteLastIndicatorPoint.emit()
+        self.eh.deleteLastIndicatorPoint.emit()
 
     def mouseMoveEvent(self, event):
         '''
@@ -543,6 +568,11 @@ class QPdfView(QGraphicsPixmapItem):
         sPos = QPoint(qPos.x() + xDif, qPos.y() + yDif)
 
         return sPos
+
+    def toQPos(self, fPos):
+        qPos = QPoint(fPos.x, fPos.y)
+
+        return qPos
 
 
 class GraphicsViewHandler(QGraphicsView):

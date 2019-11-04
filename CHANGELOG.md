@@ -26,6 +26,7 @@
 - [x] Improve moving of objects (lines)
 - [-] Improve text wrapping; no issues currently
 - [x] Implement temporary points to indicate ongoing edit
+- [x] Improve PDF opening performance
 - [ ] Implement Undo and Redo functionality
 - [ ] Reduce Text Size with increasing annotation length
 - [ ] Implement object resizing
@@ -34,7 +35,6 @@
 - [ ] Save as dialog
 - [ ] Fix Annotation colors for inverted mode
 - [ ] PDF overwriting
-- [ ] Improve PDF opening performance
 - [ ] PDF loading indicator
 - [ ] Implement markdown formatted annotations
 - [ ] Implement free drawing
