@@ -15,6 +15,7 @@ from preferences import Preferences
 
 from pdfEngine import pdfEngine
 from imageHelper import imageHelper
+from markdownHelper import markdownHelper
 
 from enum import Enum
 
@@ -96,6 +97,25 @@ class QPdfView(QGraphicsPixmapItem):
 
     def fPointToQPoint(self, fPoint):
         return QPoint(fPoint.x, fPoint.y)
+
+    #-----------------------------------------------------------------------
+    # Markdown Box
+    #-----------------------------------------------------------------------
+
+    def startNewMarkdownBox(self, qpos):
+        self.ongoingEdit = True
+        self.startPos = qpos
+
+    def stopNewMarkdownBox(self, qpos):
+        self.ongoingEdit = False
+        self.endPos = qpos
+
+        self.eh.requestTextInput.emit(self.endPos.x(), self.endPos.y(), self.pageNumber, "")
+
+    def insertMarkdown(self, qpos, content):
+        self.mdHelper = markdownHelper()
+        print('test')
+
 
 
     #-----------------------------------------------------------------------
@@ -225,7 +245,10 @@ class QPdfView(QGraphicsPixmapItem):
             self.resetEditMode()
             self.removeVisualCorners()
 
-
+        elif editMode == editModes.markdown:
+            self.insertMarkdown(QPoint(x, y), content)
+            self.resetEditMode()
+            self.eh.deleteLastIndicatorPoint.emit()
 
     def deleteAnnot(self, annot):
         '''
@@ -473,6 +496,11 @@ class QPdfView(QGraphicsPixmapItem):
                 scenePoint = self.toSceneCoordinates(event.pos())
                 self.eh.addIndicatorPoint.emit(scenePoint.x(), scenePoint.y())
 
+                self.startNewMarkdownBox(self.toPdfCoordinates(event.pos()))
+            elif editMode == editModes.newTextBox:
+                scenePoint = self.toSceneCoordinates(event.pos())
+                self.eh.addIndicatorPoint.emit(scenePoint.x(), scenePoint.y())
+
                 self.startNewTextBox(self.toPdfCoordinates(event.pos()))
         elif event.button() == Qt.RightButton:
             # Check if there is not currently an active editing mode
@@ -499,8 +527,15 @@ class QPdfView(QGraphicsPixmapItem):
                 self.eh.addIndicatorPoint.emit(scenePoint.x(), scenePoint.y())
 
                 self.stopNewTextBox(self.toPdfCoordinates(event.pos()))
+            elif editMode == editModes.markdown:
+                scenePoint = self.toSceneCoordinates(event.pos())
+                self.eh.addIndicatorPoint.emit(scenePoint.x(), scenePoint.y())
+
+                self.stopNewMarkdownBox(self.toPdfCoordinates(event.pos()))
+
             elif editMode == editModes.marker:
                 self.stopMarkText(self.toPdfCoordinates(event.pos()))
+
         elif event.button() == Qt.RightButton:
             #Check if there is currently an ongoing edit (like moving an object)
             if self.ongoingEdit:

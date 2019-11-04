@@ -27,12 +27,12 @@
 - [-] Improve text wrapping; no issues currently
 - [x] Implement temporary points to indicate ongoing edit
 - [x] Improve PDF opening performance
+- [x] Save as dialog
 - [ ] Implement Undo and Redo functionality
 - [ ] Reduce Text Size with increasing annotation length
 - [o] Implement object resizing
 - [ ] Get more abstraction by splitting up core script
 - [ ] Create new PDF
-- [ ] Save as dialog
 - [ ] Fix Annotation colors for inverted mode
 - [ ] PDF overwriting
 - [ ] PDF loading indicator
