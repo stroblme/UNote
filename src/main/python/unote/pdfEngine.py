@@ -24,6 +24,15 @@ class pdfEngine():
 
         self.doc.save(name + ext)
 
+    def savePdfAs(self, filename):
+        name, ext = os.path.splitext(filename)
+
+        ext = '.pdf'
+
+        self.filename = name + ext
+
+        self.doc.save(self.filename)
+
     def getPage(self, pageNumber):
         page = self.extractPage(self.doc, pageNumber)
 

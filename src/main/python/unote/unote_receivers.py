@@ -57,6 +57,14 @@ class Receivers(QObject):
     def savePdf(self):
         self.uiInst.graphicsView.saveCurrentPdf()
 
+    def savePdfAs(self):
+        pdfFileName = self.guiHelper.saveFileDialog("PDF File (*.pdf)")
+
+        if pdfFileName == '':
+            return
+
+        self.uiInst.graphicsView.saveCurrentPdfAs(pdfFileName)
+
     def pageInsertHere(self):
         self.uiInst.graphicsView.pageInsertHere()
 

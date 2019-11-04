@@ -168,6 +168,9 @@ class UNote():
         # Save PDF
         self.ui.actionSave_PDF.triggered.connect(lambda:self.receiversInst.savePdf())
 
+        # Save PDF as
+        self.ui.actionSave_PDF_as.triggered.connect(lambda:self.receiversInst.savePdfAs())
+
         # Insert PDF Page
         self.ui.actionPageInsertHere.triggered.connect(lambda:self.receiversInst.pageInsertHere())
 

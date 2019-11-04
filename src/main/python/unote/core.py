@@ -529,10 +529,10 @@ class QPdfView(QGraphicsPixmapItem):
         br = self.toSceneCoordinates(self.toQPos(rect.br))
 
 
-        self.eh.addIndicatorPoint.emit(tl.x(), tl.y())
-        self.eh.addIndicatorPoint.emit(tr.x(), tr.y())
-        self.eh.addIndicatorPoint.emit(bl.x(), bl.y())
-        self.eh.addIndicatorPoint.emit(br.x(), br.y())
+        self.eh.addIndicatorPoint.emit(tl.x()-6, tl.y()-6)
+        self.eh.addIndicatorPoint.emit(tr.x()-3, tr.y()-6)
+        self.eh.addIndicatorPoint.emit(bl.x()-6, bl.y()-2)
+        self.eh.addIndicatorPoint.emit(br.x()-3, br.y()-2)
 
     def removeVisualCorners(self):
         self.eh.deleteLastIndicatorPoint.emit()
@@ -622,6 +622,13 @@ class GraphicsViewHandler(QGraphicsView):
         if self.pdf.filename:
             self.pdf.savePdf()
             print('PDF saved')
+
+    def saveCurrentPdfAs(self, fileName):
+        '''
+        Just handles saving the pdf
+        '''
+        self.pdf.savePdfAs(fileName)
+        print('PDF saved as\t' + fileName)
 
     def loadPdfToCurrentView(self, pdfFilePath):
         '''
@@ -853,7 +860,7 @@ class GraphicsViewHandler(QGraphicsView):
         Mmodo = QApplication.mouseButtons()
         if bool(Mmodo == Qt.RightButton) or bool(modifiers == Qt.ControlModifier):
 
-            zoomInFactor = 1.2
+            zoomInFactor = 1.1
             zoomOutFactor = 1 / zoomInFactor
 
             # Zoom
@@ -979,5 +986,11 @@ class GraphicsViewHandler(QGraphicsView):
 
     @pyqtSlot()
     def deleteLastIndicatorPoint(self):
-        self.scene.removeItem(self.tempObj[-1])
-        del self.tempObj[-1]
+        try:
+            self.scene.removeItem(self.tempObj[-1])
+            del self.tempObj[-1]
+        except IndexError as ie:
+            # Don't judge me, but this can happen
+            pass
+        except Exception as e:
+            print(e.with_traceback())

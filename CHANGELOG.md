@@ -29,7 +29,7 @@
 - [x] Improve PDF opening performance
 - [ ] Implement Undo and Redo functionality
 - [ ] Reduce Text Size with increasing annotation length
-- [ ] Implement object resizing
+- [o] Implement object resizing
 - [ ] Get more abstraction by splitting up core script
 - [ ] Create new PDF
 - [ ] Save as dialog

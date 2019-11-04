@@ -63,8 +63,11 @@ class Ui_MainWindow(object):
         self.actionPageMoveTo_Page.setObjectName("actionPageMoveTo_Page")
         self.actionHelpAbout = QtWidgets.QAction(MainWindow)
         self.actionHelpAbout.setObjectName("actionHelpAbout")
+        self.actionSave_PDF_as = QtWidgets.QAction(MainWindow)
+        self.actionSave_PDF_as.setObjectName("actionSave_PDF_as")
         self.menuFile.addAction(self.actionLoad_PDF)
         self.menuFile.addAction(self.actionSave_PDF)
+        self.menuFile.addAction(self.actionSave_PDF_as)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionPreferences)
         self.menuFile.addSeparator()
@@ -109,6 +112,8 @@ class Ui_MainWindow(object):
         self.actionPageMoveDown.setText(_translate("MainWindow", "Down"))
         self.actionPageMoveTo_Page.setText(_translate("MainWindow", "To Page"))
         self.actionHelpAbout.setText(_translate("MainWindow", "About"))
+        self.actionSave_PDF_as.setText(_translate("MainWindow", "Save PDF as"))
+        self.actionSave_PDF_as.setShortcut(_translate("MainWindow", "Ctrl+Alt+S"))
 
 
 if __name__ == "__main__":
