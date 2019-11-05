@@ -77,8 +77,8 @@ class PreferencesGUI(Ui_PreferencesDialog):
 
             print("Settings saved")
         #settings discarded
-        else:
-            self.loadSettings()
+        # else:
+        #     self.loadSettings()
 
     def connectReceivers(self, receiversInst):
         '''

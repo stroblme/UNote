@@ -341,15 +341,16 @@ class QPdfView(QGraphicsPixmapItem):
         self.ongoingEdit = False
         self.endPos = qpos
 
-    def updateMarkText(self, qpos):
+        self.updateMarkText()
+
+    def updateMarkText(self):
         '''
         Called updates the currently ongoing marking to match the latest, provided position
         '''
-        self.endPos = qpos
-
         yMin = min(self.startPos.y(), self.endPos.y())
         yMax = max(self.startPos.y(), self.endPos.y())
 
+        # Ensure at least a width of 10
         if abs(yMin - yMax) < 10:
             yMin = yMin - 5
             yMax = yMax + 5
@@ -579,11 +580,11 @@ class QPdfView(QGraphicsPixmapItem):
         '''
         Overrides the default event
         '''
-        self.blockEdit = False
+        # self.blockEdit = False
 
-        if self.ongoingEdit:
-            if editMode == editModes.marker:
-                self.updateMarkText(self.toPdfCoordinates(event.pos()))
+        # if self.ongoingEdit:
+        #     if editMode == editModes.marker:
+        #         self.updateMarkText(self.toPdfCoordinates(event.pos()))
 
         QGraphicsPixmapItem.mouseMoveEvent(self, event)
 

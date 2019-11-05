@@ -13,14 +13,18 @@
 - [ ] Smooth scrolling using QTimeLine
 - [ ] Implement bookmarks view pane
 - [ ] Add tooltips
+- [ ] Implement Forms fill functionality
+- [ ] Get more abstraction by splitting up core script
+- [ ] Live drawing (currently ui is updated when movement finished)
 
 ## Features for v2.x
 
 - [x] Creating venv to support fbs
 - [x] Button UI Improvement
 - [x] Style Optimization
+- [x] Implement button pictures
 - [x] Abstract PDF annotation properties
-- [o] Implement color palettes; workaround, see above
+- [x] Implement color palettes; workaround, see above
 - [x] Implement object moving
 - [x] Improve deletion of objects
 - [x] Improve moving of objects (lines)
@@ -31,17 +35,19 @@
 - [ ] Implement Undo and Redo functionality
 - [ ] Reduce Text Size with increasing annotation length
 - [o] Implement object resizing
-- [ ] Get more abstraction by splitting up core script
 - [ ] Create new PDF
 - [ ] Fix Annotation colors for inverted mode
 - [ ] PDF overwriting
 - [ ] PDF loading indicator
-- [ ] Implement markdown formatted annotations
+- [o] Implement markdown formatted annotations
 - [ ] Implement free drawing
 - [ ] Implement basic forms
-- [ ] Implement button pictures
 - [ ] Implement gestures for touch compatibility
-- [ ] Improve highlighting by reducing noise on y axis (Kalman?)
+- [x] Improve highlighting by reducing noise on y axis (Kalman?); simply converted to simple rect
+
+### Issues in 1.x
+
+- Performance drop when rendering edited pdf file
 
 ## Features for v1.x - Completed
 
@@ -66,4 +72,9 @@
 - [x] In-Field-Test
 - [x] Auto-save on exit
 - [x] Improve text box positioning
-- [-] Introducing fman build system (fbs); suspended due to lack of py 3.7 support
+- [o] Introducing fman build system (fbs); suspended due to lack of py 3.7 support
+
+### Issues in 0.x
+
+- PDF loading time
+- No 'Delete' option

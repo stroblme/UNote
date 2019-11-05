@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QGraphicsPixmapItem
 from PyQt5.QtCore import Qt, QRectF, QEvent, QThread, pyqtSignal, pyqtSlot,QObject, QPoint
 from PyQt5.QtGui import QPixmap, QImage, QPainter
 from PyQt5.QtWebEngineWidgets import QWebEnginePage
+# from PyQt5.QtWebEngine import QWebFrame
 from PyQt5.QtWidgets import QWidget
 
 import markups
@@ -35,7 +36,7 @@ class markdownHelper():
     def htmlToQImage(self, html):
         page = QWebEnginePage()
 
-        page.setContent(html, "text/html")
+        page.setHtml(html)
 
         img = QImage(500, 500, QImage.Format_ARGB32)
         painter = QPainter(img)
