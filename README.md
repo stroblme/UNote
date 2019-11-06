@@ -21,11 +21,20 @@ Installer files will be updated once, a major version (vX.0) is achieved.
 
 ## Requirements
 
+- Python3.6
 - PyQt5
 - Pillow
 - PyMuPDF
 - fbs
 - indexed.py
+- numpy
+
+In the environment, simply run:
+´´´
+pip install -r requirements.txt
+´´´
+
+
 
 ## Building
 
