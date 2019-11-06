@@ -29,6 +29,7 @@ from indexed import IndexedOrderedDict
 import fitz
 
 from editHelper import editModes
+from filters import Kalman
 
 sys.path.append('./style')
 from styledef import rgb, norm_rgb, pdf_annots
@@ -62,6 +63,7 @@ class QPdfView(QGraphicsPixmapItem):
 
         self.eh = EventHelper()
 
+        self.kalman = Kalman()
 
 
     def setPixMap(self, qImg, pageNumber):
@@ -396,6 +398,10 @@ class QPdfView(QGraphicsPixmapItem):
 
 
     def applyDrawPoints(self):
+
+        # self.kalman.initKalman()
+        self.drawPoints = self.kalman.applyKalman(self.drawPoints)
+
         g = []
         g.append(self.drawPoints)
 
