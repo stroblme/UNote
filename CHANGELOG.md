@@ -56,6 +56,7 @@
 - Indiator points sometimes not displayed correctly
 - Text not displayed correctly when too much
 - Corporate design for freehand drawings
+- much noice while freehand drawing
 - In light theme, the button state keeps persistent after deactivation
 
 ## Features for v1.x - Completed
