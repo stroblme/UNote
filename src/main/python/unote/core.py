@@ -173,7 +173,9 @@ class QPdfView(QGraphicsPixmapItem):
 
             textAnnot.update()
         else:
-            self.eh.deleteLastIndicatorPoint.emit()
+            # Only when there is a line
+            if self.startPos != self.endPos:
+                self.eh.deleteLastIndicatorPoint.emit()
 
 
     def insertLine(self, fStart, fEnd, subj):
