@@ -16,6 +16,8 @@
 - [ ] Implement Forms fill functionality
 - [ ] Get more abstraction by splitting up core script
 - [ ] Live drawing (currently ui is updated when movement finished)
+- [ ] Smoother scrolling
+- [ ] Search functionality
 
 ## Features for v2.x
 
@@ -41,17 +43,20 @@
 - [ ] PDF overwriting
 - [ ] PDF loading indicator
 - [o] Implement markdown formatted annotations
-- [ ] Implement free drawing
+- [x] Implement free drawing
+- [ ] Implement eraser
 - [ ] Implement basic forms
 - [ ] Implement gestures for touch compatibility
 - [x] Improve highlighting by reducing noise on y axis (Kalman?); simply converted to simple rect
 
 ### Issues in 1.x
 
-- Performance drop when rendering edited pdf file
-- Bug, that a page is displayed twice, after inserting annot
+- Performance drop when rendering edited pdf file; sometimes reproducable
+- Bug, that a page is displayed twice, after inserting annot; sometimes reproducable
 - Indiator points sometimes not displayed correctly
 - Text not displayed correctly when too much
+- Corporate design for freehand drawings
+- In light theme, the button state keeps persistent after deactivation
 
 ## Features for v1.x - Completed
 

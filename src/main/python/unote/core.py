@@ -172,6 +172,9 @@ class QPdfView(QGraphicsPixmapItem):
             self.eh.deleteLastIndicatorPoint.emit()
 
             textAnnot.update()
+        else:
+            self.eh.deleteLastIndicatorPoint.emit()
+
 
     def insertLine(self, fStart, fEnd, subj):
         cyan  = norm_rgb.main
