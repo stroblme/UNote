@@ -95,6 +95,10 @@ class QPdfView(QGraphicsPixmapItem):
     def qPointToFPoint(self, qPoint):
         return fitz.Point(qPoint.x(), qPoint.y())
 
+    def qPointToFloatParirs(self, qPoint):
+        p = (float(qPoint.x()), float(qPoint.y()))
+        return p
+
     def fPointToQPoint(self, fPoint):
         return QPoint(fPoint.x, fPoint.y)
 
@@ -361,6 +365,43 @@ class QPdfView(QGraphicsPixmapItem):
         rect = fitz.Rect(xMin, yMin, xMax, yMax)
         self.page.addHighlightAnnot(rect)
 
+    #-----------------------------------------------------------------------
+    # Draw
+    #-----------------------------------------------------------------------
+
+
+    def startDraw(self, qpos):
+        self.ongoingEdit = True
+        self.drawPoints = []
+
+    def stopDraw(self, qpos):
+        self.ongoingEdit = False
+
+        self.applyDrawPoints()
+
+        self.drawPoints = []
+
+
+    def updateDrawPoints(self, qpos):
+        '''
+        Called updates the currently ongoing marking to match the latest, provided position
+        '''
+        fPoint = self.qPointToFloatParirs(qpos)
+        self.drawPoints.append(fPoint)
+
+
+    def applyDrawPoints(self):
+        g = []
+        g.append(self.drawPoints)
+
+        annot = self.page.addInkAnnot(g)
+
+        cyan  = norm_rgb.main
+
+        # let it look a little nicer
+        annot.setBorder({"width":1})# line thickness, some dashing
+        annot.setColors({"stroke":cyan})         # make the lines blue
+        annot.update()
 
     def calculateTextRectBounds(self, content):
         '''
@@ -493,6 +534,8 @@ class QPdfView(QGraphicsPixmapItem):
         if event.button() == Qt.LeftButton:
             if editMode == editModes.marker:
                 self.startMarkText(self.toPdfCoordinates(event.pos()))
+            elif editMode == editModes.freehand:
+                self.startDraw(self.toPdfCoordinates(event.pos()))
             elif editMode == editModes.newTextBox:
                 scenePoint = self.toSceneCoordinates(event.pos())
                 self.eh.addIndicatorPoint.emit(scenePoint.x(), scenePoint.y())
@@ -536,6 +579,8 @@ class QPdfView(QGraphicsPixmapItem):
 
             elif editMode == editModes.marker:
                 self.stopMarkText(self.toPdfCoordinates(event.pos()))
+            elif editMode == editModes.freehand:
+                self.stopDraw(self.toPdfCoordinates(event.pos()))
 
         elif event.button() == Qt.RightButton:
             #Check if there is currently an ongoing edit (like moving an object)
@@ -580,11 +625,11 @@ class QPdfView(QGraphicsPixmapItem):
         '''
         Overrides the default event
         '''
-        # self.blockEdit = False
+        self.blockEdit = False
 
-        # if self.ongoingEdit:
-        #     if editMode == editModes.marker:
-        #         self.updateMarkText(self.toPdfCoordinates(event.pos()))
+        if self.ongoingEdit:
+            if editMode == editModes.freehand:
+                self.updateDrawPoints(self.toPdfCoordinates(event.pos()))
 
         QGraphicsPixmapItem.mouseMoveEvent(self, event)
 

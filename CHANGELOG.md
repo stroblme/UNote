@@ -36,6 +36,7 @@
 - [ ] Reduce Text Size with increasing annotation length
 - [o] Implement object resizing
 - [ ] Create new PDF
+- [ ] Improve text box endpoint position
 - [ ] Fix Annotation colors for inverted mode
 - [ ] PDF overwriting
 - [ ] PDF loading indicator
