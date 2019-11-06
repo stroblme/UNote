@@ -91,6 +91,7 @@ class ToolBoxWidget(QWidget):
         self.pTextEdit.setLineWrapMode(QTextEdit.WidgetWidth)
         self.pTextEdit.setAutoFormatting(QTextEdit.AutoAll)
         self.pTextEdit.setAcceptRichText(True)
+        self.pTextEdit.setFontPointSize(10)
         self.pTextEdit.setPlaceholderText("Text Box Content")
 
         # Forward keypressevents from the textEdit to the parent toolBoxWidget
@@ -159,6 +160,7 @@ class ToolBoxWidget(QWidget):
         # Set Shortcuts for the buttons
         self.textButton.setShortcut("Ctrl+T")
         self.markerButton.setShortcut("Ctrl+M")
+        self.freehandButton.setShortcut("Ctrl+D")
         self.okButton.setShortcut("Ctrl+Return")
         self.cancelButton.setShortcut("Esc")
         self.deleteButton.setShortcut("Ctrl+Del")

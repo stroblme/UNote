@@ -28,7 +28,7 @@
 - [x] Implement object moving
 - [x] Improve deletion of objects
 - [x] Improve moving of objects (lines)
-- [-] Improve text wrapping; no issues currently
+- [ ] Improve text wrapping
 - [x] Implement temporary points to indicate ongoing edit
 - [x] Improve PDF opening performance
 - [x] Save as dialog
@@ -49,6 +49,9 @@
 ### Issues in 1.x
 
 - Performance drop when rendering edited pdf file
+- Bug, that a page is displayed twice, after inserting annot
+- Indiator points sometimes not displayed correctly
+- Text not displayed correctly when too much
 
 ## Features for v1.x - Completed
 
