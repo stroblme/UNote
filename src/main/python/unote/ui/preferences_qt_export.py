@@ -55,7 +55,7 @@ class Ui_PreferencesDialog(object):
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
         self.buttonBox = QtWidgets.QDialogButtonBox(PreferencesDialog)
         self.buttonBox.setLayoutDirection(QtCore.Qt.RightToLeft)
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Discard|QtWidgets.QDialogButtonBox.Save)
+        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Save)
         self.buttonBox.setCenterButtons(True)
         self.buttonBox.setObjectName("buttonBox")
         self.horizontalLayout_4.addWidget(self.buttonBox)
@@ -63,6 +63,8 @@ class Ui_PreferencesDialog(object):
         self.verticalLayout.addLayout(self.verticalLayout_3)
 
         self.retranslateUi(PreferencesDialog)
+        self.buttonBox.accepted.connect(PreferencesDialog.accept)
+        self.buttonBox.rejected.connect(PreferencesDialog.reject)
         QtCore.QMetaObject.connectSlotsByName(PreferencesDialog)
 
     def retranslateUi(self, PreferencesDialog):

@@ -71,14 +71,10 @@ class PreferencesGUI(Ui_PreferencesDialog):
         Starts the Preferences Window
         '''
         #settings confirmed
-        if self.MainWindow.exec():
-            self.storeLooseEntries()
-            self.storeSettings()
-
-            print("Settings saved")
-        #settings discarded
-        # else:
-        #     self.loadSettings()
+        if self.MainWindow.exec_():
+            self.saveSettings()
+        else:
+            self.discardSettings()
 
     def connectReceivers(self, receiversInst):
         '''
@@ -109,11 +105,20 @@ class PreferencesGUI(Ui_PreferencesDialog):
 
         self.settings.sync()
 
+        print("Settings saved")
+
+
     def storeLooseEntries(self):
         '''
         Saves all entries, which have been entered without explicit confirmation
         '''
 
+    def saveSettings(self):
+        self.storeLooseEntries()
+        self.storeSettings()
+
+    def discardSettings(self):
+        self.loadSettings()
 
     def loadSettings(self):
         '''

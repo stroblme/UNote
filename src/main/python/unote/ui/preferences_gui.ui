@@ -87,7 +87,7 @@
           <enum>Qt::RightToLeft</enum>
          </property>
          <property name="standardButtons">
-          <set>QDialogButtonBox::Discard|QDialogButtonBox::Save</set>
+          <set>QDialogButtonBox::Cancel|QDialogButtonBox::Save</set>
          </property>
          <property name="centerButtons">
           <bool>true</bool>
@@ -101,5 +101,38 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>PreferencesDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>446</x>
+     <y>1008</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>446</x>
+     <y>515</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>PreferencesDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>446</x>
+     <y>1008</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>446</x>
+     <y>515</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
