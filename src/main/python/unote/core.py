@@ -379,6 +379,8 @@ class QPdfView(QGraphicsPixmapItem):
 
     def startDraw(self, qpos):
         self.ongoingEdit = True
+        self.startPos = qpos
+
         self.drawPoints = []
 
     def stopDraw(self, qpos):
@@ -399,8 +401,9 @@ class QPdfView(QGraphicsPixmapItem):
 
     def applyDrawPoints(self):
 
-        # self.kalman.initKalman()
-        self.drawPoints = self.kalman.applyKalman(self.drawPoints)
+        self.kalman.initKalman(self.qPointToFloatParirs(self.startPos))
+
+        # self.drawPoints = self.kalman.applyKalman(self.drawPoints)
 
         g = []
         g.append(self.drawPoints)

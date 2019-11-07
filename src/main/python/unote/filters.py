@@ -3,7 +3,7 @@ import numpy as np
 
 class Kalman(object):
     def __init__(self):
-        self.initKalman()
+        pass
 
     def kalman_xy(self, x, P, measurement, R, motion = np.matrix('0. 0. 0. 0.').T, Q = np.matrix(np.eye(4))):
         """
@@ -60,8 +60,10 @@ class Kalman(object):
 
         return x, P
 
-    def initKalman(self):
-        self.x = np.matrix('0. 0. 0. 0.').T
+    def initKalman(self, startPoint):
+        xC = [*startPoint, 0, 0]
+
+        self.x = np.matrix(xC).T
         self.P = np.matrix(np.eye(4))*1000 # initial uncertainty
         # self.true_x = np.linspace(0.0, 10.0, N)
         # self.true_y = true_x**2
