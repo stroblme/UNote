@@ -23,6 +23,7 @@
 - [ ] Automatic text size from pdf text
 - [ ] Change start position of text box line
 - [ ] Auto-save in intervalls
+- [ ] Focus main window after file handling
 
 ## Features for v2.x
 

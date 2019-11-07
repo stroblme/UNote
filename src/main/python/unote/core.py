@@ -120,7 +120,10 @@ class QPdfView(QGraphicsPixmapItem):
 
     def insertMarkdown(self, qpos, content):
         self.mdHelper = markdownHelper()
-        print('test')
+
+        self.mdHelper.loadGetMarkdownPage(content)
+        pass
+
 
 
 

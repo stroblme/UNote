@@ -9,5 +9,6 @@
     <file>./assets/ok.png</file>
     <file>./assets/cancel.png</file>
     <file>./assets/delete.png</file>
+    <file>./assets/index.html</file>
 </qresource>
 </RCC>
