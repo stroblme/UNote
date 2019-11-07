@@ -18,6 +18,11 @@
 - [ ] Live drawing (currently ui is updated when movement finished)
 - [ ] Smoother scrolling
 - [ ] Search functionality
+- [ ] Custom colors for drawing
+- [ ] Text Size for Text Boxes
+- [ ] Automatic text size from pdf text
+- [ ] Change start position of text box line
+- [ ] Auto-save in intervalls
 
 ## Features for v2.x
 
@@ -48,6 +53,10 @@
 - [ ] Implement basic forms
 - [ ] Implement gestures for touch compatibility
 - [x] Improve highlighting by reducing noise on y axis (Kalman?); simply converted to simple rect
+- [ ] Threading for pdf loading
+- [ ] Threading for pdf saving
+- [ ] Threading for pdf rendering
+- [ ] Implement clear all indicator points
 
 ### Issues in 1.x
 
@@ -58,6 +67,8 @@
 - Corporate design for freehand drawings
 - much noice while freehand drawing
 - In light theme, the button state keeps persistent after deactivation
+- Text box can be positioned outside pdf area
+- Indicator Points not disappear after cancelling edit
 
 ## Features for v1.x - Completed
 
