@@ -401,9 +401,9 @@ class QPdfView(QGraphicsPixmapItem):
 
     def applyDrawPoints(self):
 
-        self.kalman.initKalman(self.qPointToFloatParirs(self.startPos))
+        # self.kalman.initKalman(self.qPointToFloatParirs(self.startPos))
 
-        # self.drawPoints = self.kalman.applyKalman(self.drawPoints)
+        # # self.drawPoints = self.kalman.applyKalman(self.drawPoints)
 
         g = []
         g.append(self.drawPoints)
