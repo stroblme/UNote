@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import QDialog, QGraphicsView, QGraphicsScene, QWidget, QPu
 
 from indexed import IndexedOrderedDict
 
+
 from math import sin, cos
 
 import assets
@@ -46,7 +47,6 @@ class ToolBoxWidget(QWidget):
 
     editMode = editModes.none
 
-
     editModeChange = pyqtSignal(str)
 
     editTextBox = False
@@ -59,9 +59,6 @@ class ToolBoxWidget(QWidget):
         '''
         QWidget.__init__(self, parent)
         self.initUI()
-
-
-
 
     def initUI(self):
         '''
@@ -216,19 +213,14 @@ class ToolBoxWidget(QWidget):
         self.pTextEdit.setEnabled(False)
         self.pTextEdit.setVisible(False)
 
-
-
-
     def drawRectShape(self, event):
         '''
         Draws a rectangle for the textEdit box
         '''
-
         textBoxRect = self.rect()
         outerCircleRect = self.rect()
         textBoxRect.adjust(+30,+30,-12,-12)
         outerCircleRect.adjust(+8,+8,-8,-15)
-
 
         moveRect = QRect(0,0, 11,11)
 
@@ -419,18 +411,14 @@ class ToolBoxWidget(QWidget):
 
     #     QWidget.mouseReleaseEvent(self, event)
 
-
     @pyqtSlot(int, int, int, str)
     def handleTextInputRequest(self, x, y, pageNumber, currentContent):
         '''
         Slot when toolBox receives a textInput request. This is the case, when the user wants to insert a new or edit an existing textBox
         '''
-
-
         # Switch in to text box mode and redraw Widget
         self.currentPageNumber = pageNumber
         self.currentContent = currentContent
-
 
         if self.insertCurrentContent(currentContent):
             self.editMode = editModes.editTextBox

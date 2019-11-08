@@ -9,6 +9,7 @@
 from PyQt5.QtWidgets import QSizePolicy, QFrame, QDialog, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGesture, QGraphicsLineItem, QGraphicsEllipseItem
 from PyQt5.QtCore import Qt, QRectF, QEvent, QThread, pyqtSignal, pyqtSlot, QObject, QPoint
 from PyQt5.QtGui import QPixmap, QBrush, QColor, QImage
+from PyQt5.QtWebEngine import QtWebEngineView
 
 import threading
 from preferences import Preferences
@@ -119,12 +120,13 @@ class QPdfView(QGraphicsPixmapItem):
         self.eh.requestTextInput.emit(self.endPos.x(), self.endPos.y(), self.pageNumber, "")
 
     def insertMarkdown(self, qpos, content):
+        self.preview = QtWebEngineView()
+
         self.mdHelper = markdownHelper()
 
-        self.mdHelper.loadGetMarkdownPage(content)
-        pass
+        self.ppage = self.mdHelper.loadGetMarkdownPage(content)
 
-
+        self.preview.setPage(self.ppage)
 
 
     #-----------------------------------------------------------------------
