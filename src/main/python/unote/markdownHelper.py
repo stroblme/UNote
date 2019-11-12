@@ -47,13 +47,6 @@ class Document(QObject):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
 
-    @pyqtProperty(int)
-    def m_text(self):
-        return self.m_text
-    @m_text.setter
-    def total(self, text):
-        self.setText(text)
-
     def setText(self, qstr):
         if (qstr == self.m_text):
             return
