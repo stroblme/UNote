@@ -6,6 +6,8 @@
 # Author: Melvin Strobl
 # ---------------------------------------------------------------
 
+from fbs_runtime.application_context.PyQt5 import ApplicationContext
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import pyqtSignal, QSettings, QObject
 from PyQt5.QtWidgets import QDialog
@@ -33,7 +35,10 @@ APPLICATION_NAME = "UNote"
 KEYSFILEPATH = "./preferences.keys"
 
 
-class PreferencesGUI(Ui_PreferencesDialog):
+class App(Ui_PreferencesDialog):
+    appctxt = ApplicationContext()
+
+class PreferencesGUI(App):
     '''
     Main class for the Preferences Window
     '''
@@ -41,10 +46,8 @@ class PreferencesGUI(Ui_PreferencesDialog):
 
     def __init__(self):
         super().__init__()
-        self.MainWindow = QtWidgets.QDialog()
-        self.ui = Ui_PreferencesDialog()
-        self.ui.setupUi(self.MainWindow)
-        self.MainWindow.setWindowIcon(QtGui.QIcon("./assets/icon.png"))
+        self.initUI()
+
         # self.MainWindow.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.FramelessWindowHint)
 
         # self.MainWindow.setAttribute(QtCore.Qt.WA_DeleteOnClose)
@@ -66,12 +69,24 @@ class PreferencesGUI(Ui_PreferencesDialog):
         del self.settings
 
 
+    def initUI(self):
+        # self.app = QtWidgets.QApplication(sys.argv)
+        self.MainWindow = QDialog()
+        self.ui = Ui_PreferencesDialog()
+        self.ui.setupUi(self.MainWindow)
+
+        self.MainWindow.setWindowIcon(QtGui.QIcon("./assets/icon.png"))
+
     def run(self):
         '''
         Starts the Preferences Window
         '''
+        self.MainWindow.show()
+
+        result = self.appctxt.app.exec_()
+
         #settings confirmed
-        if self.MainWindow.exec_():
+        if result:
             self.saveSettings()
         else:
             self.discardSettings()

@@ -38,6 +38,8 @@
 - [x] Implement object moving
 - [x] Improve deletion of objects
 - [x] Improve moving of objects (lines)
+- [x] Implement free drawing
+- [ ] Implement active Pen Support https://doc.qt.io/qt-5/qtabletevent.html
 - [ ] Improve text wrapping
 - [x] Implement temporary points to indicate ongoing edit
 - [x] Improve PDF opening performance
@@ -51,7 +53,6 @@
 - [ ] PDF overwriting
 - [ ] PDF loading indicator
 - [o] Implement markdown formatted annotations
-- [x] Implement free drawing
 - [ ] Implement eraser
 - [ ] Implement basic forms
 - [ ] Implement gestures for touch compatibility
