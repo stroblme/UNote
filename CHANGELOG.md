@@ -25,6 +25,7 @@
 - [ ] Auto-save in intervalls
 - [ ] Focus main window after file handling
 - [ ] Store preferred Toolbox position
+- [ ] Implement easy toggling of annotation modes
 
 ## Features for v2.x
 
