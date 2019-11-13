@@ -1,4 +1,4 @@
 {
     "git.ignoreLimitWarning": true,
-    "python.pythonPath": "x:\\UNote\\venv\\Scripts\\python.exe"
+    "python.pythonPath": "$workspaceRoot\\venv\\Scripts\\python.exe"
 }

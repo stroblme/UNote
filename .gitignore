@@ -1,6 +1,5 @@
-# ref/*
+### Test Files ###
 *.pdf
-*.pyc
 
 Backup_of_*
 
@@ -15,6 +14,8 @@ Backup_of_*
 !.vscode/extensions.json
 
 ### Python ###
+!venv/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
