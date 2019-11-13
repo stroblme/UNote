@@ -7,9 +7,22 @@ import os
 class pdfEngine():
     filename = None
     doc = None
+    incremental = True
 
     def __init__(self):
         super().__init__()
+
+    def __del__(self):
+        if self.doc:
+            self.doc.close()
+
+            if not self.incremental:
+                name, ext = os.path.splitext(self.filename)
+                name = name + '_m'
+
+                os.replace(name + ext, self.filename)
+
+
 
     def openPdf(self, filename):
         # import fitz
@@ -20,9 +33,17 @@ class pdfEngine():
 
     def savePdf(self):
         name, ext = os.path.splitext(self.filename)
-        name = name + '_m'
+        try:
+            if self.incremental:
+                self.doc.save(self.filename, incremental = self.incremental)
+            else:
+                name = name + '_m'
+                self.doc.save(name + ext, incremental = self.incremental)
 
-        self.doc.save(name + ext)
+        except:
+            print('Can\'t do incremental. Will save with _m appended')
+            self.incremental = False
+            self.savePdf()
 
     def savePdfAs(self, filename):
         name, ext = os.path.splitext(filename)

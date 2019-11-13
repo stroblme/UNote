@@ -24,6 +24,7 @@
 - [ ] Change start position of text box line
 - [ ] Auto-save in intervalls
 - [ ] Focus main window after file handling
+- [ ] Store preferred Toolbox position
 
 ## Features for v2.x
 
