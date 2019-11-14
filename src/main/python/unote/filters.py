@@ -1,7 +1,8 @@
 import numpy as np
-
+from scipy.signal import savgol_filter
 
 class Kalman(object):
+
     def __init__(self):
         pass
 
@@ -89,4 +90,48 @@ class Kalman(object):
             kalman_y_flat_list.append(sublist[0])
 
         points = list(zip(kalman_x_flat_list, kalman_y_flat_list))
+        return points
+
+class Savgol(object):
+
+    def __init__(self):
+        pass
+
+    def initSavgol(self):
+        pass
+
+    def tuplesToArrays(self, points):
+        xPoints = []
+        yPoints = []
+
+        for point in points:
+            xPoints.append(point[0])
+            yPoints.append(point[1])
+
+        return xPoints, yPoints
+
+    def arraysToTuples(self, xPoints, yPoints):
+        points = []
+
+        for xPoint, yPoint in zip(xPoints, yPoints):
+            points.append([xPoint, yPoint])
+
+        return points
+
+
+    def applySavgol(self, observedPoints):
+        WINDOW_LENGTH = 11
+        POLYNOM_GRADE = 3
+
+        xPoints, yPoints = self.tuplesToArrays(observedPoints)
+
+        if len(observedPoints) > WINDOW_LENGTH:
+            xPointsS = savgol_filter(xPoints, WINDOW_LENGTH, POLYNOM_GRADE)
+            yPointsS = savgol_filter(yPoints, WINDOW_LENGTH, POLYNOM_GRADE)
+
+            points = self.arraysToTuples(xPointsS, yPointsS)
+
+        else:
+            points = observedPoints
+
         return points

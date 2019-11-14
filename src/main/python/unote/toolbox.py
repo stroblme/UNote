@@ -206,7 +206,6 @@ class ToolBoxWidget(QWidget):
 
 
 
-        self.setButtonState()
 
         sliderSize = QSize(8,140)
 
@@ -221,6 +220,9 @@ class ToolBoxWidget(QWidget):
         self.slider.setEnabled(False)
         self.slider.valueChanged.connect(self.handleSliderValueChange)
         self.slider.sliderReleased.connect(self.handleSliderValueChanged)
+
+        self.setButtonState()
+
 
     def paintEvent(self, event):
         '''
@@ -299,10 +301,12 @@ class ToolBoxWidget(QWidget):
             self.setEnableOnAllButtonsButThose(['okButton', 'cancelButton'])
             self.setVisibleOnAllButtonsButThose(['okButton', 'cancelButton'])
 
+            self.slider.setVisible(False)
         elif self.editTextBox and self.editMode == editModes.editTextBox:
             self.setEnableOnAllButtonsButThose(['okButton', 'deleteButton'])
             self.setVisibleOnAllButtonsButThose(['okButton', 'deleteButton'])
 
+            self.slider.setVisible(False)
         elif self.editMode == editModes.newTextBox:
             self.setEnableOnAllButtonsButThose(['textButton', 'sizeButton'])
             self.setVisibleOnAllButtonsButThose(['textButton', 'sizeButton'])
@@ -335,6 +339,8 @@ class ToolBoxWidget(QWidget):
             self.setEnableOnAllButtonsButThose(['textButton', 'clipboardButton', 'formsButton', 'freehandButton', 'markerButton', 'markdownButton'])
 
             self.setCheckedOnAllButtonsButThose([])
+
+            self.slider.setVisible(True)
 
     def setEnableOnAllButtonsButThose(self, names, value=False):
         for buttonName, buttonInst in self.buttons.items():
