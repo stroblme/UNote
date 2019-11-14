@@ -219,7 +219,8 @@ class ToolBoxWidget(QWidget):
         self.slider.move(self.bottomMiddle)
         self.slider.setFixedSize(sliderSize)
         self.slider.setEnabled(False)
-        self.slider.valueChanged.connect(self.handleSlider)
+        self.slider.valueChanged.connect(self.handleSliderValueChange)
+        self.slider.sliderReleased.connect(self.handleSliderValueChanged)
 
     def paintEvent(self, event):
         '''
@@ -310,6 +311,7 @@ class ToolBoxWidget(QWidget):
 
         elif self.editMode == editModes.marker:
             self.setEnableOnAllButtonsButThose(['markerButton', 'sizeButton'])
+            self.setVisibleOnAllButtonsButThose(['markerButton', 'sizeButton'])
 
             self.buttons['sizeButton'].move(self.row1Right)
 
@@ -534,10 +536,35 @@ class ToolBoxWidget(QWidget):
         '''
         This method will set the slider value to match the current size
         '''
+        if self.sizeButton.isChecked():
+            self.slider.setEnabled(True)
+
+            if self.editMode == editModes.newTextBox:
+                lastSliderValue = Preferences.data['textSize']
+            elif self.editMode == editModes.marker:
+                lastSliderValue = Preferences.data['markerSize']
+
+            self.slider.setValue(int(lastSliderValue))
+
+        else:
+            self.slider.setEnabled(False)
+
+
+            self.slider.setValue(100)
+
+
+    def handleSliderValueChange(self, value):
+        '''
+        Triggered when user changes the slider value
+        '''
         pass
 
-    def handleSlider(self):
+    def handleSliderValueChanged(self):
         '''
-        Triggered when user changes slider value
+        Triggered when user has changed the slider value
         '''
-        pass
+        if self.editMode == editModes.newTextBox:
+            Preferences.updateKeyValue('textSize', self.slider.value())
+
+        elif self.editMode == editModes.marker:
+            Preferences.updateKeyValue('markerSize', self.slider.value())
