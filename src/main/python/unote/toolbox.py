@@ -1,7 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QPixmap, QPainter, QPen, QBrush, QColor, QPolygon, QIcon
 from PyQt5.QtCore import pyqtSignal, QFile, QTextStream, pyqtSlot, QObject, QPoint, Qt, QRect, QSize
-from PyQt5.QtWidgets import QDialog, QGraphicsView, QGraphicsScene, QWidget, QPushButton, QVBoxLayout, QTextEdit, QGridLayout
+from PyQt5.QtWidgets import QDialog, QGraphicsView, QGraphicsScene, QWidget, QPushButton, QVBoxLayout, QTextEdit, QGridLayout, QSlider
 
 from indexed import IndexedOrderedDict
 
@@ -11,6 +11,7 @@ from math import sin, cos
 import assets
 
 from editHelper import editModes
+from preferences import Preferences
 
 OUTEROFFSETTOP = 25
 OUTEROFFSETBOTTOM = 14
@@ -75,14 +76,15 @@ class ToolBoxWidget(QWidget):
         buttonRect = self.rect()
         buttonRect.adjust(+35,+30,5,-20)
 
-        row1Left = buttonRect.topLeft()
-        row1Right = buttonRect.topRight()
-        row2Left = QPoint(row1Left.x(), row1Left.y()+35)
-        row2Right = QPoint(row1Right.x(), row1Right.y()+35)
-        row3Left = QPoint(row2Left.x(), row2Left.y()+35)
-        row3Right = QPoint(row2Right.x(), row2Right.y()+35)
-        bottomLeft = QPoint(buttonRect.topLeft().x(), buttonRect.topLeft().y()+130)
-        bottomRight = QPoint(row1Right.x(), row1Right.y()+130)
+        self.row1Left = buttonRect.topLeft()
+        self.row1Right = buttonRect.topRight()
+        self.row2Left = QPoint(self.row1Left.x(), self.row1Left.y()+35)
+        self.row2Right = QPoint(self.row1Right.x(), self.row1Right.y()+35)
+        self.row3Left = QPoint(self.row2Left.x(), self.row2Left.y()+35)
+        self.row3Right = QPoint(self.row2Right.x(), self.row2Right.y()+35)
+        self.bottomLeft = QPoint(buttonRect.topLeft().x(), buttonRect.topLeft().y()+130)
+        self.bottomRight = QPoint(self.row1Right.x(), self.row1Right.y()+130)
+        self.bottomMiddle = QPoint(self.row1Left.x()+(self.row1Right.x()-self.row1Left.x()), self.row1Right.y()+130)
 
         # We use a textEdit for making text boxes editable for user
         self.pTextEdit = QTextEdit(self)
@@ -110,61 +112,61 @@ class ToolBoxWidget(QWidget):
 
         self.textButton = QPushButton(self)
         self.textButton.setFixedSize(buttonSize)
-        self.textButton.move(row1Right)
+        self.textButton.move(self.row1Right)
         self.textButton.setIcon(QIcon(":/assets/text.png"))
         self.textButton.setCheckable(True)
         self.buttons['textButton'] = self.textButton
 
         self.markerButton = QPushButton(self)
         self.markerButton.setFixedSize(buttonSize)
-        self.markerButton.move(row1Left)
+        self.markerButton.move(self.row1Left)
         self.markerButton.setIcon(QIcon(":/assets/marker.png"))
         self.markerButton.setCheckable(True)
         self.buttons['markerButton'] = self.markerButton
 
         self.freehandButton = QPushButton(self)
         self.freehandButton.setFixedSize(buttonSize)
-        self.freehandButton.move(row2Left)
+        self.freehandButton.move(self.row2Left)
         self.freehandButton.setIcon(QIcon(":/assets/freehand.png"))
         self.freehandButton.setCheckable(True)
         self.buttons['freehandButton'] = self.freehandButton
 
         self.markdownButton = QPushButton(self)
         self.markdownButton.setFixedSize(buttonSize)
-        self.markdownButton.move(row2Right)
+        self.markdownButton.move(self.row2Right)
         self.markdownButton.setIcon(QIcon(":/assets/markdown.png"))
         self.markdownButton.setCheckable(True)
         self.buttons['markdownButton'] = self.markdownButton
 
         self.formsButton = QPushButton(self)
         self.formsButton.setFixedSize(buttonSize)
-        self.formsButton.move(row3Left)
+        self.formsButton.move(self.row3Left)
         self.formsButton.setIcon(QIcon(":/assets/forms.png"))
         self.formsButton.setCheckable(True)
         self.buttons['formsButton'] = self.formsButton
 
         self.clipboardButton = QPushButton(self)
         self.clipboardButton.setFixedSize(buttonSize)
-        self.clipboardButton.move(row3Right)
+        self.clipboardButton.move(self.row3Right)
         self.clipboardButton.setIcon(QIcon(":/assets/clipboard.png"))
         self.clipboardButton.setCheckable(True)
         self.buttons['clipboardButton'] = self.clipboardButton
 
         self.okButton = QPushButton(self)
         self.okButton.setFixedSize(buttonSize)
-        self.okButton.move(bottomLeft)
+        self.okButton.move(self.bottomLeft)
         self.okButton.setIcon(QIcon(":/assets/ok.png"))
         self.buttons['okButton'] = self.okButton
 
         self.cancelButton = QPushButton(self)
         self.cancelButton.setFixedSize(buttonSize)
-        self.cancelButton.move(bottomRight)
+        self.cancelButton.move(self.bottomRight)
         self.cancelButton.setIcon(QIcon(":/assets/cancel.png"))
         self.buttons['cancelButton'] = self.cancelButton
 
         self.deleteButton = QPushButton(self)
         self.deleteButton.setFixedSize(buttonSize)
-        self.deleteButton.move(bottomRight)
+        self.deleteButton.move(self.bottomRight)
         self.deleteButton.setIcon(QIcon(":/assets/delete.png"))
         self.buttons['deleteButton'] = self.deleteButton
 
@@ -194,13 +196,22 @@ class ToolBoxWidget(QWidget):
 
         self.sizeButton = QPushButton(self)
         self.sizeButton.setFixedSize(buttonSize)
-        self.sizeButton.move(row1Right)
         self.sizeButton.setIcon(QIcon(":/assets/size.png"))
+        self.sizeButton.setCheckable(True)
         self.buttons['sizeButton'] = self.sizeButton
 
 
 
         self.setButtonState()
+
+
+        self.slider = QSlider(Qt.Vertical)
+        self.slider.setMinimum(10)
+        self.slider.setMaximum(30)
+        self.slider.setValue(20)
+        self.slider.setTickPosition(QSlider.TicksBelow)
+        self.slider.setTickInterval(5)
+        self.slider.move(self.bottomMiddle)
 
     def paintEvent(self, event):
         '''
@@ -210,12 +221,12 @@ class ToolBoxWidget(QWidget):
             # Draw the toolBoxShape
             self.drawRectShape(event)
         else:
-            self.drawCircularShape(event)
+            self.drawToolBoxShape(event)
 
         # Run the parent paint Event
         QWidget.paintEvent(self, event)
 
-    def drawCircularShape(self, paintEvent):
+    def drawToolBoxShape(self, paintEvent):
         '''
         Draws the circular toolBox shape
         '''
@@ -285,12 +296,19 @@ class ToolBoxWidget(QWidget):
 
         elif self.editMode == editModes.newTextBox:
             self.setEnableOnAllButtonsButThose(['textButton', 'sizeButton'])
+            self.setVisibleOnAllButtonsButThose(['textButton', 'sizeButton'])
+
+            self.buttons['sizeButton'].move(self.row1Left)
 
         elif self.editMode == editModes.marker:
-            self.setEnableOnAllButtonsButThose(['markerButton'])
+            self.setEnableOnAllButtonsButThose(['markerButton', 'sizeButton'])
+
+            self.buttons['sizeButton'].move(self.row1Right)
 
         elif self.editMode == editModes.freehand:
             self.setEnableOnAllButtonsButThose(['freehandButton'])
+
+            self.buttons['sizeButton'].move(self.row1Right)
 
         elif self.editMode == editModes.clipboard:
             self.setEnableOnAllButtonsButThose(['clipboardButton'])
@@ -306,7 +324,7 @@ class ToolBoxWidget(QWidget):
 
             self.setEnableOnAllButtonsButThose(['textButton', 'clipboardButton', 'formsButton', 'freehandButton', 'markerButton', 'markdownButton'])
 
-            self.textButton.setChecked(False)
+            self.setCheckedOnAllButtonsButThose([])
 
     def setEnableOnAllButtonsButThose(self, names, value=False):
         for buttonName, buttonInst in self.buttons.items():
@@ -322,6 +340,13 @@ class ToolBoxWidget(QWidget):
                 buttonInst.setVisible(value)
             else:
                 buttonInst.setVisible(not value)
+
+    def setCheckedOnAllButtonsButThose(self, names, value=False):
+        for buttonName, buttonInst in self.buttons.items():
+            if not buttonName in names:
+                buttonInst.setChecked(value)
+            else:
+                buttonInst.setChecked(not value)
 
     def insertCurrentContent(self, content):
         '''
