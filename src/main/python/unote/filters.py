@@ -120,8 +120,8 @@ class Savgol(object):
 
 
     def applySavgol(self, observedPoints):
-        WINDOW_LENGTH = 11
-        POLYNOM_GRADE = 3
+        WINDOW_LENGTH = 19 #odd!
+        POLYNOM_GRADE = 2
 
         xPoints, yPoints = self.tuplesToArrays(observedPoints)
 
