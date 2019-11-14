@@ -10,5 +10,5 @@ class editModes(QObject):
     editTextBox = 'editTextBox'
     freehand = 'freehand'
     forms = 'forms'
-    clipboard = 'clipboard'
+    eraser = 'eraser'
     markdown = 'markdown'

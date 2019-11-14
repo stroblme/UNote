@@ -267,6 +267,7 @@ class QPdfView(QGraphicsPixmapItem):
             self.resetEditMode()
             self.eh.deleteLastIndicatorPoint.emit()
 
+
     def deleteAnnot(self, annot):
         '''
         Deletes the desired annot and the corresponding line if one is found
@@ -367,10 +368,13 @@ class QPdfView(QGraphicsPixmapItem):
         yMin = min(self.startPos.y(), self.endPos.y())
         yMax = max(self.startPos.y(), self.endPos.y())
 
+
+        minWidth = pdf_annots.defaultMarkerSize * (int(Preferences.data['markerSize'])/100)
+
         # Ensure at least a width of 10
-        if abs(yMin - yMax) < 10:
-            yMin = yMin - 5
-            yMax = yMax + 5
+        if abs(yMin - yMax) < minWidth:
+            yMin = yMin - minWidth/2
+            yMax = yMax + minWidth/2
 
         xMin = min(self.startPos.x(), self.endPos.x())
         xMax = max(self.startPos.x(), self.endPos.x())
@@ -378,6 +382,34 @@ class QPdfView(QGraphicsPixmapItem):
         rect = fitz.Rect(xMin, yMin, xMax, yMax)
         self.page.addHighlightAnnot(rect)
 
+    #-----------------------------------------------------------------------
+    # Eraser
+    #-----------------------------------------------------------------------
+
+
+    def startEraser(self, qpos):
+        self.ongoingEdit = True
+        self.startPos = qpos
+
+        self.eraserPoints = []
+
+    def stopEraser(self, qpos):
+        self.ongoingEdit = False
+
+        self.applyEraser()
+
+    def updateEraserPoints(self, qpos):
+        '''
+        Called updates the currently ongoing marking to match the latest, provided position
+        '''
+        self.eraserPoints.append(qpos)
+
+    def applyEraser(self):
+
+        annots = self.getAnnotsAtPoints(self.eraserPoints)
+
+        for annot in annots:
+            self.deleteAnnot(annot)
     #-----------------------------------------------------------------------
     # Draw
     #-----------------------------------------------------------------------
@@ -487,6 +519,20 @@ class QPdfView(QGraphicsPixmapItem):
 
         return None
 
+    def getAnnotsAtPoints(self, qposList):
+        '''
+        Return the annots of the current page which are hitted by the any point in the list
+        '''
+        annots = []
+
+        for annot in self.page.annots():
+            for qpos in qposList:
+                if self.pointInArea(qpos, annot.rect):
+                    annots.append(annot)
+                    break
+
+        return annots
+
     def getAnnotWithXref(self, xRef):
         '''
         Return the annot of the current page, which matches the provided xRef
@@ -555,7 +601,9 @@ class QPdfView(QGraphicsPixmapItem):
                 self.startMarkText(self.toPdfCoordinates(event.pos()))
             elif editMode == editModes.freehand:
                 self.startDraw(self.toPdfCoordinates(event.pos()))
-            elif editMode == editModes.newTextBox:
+            elif editMode == editModes.eraser:
+                self.startEraser(self.toPdfCoordinates(event.pos()))
+            elif editMode == editModes.markdown:
                 scenePoint = self.toSceneCoordinates(event.pos())
                 self.eh.addIndicatorPoint.emit(scenePoint.x(), scenePoint.y())
 
@@ -600,6 +648,8 @@ class QPdfView(QGraphicsPixmapItem):
                 self.stopMarkText(self.toPdfCoordinates(event.pos()))
             elif editMode == editModes.freehand:
                 self.stopDraw(self.toPdfCoordinates(event.pos()))
+            elif editMode == editModes.eraser:
+                self.stopEraser(self.toPdfCoordinates(event.pos()))
 
         elif event.button() == Qt.RightButton:
             #Check if there is currently an ongoing edit (like moving an object)
@@ -649,6 +699,9 @@ class QPdfView(QGraphicsPixmapItem):
         if self.ongoingEdit:
             if editMode == editModes.freehand:
                 self.updateDrawPoints(self.toPdfCoordinates(event.pos()))
+            elif editMode == editModes.eraser:
+                self.updateEraserPoints(self.toPdfCoordinates(event.pos()))
+
 
         QGraphicsPixmapItem.mouseMoveEvent(self, event)
 

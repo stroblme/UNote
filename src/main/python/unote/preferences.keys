@@ -5,3 +5,6 @@ windowXPos
 windowYPos
 textSize
 markerSize
+markerColor
+freehandSize
+freehandColor

@@ -145,12 +145,12 @@ class ToolBoxWidget(QWidget):
         self.formsButton.setCheckable(True)
         self.buttons['formsButton'] = self.formsButton
 
-        self.clipboardButton = QPushButton(self)
-        self.clipboardButton.setFixedSize(buttonSize)
-        self.clipboardButton.move(self.row3Right)
-        self.clipboardButton.setIcon(QIcon(":/assets/clipboard.png"))
-        self.clipboardButton.setCheckable(True)
-        self.buttons['clipboardButton'] = self.clipboardButton
+        self.eraserButton = QPushButton(self)
+        self.eraserButton.setFixedSize(buttonSize)
+        self.eraserButton.move(self.row3Right)
+        self.eraserButton.setIcon(QIcon(":/assets/eraser.png"))
+        self.eraserButton.setCheckable(True)
+        self.buttons['eraserButton'] = self.eraserButton
 
         self.okButton = QPushButton(self)
         self.okButton.setFixedSize(buttonSize)
@@ -180,14 +180,24 @@ class ToolBoxWidget(QWidget):
         self.sizeButton.setCheckable(True)
         self.buttons['sizeButton'] = self.sizeButton
 
+
+        self.colorButton = QPushButton(self)
+        self.colorButton.setFixedSize(buttonSize)
+        self.colorButton.setIcon(QIcon(":/assets/color.png"))
+        self.colorButton.setCheckable(True)
+        self.buttons['colorButton'] = self.colorButton
+
+
         # Set Shortcuts for the buttons
         self.textButton.setShortcut("Ctrl+T")
         self.markerButton.setShortcut("Ctrl+M")
         self.freehandButton.setShortcut("Ctrl+D")
+        self.eraserButton.setShortcut("Ctrl+E")
         self.okButton.setShortcut("Ctrl+Return")
         self.cancelButton.setShortcut("Esc")
         self.deleteButton.setShortcut("Ctrl+Del")
         self.sizeButton.setShortcut("Ctrl+X")
+        self.colorButton.setShortcut("Ctrl+L")
 
         # Connect Events for the buttons
         self.okButton.clicked.connect(self.handleOkButton)
@@ -195,11 +205,12 @@ class ToolBoxWidget(QWidget):
         self.textButton.clicked.connect(self.handleTextButton)
         self.formsButton.clicked.connect(self.handleFormsButton)
         self.freehandButton.clicked.connect(self.handleFreehandButton)
-        self.clipboardButton.clicked.connect(self.handleClipboardButton)
+        self.eraserButton.clicked.connect(self.handleEraserButton)
         self.markdownButton.clicked.connect(self.handleMarkdownButton)
         self.cancelButton.clicked.connect(self.handleCancelButton)
         self.deleteButton.clicked.connect(self.handleDeleteButton)
         self.sizeButton.clicked.connect(self.handleSizeButton)
+        self.colorButton.clicked.connect(self.handleColorButton)
 
 
 
@@ -207,7 +218,7 @@ class ToolBoxWidget(QWidget):
 
 
 
-        sliderSize = QSize(8,140)
+        sliderSize = QSize(9,140)
 
         self.slider = QSlider(Qt.Vertical, self)
         self.slider.setMinimum(50)
@@ -302,30 +313,36 @@ class ToolBoxWidget(QWidget):
             self.setVisibleOnAllButtonsButThose(['okButton', 'cancelButton'])
 
             self.slider.setVisible(False)
+
         elif self.editTextBox and self.editMode == editModes.editTextBox:
             self.setEnableOnAllButtonsButThose(['okButton', 'deleteButton'])
             self.setVisibleOnAllButtonsButThose(['okButton', 'deleteButton'])
 
             self.slider.setVisible(False)
+
         elif self.editMode == editModes.newTextBox:
-            self.setEnableOnAllButtonsButThose(['textButton', 'sizeButton'])
-            self.setVisibleOnAllButtonsButThose(['textButton', 'sizeButton'])
+            self.setEnableOnAllButtonsButThose(['textButton', 'sizeButton','colorButton'])
+            self.setVisibleOnAllButtonsButThose(['textButton', 'sizeButton','colorButton'])
 
             self.buttons['sizeButton'].move(self.row1Left)
+            self.buttons['colorButton'].move(self.row2Left)
 
         elif self.editMode == editModes.marker:
-            self.setEnableOnAllButtonsButThose(['markerButton', 'sizeButton'])
-            self.setVisibleOnAllButtonsButThose(['markerButton', 'sizeButton'])
+            self.setEnableOnAllButtonsButThose(['markerButton', 'sizeButton','colorButton'])
+            self.setVisibleOnAllButtonsButThose(['markerButton', 'sizeButton','colorButton'])
 
             self.buttons['sizeButton'].move(self.row1Right)
+            self.buttons['colorButton'].move(self.row2Right)
 
         elif self.editMode == editModes.freehand:
-            self.setEnableOnAllButtonsButThose(['freehandButton'])
+            self.setEnableOnAllButtonsButThose(['freehandButton', 'sizeButton','colorButton'])
+            self.setVisibleOnAllButtonsButThose(['freehandButton', 'sizeButton','colorButton'])
 
             self.buttons['sizeButton'].move(self.row1Right)
+            self.buttons['colorButton'].move(self.row2Right)
 
-        elif self.editMode == editModes.clipboard:
-            self.setEnableOnAllButtonsButThose(['clipboardButton'])
+        elif self.editMode == editModes.eraser:
+            self.setEnableOnAllButtonsButThose(['eraserButton'])
 
         elif self.editMode == editModes.forms:
             self.setEnableOnAllButtonsButThose(['formsButton'])
@@ -334,9 +351,9 @@ class ToolBoxWidget(QWidget):
             self.setEnableOnAllButtonsButThose(['markdownButton'])
 
         elif self.editMode == editModes.none:
-            self.setVisibleOnAllButtonsButThose(['textButton', 'clipboardButton', 'formsButton', 'freehandButton', 'markerButton', 'markdownButton'])
+            self.setVisibleOnAllButtonsButThose(['textButton', 'eraserButton', 'formsButton', 'freehandButton', 'markerButton', 'markdownButton'])
 
-            self.setEnableOnAllButtonsButThose(['textButton', 'clipboardButton', 'formsButton', 'freehandButton', 'markerButton', 'markdownButton'])
+            self.setEnableOnAllButtonsButThose(['textButton', 'eraserButton', 'formsButton', 'freehandButton', 'markerButton', 'markdownButton'])
 
             self.setCheckedOnAllButtonsButThose([])
 
@@ -456,9 +473,9 @@ class ToolBoxWidget(QWidget):
         self.editModeChange.emit(self.editMode)
         self.setButtonState()
 
-    def handleClipboardButton(self):
-        if self.clipboardButton.isChecked():
-            self.editMode = editModes.clipboard
+    def handleEraserButton(self):
+        if self.eraserButton.isChecked():
+            self.editMode = editModes.eraser
         else:
             self.editMode = editModes.none
 
@@ -538,26 +555,62 @@ class ToolBoxWidget(QWidget):
             self.currentX = -1
             self.currentY = -1
 
+    def restoreSliderValue(self):
+        if self.sizeButton.isChecked():
+            if self.editMode == editModes.newTextBox:
+                lastSliderValue = Preferences.data['textSize']
+            elif self.editMode == editModes.marker:
+                lastSliderValue = Preferences.data['markerSize']
+            elif self.editMode == editModes.freehand:
+                lastSliderValue = Preferences.data['freehandSize']
+
+        elif self.colorButton.isChecked():
+            if self.editMode == editModes.marker:
+                lastSliderValue = Preferences.data['markerColor']
+            elif self.editMode == editModes.freehand:
+                lastSliderValue = Preferences.data['freehandColor']
+
+        self.slider.setValue(int(lastSliderValue))
+
+    def storeSliderValue(self):
+        if self.sizeButton.isChecked():
+            if self.editMode == editModes.newTextBox:
+                Preferences.updateKeyValue('textSize', self.slider.value())
+            elif self.editMode == editModes.marker:
+                Preferences.updateKeyValue('markerSize', self.slider.value())
+            elif self.editMode == editModes.freehand:
+                Preferences.updateKeyValue('freehandSize', self.slider.value())
+        elif self.colorButton.isChecked():
+            if self.editMode == editModes.marker:
+                Preferences.updateKeyValue('markerColor', self.slider.value())
+            elif self.editMode == editModes.freehand:
+                Preferences.updateKeyValue('freehandColor', self.slider.value())
+
     def handleSizeButton(self):
         '''
         This method will set the slider value to match the current size
         '''
         if self.sizeButton.isChecked():
             self.slider.setEnabled(True)
-
-            if self.editMode == editModes.newTextBox:
-                lastSliderValue = Preferences.data['textSize']
-            elif self.editMode == editModes.marker:
-                lastSliderValue = Preferences.data['markerSize']
-
-            self.slider.setValue(int(lastSliderValue))
-
+            self.restoreSliderValue()
         else:
+            self.storeSliderValue()
+
             self.slider.setEnabled(False)
-
-
             self.slider.setValue(100)
 
+    def handleColorButton(self):
+        '''
+        Handles color button presses
+        '''
+        if self.colorButton.isChecked():
+            self.slider.setEnabled(True)
+            self.restoreSliderValue()
+        else:
+            self.storeSliderValue()
+
+            self.slider.setEnabled(False)
+            self.slider.setValue(100)
 
     def handleSliderValueChange(self, value):
         '''
@@ -569,8 +622,4 @@ class ToolBoxWidget(QWidget):
         '''
         Triggered when user has changed the slider value
         '''
-        if self.editMode == editModes.newTextBox:
-            Preferences.updateKeyValue('textSize', self.slider.value())
-
-        elif self.editMode == editModes.marker:
-            Preferences.updateKeyValue('markerSize', self.slider.value())
+        self.storeSliderValue()
