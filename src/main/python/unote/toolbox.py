@@ -51,6 +51,8 @@ class ToolBoxWidget(QWidget):
 
     editTextBox = False
 
+    buttons = IndexedOrderedDict()
+
     def __init__(self, parent):
         '''
         Creates the toolboxwidget as child of the window widget
@@ -102,57 +104,69 @@ class ToolBoxWidget(QWidget):
 
         buttonSize = QSize(60,30)
 
+        # -----------------------------
+        # Toolbuttons
+        # -----------------------------
+
         self.textButton = QPushButton(self)
         self.textButton.setFixedSize(buttonSize)
         self.textButton.move(row1Right)
         self.textButton.setIcon(QIcon(":/assets/text.png"))
         self.textButton.setCheckable(True)
+        self.buttons['textButton'] = self.textButton
 
         self.markerButton = QPushButton(self)
         self.markerButton.setFixedSize(buttonSize)
         self.markerButton.move(row1Left)
         self.markerButton.setIcon(QIcon(":/assets/marker.png"))
         self.markerButton.setCheckable(True)
+        self.buttons['markerButton'] = self.markerButton
 
         self.freehandButton = QPushButton(self)
         self.freehandButton.setFixedSize(buttonSize)
         self.freehandButton.move(row2Left)
         self.freehandButton.setIcon(QIcon(":/assets/freehand.png"))
         self.freehandButton.setCheckable(True)
+        self.buttons['freehandButton'] = self.freehandButton
 
         self.markdownButton = QPushButton(self)
         self.markdownButton.setFixedSize(buttonSize)
         self.markdownButton.move(row2Right)
         self.markdownButton.setIcon(QIcon(":/assets/markdown.png"))
         self.markdownButton.setCheckable(True)
+        self.buttons['markdownButton'] = self.markdownButton
 
         self.formsButton = QPushButton(self)
         self.formsButton.setFixedSize(buttonSize)
         self.formsButton.move(row3Left)
         self.formsButton.setIcon(QIcon(":/assets/forms.png"))
         self.formsButton.setCheckable(True)
+        self.buttons['formsButton'] = self.formsButton
 
         self.clipboardButton = QPushButton(self)
         self.clipboardButton.setFixedSize(buttonSize)
         self.clipboardButton.move(row3Right)
         self.clipboardButton.setIcon(QIcon(":/assets/clipboard.png"))
         self.clipboardButton.setCheckable(True)
+        self.buttons['clipboardButton'] = self.clipboardButton
 
         self.okButton = QPushButton(self)
         self.okButton.setFixedSize(buttonSize)
         self.okButton.move(bottomLeft)
         self.okButton.setIcon(QIcon(":/assets/ok.png"))
+        self.buttons['okButton'] = self.okButton
 
         self.cancelButton = QPushButton(self)
         self.cancelButton.setFixedSize(buttonSize)
         self.cancelButton.move(bottomRight)
         self.cancelButton.setIcon(QIcon(":/assets/cancel.png"))
+        self.buttons['cancelButton'] = self.cancelButton
 
         self.deleteButton = QPushButton(self)
         self.deleteButton.setFixedSize(buttonSize)
         self.deleteButton.move(bottomRight)
         self.deleteButton.setIcon(QIcon(":/assets/delete.png"))
-
+        self.buttons['deleteButton'] = self.deleteButton
 
         # Set Shortcuts for the buttons
         self.textButton.setShortcut("Ctrl+T")
@@ -172,6 +186,19 @@ class ToolBoxWidget(QWidget):
         self.markdownButton.clicked.connect(self.handleMarkdownButton)
         self.cancelButton.clicked.connect(self.handleCancelButton)
         self.deleteButton.clicked.connect(self.handleDeleteButton)
+
+
+        # -----------------------------
+        # Preference Buttons
+        # -----------------------------
+
+        self.sizeButton = QPushButton(self)
+        self.sizeButton.setFixedSize(buttonSize)
+        self.sizeButton.move(row1Right)
+        self.sizeButton.setIcon(QIcon(":/assets/size.png"))
+        self.buttons['sizeButton'] = self.sizeButton
+
+
 
         self.setButtonState()
 
@@ -249,114 +276,52 @@ class ToolBoxWidget(QWidget):
         Sets the button state depending on the current edit mode
         '''
         if self.editTextBox and self.editMode == editModes.newTextBox:
-            self.okButton.setEnabled(True)
-            self.cancelButton.setEnabled(True)
-            self.deleteButton.setEnabled(False)
-            self.okButton.setVisible(True)
-            self.deleteButton.setVisible(False)
-            self.cancelButton.setVisible(True)
-            self.markerButton.setVisible(False)
-            self.markdownButton.setVisible(False)
-            self.freehandButton.setVisible(False)
-            self.formsButton.setVisible(False)
-            self.clipboardButton.setVisible(False)
-            self.textButton.setVisible(False)
-        elif self.editTextBox and self.editMode == editModes.editTextBox:
-            self.okButton.setEnabled(True)
-            self.cancelButton.setEnabled(False)
-            self.deleteButton.setEnabled(True)
-            self.okButton.setVisible(True)
-            self.deleteButton.setVisible(True)
-            self.cancelButton.setVisible(False)
-            self.markerButton.setVisible(False)
-            self.markdownButton.setVisible(False)
-            self.freehandButton.setVisible(False)
-            self.formsButton.setVisible(False)
-            self.clipboardButton.setVisible(False)
-            self.textButton.setVisible(False)
-        elif self.editMode == editModes.newTextBox:
-            self.okButton.setEnabled(False)
-            self.deleteButton.setEnabled(False)
-            self.cancelButton.setEnabled(False)
-            self.markerButton.setEnabled(False)
-            self.markdownButton.setEnabled(False)
-            self.freehandButton.setEnabled(False)
-            self.formsButton.setEnabled(False)
-            self.clipboardButton.setEnabled(False)
-            self.textButton.setEnabled(True)
-        elif self.editMode == editModes.marker:
-            self.okButton.setEnabled(False)
-            self.deleteButton.setEnabled(False)
-            self.cancelButton.setEnabled(False)
-            self.markerButton.setEnabled(True)
-            self.markdownButton.setEnabled(False)
-            self.freehandButton.setEnabled(False)
-            self.formsButton.setEnabled(False)
-            self.clipboardButton.setEnabled(False)
-            self.textButton.setEnabled(False)
-        elif self.editMode == editModes.freehand:
-            self.okButton.setEnabled(False)
-            self.deleteButton.setEnabled(False)
-            self.cancelButton.setEnabled(False)
-            self.markerButton.setEnabled(False)
-            self.markdownButton.setEnabled(False)
-            self.freehandButton.setEnabled(True)
-            self.formsButton.setEnabled(False)
-            self.clipboardButton.setEnabled(False)
-            self.textButton.setEnabled(False)
-        elif self.editMode == editModes.clipboard:
-            self.okButton.setEnabled(False)
-            self.deleteButton.setEnabled(False)
-            self.cancelButton.setEnabled(False)
-            self.markerButton.setEnabled(False)
-            self.markdownButton.setEnabled(False)
-            self.freehandButton.setEnabled(False)
-            self.formsButton.setEnabled(False)
-            self.clipboardButton.setEnabled(True)
-            self.textButton.setEnabled(False)
-        elif self.editMode == editModes.forms:
-            self.okButton.setEnabled(False)
-            self.deleteButton.setEnabled(False)
-            self.cancelButton.setEnabled(False)
-            self.markerButton.setEnabled(False)
-            self.markdownButton.setEnabled(False)
-            self.freehandButton.setEnabled(False)
-            self.formsButton.setEnabled(True)
-            self.clipboardButton.setEnabled(False)
-            self.textButton.setEnabled(False)
-        elif self.editMode == editModes.markdown:
-            self.okButton.setEnabled(False)
-            self.deleteButton.setEnabled(False)
-            self.cancelButton.setEnabled(False)
-            self.markerButton.setEnabled(False)
-            self.markdownButton.setEnabled(True)
-            self.freehandButton.setEnabled(False)
-            self.formsButton.setEnabled(False)
-            self.clipboardButton.setEnabled(False)
-            self.textButton.setEnabled(False)
-        elif self.editMode == editModes.none:
-            self.okButton.setVisible(False)
-            self.deleteButton.setVisible(False)
-            self.cancelButton.setVisible(False)
-            self.markerButton.setVisible(True)
-            self.markdownButton.setVisible(True)
-            self.freehandButton.setVisible(True)
-            self.formsButton.setVisible(True)
-            self.clipboardButton.setVisible(True)
-            self.textButton.setVisible(True)
+            self.setEnableOnAllButtonsButThose(['okButton', 'cancelButton'], False)
+            self.setVisibleOnAllButtonsButThose(['okButton', 'cancelButton'], False)
 
-            self.okButton.setEnabled(False)
-            self.deleteButton.setEnabled(False)
-            self.cancelButton.setEnabled(False)
-            self.markerButton.setEnabled(True)
-            self.markdownButton.setEnabled(True)
-            self.freehandButton.setEnabled(True)
-            self.formsButton.setEnabled(True)
-            self.clipboardButton.setEnabled(True)
-            self.textButton.setEnabled(True)
+        elif self.editTextBox and self.editMode == editModes.editTextBox:
+            self.setEnableOnAllButtonsButThose(['okButton', 'deleteButton'], False)
+            self.setVisibleOnAllButtonsButThose(['okButton', 'deleteButton'], False)
+
+        elif self.editMode == editModes.newTextBox:
+            self.setEnableOnAllButtonsButThose(['textButton'], False)
+
+        elif self.editMode == editModes.marker:
+            self.setEnableOnAllButtonsButThose(['markerButton'], False)
+
+        elif self.editMode == editModes.freehand:
+            self.setEnableOnAllButtonsButThose(['freehandButton'], False)
+
+        elif self.editMode == editModes.clipboard:
+            self.setEnableOnAllButtonsButThose(['clipboardButton'], False)
+
+        elif self.editMode == editModes.forms:
+            self.setEnableOnAllButtonsButThose(['formsButton'], False)
+
+        elif self.editMode == editModes.markdown:
+            self.setEnableOnAllButtonsButThose(['markdownButton'], False)
+
+        elif self.editMode == editModes.none:
+            self.setVisibleOnAllButtonsButThose(['textButton', 'clipboardButton', 'formsButton', 'freehandButton', 'markerButton', 'markdownButton'], False)
+
+            self.setEnableOnAllButtonsButThose(['textButton', 'clipboardButton', 'formsButton', 'freehandButton', 'markerButton', 'markdownButton'], False)
 
             self.textButton.setChecked(False)
 
+    def setEnableOnAllButtonsButThose(self, names, value):
+        for buttonName, buttonInst in self.buttons.items():
+            if not buttonName in names:
+                buttonInst.setEnabled(value)
+            else:
+                buttonInst.setEnabled(not value)
+
+
+    def setVisibleOnAllButtonsButThose(self, names, value):
+        for buttonName, buttonInst in self.buttons.items():
+            if not buttonName in names:
+                buttonInst.setVisible(value)
+            else:
+                buttonInst.setVisible(not value)
 
     def insertCurrentContent(self, content):
         '''

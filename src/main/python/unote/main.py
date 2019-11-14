@@ -15,7 +15,6 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import pyqtSignal, QFile, QTextStream, pyqtSlot, QObject
 from PyQt5.QtWidgets import QDialog, QGraphicsView, QGraphicsScene, QWidget
 
-from fbs_runtime.application_context.PyQt5 import ApplicationContext
 
 import argparse  # parsing cmdline arguments
 import os  # launching external python script
@@ -37,10 +36,12 @@ sys.path.append('./ui')
 from ui import Ui_MainWindow
 
 from unote_receivers import Receivers
-from preferences_gui import PreferencesGUI
 from preferences import Preferences
 from core import GraphicsViewHandler
 from toolbox import ToolBoxWidget
+from preferences_gui import PreferencesGUI
+
+from fbs_runtime.application_context.PyQt5 import ApplicationContext
 
 TOOLBOXWIDTH = 200
 TOOLBOXHEIGHT = 200
@@ -94,7 +95,7 @@ class UNote():
         self.ui.setupUi(self.MainWindow)
 
         # Load the icon
-        self.MainWindow.setWindowIcon(QtGui.QIcon("./assets/icon.png"))
+        self.MainWindow.setWindowIcon(QtGui.QIcon(self.appctxt.get_resource('assets/icon.png')))
 
         # Initialize graphicviewhandler. This is a core component of unote
         self.ui.graphicsView = GraphicsViewHandler(self.ui.centralwidget)

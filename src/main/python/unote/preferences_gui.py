@@ -83,7 +83,7 @@ class PreferencesGUI(App):
         '''
         self.MainWindow.show()
 
-        result = self.appctxt.app.exec_()
+        result = self.MainWindow.exec_()
 
         #settings confirmed
         if result:
