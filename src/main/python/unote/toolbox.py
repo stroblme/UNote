@@ -211,7 +211,7 @@ class ToolBoxWidget(QWidget):
 
         self.slider = QSlider(Qt.Vertical, self)
         self.slider.setMinimum(0)
-        self.slider.setMaximum(100)
+        self.slider.setMaximum(200)
         self.slider.setValue(100)
         self.slider.setTickPosition(QSlider.TicksBelow)
         self.slider.setTickInterval(10)

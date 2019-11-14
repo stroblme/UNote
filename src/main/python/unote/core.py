@@ -63,7 +63,6 @@ class QPdfView(QGraphicsPixmapItem):
 
         self.eh = EventHelper()
 
-        self.kalman = Kalman()
         self.savgol = Savgol()
 
 
@@ -161,9 +160,11 @@ class QPdfView(QGraphicsPixmapItem):
             borderText = {"width": pdf_annots.lineWidth, "dashes": [pdf_annots.dashLevel]}
             colors = {"stroke": black, "fill": cyan}
 
+            textSize = pdf_annots.defaultTextSize * (int(Preferences.data['textSize'])/100)
+
             textAnnot = self.page.addFreetextAnnot(textRect, content)
             textAnnot.setBorder(borderText)
-            textAnnot.update(fontsize = pdf_annots.defaultTextSize, border_color=cyan, fill_color=white, text_color=black)
+            textAnnot.update(fontsize = textSize, border_color=cyan, fill_color=white, text_color=black)
 
             if self.startPos != self.endPos:
                 fStart, fEnd = self.recalculateLinePoints(textRect, self.startPos)
@@ -429,13 +430,10 @@ class QPdfView(QGraphicsPixmapItem):
         Calculates the optimal rect boundaries for the desired content
         '''
 
-        fontwidth = 8
-        defaultHeight = 14
-        defaultWidth = 130
-        numOfLines = content.count('\n') + 1
-
-        suggestedWidth = defaultWidth
-        suggestedHeight = defaultHeight * numOfLines
+        numOfLines = content.count('\n')+1
+        fontwidth = pdf_annots.defaultTextSize * (int(Preferences.data['textSize'])/100)
+        suggestedWidth = pdf_annots.defaultBoxWidth * (int(Preferences.data['textSize'])/100)
+        suggestedHeight = pdf_annots.defaultBoxHeight * numOfLines * (int(Preferences.data['textSize'])/100)
 
         # while defaultWidth == suggestedWidth or suggestedHeight > suggestedWidth:
 
@@ -448,7 +446,7 @@ class QPdfView(QGraphicsPixmapItem):
         for line in content.split('\n'):
                 delta = len(line) * fontwidth - suggestedWidth
                 if delta > 0:
-                    suggestedHeight += (delta / suggestedWidth) * defaultHeight
+                    suggestedHeight += (delta / suggestedWidth) * pdf_annots.defaultBoxHeight
 
         return float(suggestedHeight), float(suggestedWidth)
 

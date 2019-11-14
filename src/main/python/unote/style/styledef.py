@@ -34,3 +34,5 @@ class pdf_annots():
     borderWidth = 1
     dashLevel = 1
     defaultTextSize = 12
+    defaultBoxHeight = 14
+    defaultBoxWidth = 130
