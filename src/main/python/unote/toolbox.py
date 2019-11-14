@@ -276,39 +276,39 @@ class ToolBoxWidget(QWidget):
         Sets the button state depending on the current edit mode
         '''
         if self.editTextBox and self.editMode == editModes.newTextBox:
-            self.setEnableOnAllButtonsButThose(['okButton', 'cancelButton'], False)
-            self.setVisibleOnAllButtonsButThose(['okButton', 'cancelButton'], False)
+            self.setEnableOnAllButtonsButThose(['okButton', 'cancelButton'])
+            self.setVisibleOnAllButtonsButThose(['okButton', 'cancelButton'])
 
         elif self.editTextBox and self.editMode == editModes.editTextBox:
-            self.setEnableOnAllButtonsButThose(['okButton', 'deleteButton'], False)
-            self.setVisibleOnAllButtonsButThose(['okButton', 'deleteButton'], False)
+            self.setEnableOnAllButtonsButThose(['okButton', 'deleteButton'])
+            self.setVisibleOnAllButtonsButThose(['okButton', 'deleteButton'])
 
         elif self.editMode == editModes.newTextBox:
-            self.setEnableOnAllButtonsButThose(['textButton'], False)
+            self.setEnableOnAllButtonsButThose(['textButton', 'sizeButton'])
 
         elif self.editMode == editModes.marker:
-            self.setEnableOnAllButtonsButThose(['markerButton'], False)
+            self.setEnableOnAllButtonsButThose(['markerButton'])
 
         elif self.editMode == editModes.freehand:
-            self.setEnableOnAllButtonsButThose(['freehandButton'], False)
+            self.setEnableOnAllButtonsButThose(['freehandButton'])
 
         elif self.editMode == editModes.clipboard:
-            self.setEnableOnAllButtonsButThose(['clipboardButton'], False)
+            self.setEnableOnAllButtonsButThose(['clipboardButton'])
 
         elif self.editMode == editModes.forms:
-            self.setEnableOnAllButtonsButThose(['formsButton'], False)
+            self.setEnableOnAllButtonsButThose(['formsButton'])
 
         elif self.editMode == editModes.markdown:
-            self.setEnableOnAllButtonsButThose(['markdownButton'], False)
+            self.setEnableOnAllButtonsButThose(['markdownButton'])
 
         elif self.editMode == editModes.none:
-            self.setVisibleOnAllButtonsButThose(['textButton', 'clipboardButton', 'formsButton', 'freehandButton', 'markerButton', 'markdownButton'], False)
+            self.setVisibleOnAllButtonsButThose(['textButton', 'clipboardButton', 'formsButton', 'freehandButton', 'markerButton', 'markdownButton'])
 
-            self.setEnableOnAllButtonsButThose(['textButton', 'clipboardButton', 'formsButton', 'freehandButton', 'markerButton', 'markdownButton'], False)
+            self.setEnableOnAllButtonsButThose(['textButton', 'clipboardButton', 'formsButton', 'freehandButton', 'markerButton', 'markdownButton'])
 
             self.textButton.setChecked(False)
 
-    def setEnableOnAllButtonsButThose(self, names, value):
+    def setEnableOnAllButtonsButThose(self, names, value=False):
         for buttonName, buttonInst in self.buttons.items():
             if not buttonName in names:
                 buttonInst.setEnabled(value)
@@ -316,7 +316,7 @@ class ToolBoxWidget(QWidget):
                 buttonInst.setEnabled(not value)
 
 
-    def setVisibleOnAllButtonsButThose(self, names, value):
+    def setVisibleOnAllButtonsButThose(self, names, value=False):
         for buttonName, buttonInst in self.buttons.items():
             if not buttonName in names:
                 buttonInst.setVisible(value)
