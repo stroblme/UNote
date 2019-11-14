@@ -14,15 +14,13 @@
             "console": "integratedTerminal",
         },
         {
-            "name": "UNote Update UI",
+            "name": "UNote Update UI and Preload",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/main/python/unote/main.py",
-            "cwd": "${workspaceFolder}/src/main/python/unote",
             "args": [],
-            "console": "integratedTerminal",
-            "preLaunchTask": {
-                "task": "update ui"
+            "cwd": "${workspaceFolder}/src/main/python/unote",
+            "console": "integratedTerminal"
             }
         },
         {

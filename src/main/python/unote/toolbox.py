@@ -84,7 +84,7 @@ class ToolBoxWidget(QWidget):
         self.row3Right = QPoint(self.row2Right.x(), self.row2Right.y()+35)
         self.bottomLeft = QPoint(buttonRect.topLeft().x(), buttonRect.topLeft().y()+130)
         self.bottomRight = QPoint(self.row1Right.x(), self.row1Right.y()+130)
-        self.bottomMiddle = QPoint(self.row1Left.x()+(self.row1Right.x()-self.row1Left.x()), self.row1Right.y()+130)
+        self.bottomMiddle = QPoint(self.row1Left.x()+60, self.row1Right.y())
 
         # We use a textEdit for making text boxes editable for user
         self.pTextEdit = QTextEdit(self)
@@ -170,6 +170,16 @@ class ToolBoxWidget(QWidget):
         self.deleteButton.setIcon(QIcon(":/assets/delete.png"))
         self.buttons['deleteButton'] = self.deleteButton
 
+        # -----------------------------
+        # Preference Buttons
+        # -----------------------------
+
+        self.sizeButton = QPushButton(self)
+        self.sizeButton.setFixedSize(buttonSize)
+        self.sizeButton.setIcon(QIcon(":/assets/size.png"))
+        self.sizeButton.setCheckable(True)
+        self.buttons['sizeButton'] = self.sizeButton
+
         # Set Shortcuts for the buttons
         self.textButton.setShortcut("Ctrl+T")
         self.markerButton.setShortcut("Ctrl+M")
@@ -177,6 +187,7 @@ class ToolBoxWidget(QWidget):
         self.okButton.setShortcut("Ctrl+Return")
         self.cancelButton.setShortcut("Esc")
         self.deleteButton.setShortcut("Ctrl+Del")
+        self.sizeButton.setShortcut("Ctrl+X")
 
         # Connect Events for the buttons
         self.okButton.clicked.connect(self.handleOkButton)
@@ -188,30 +199,27 @@ class ToolBoxWidget(QWidget):
         self.markdownButton.clicked.connect(self.handleMarkdownButton)
         self.cancelButton.clicked.connect(self.handleCancelButton)
         self.deleteButton.clicked.connect(self.handleDeleteButton)
+        self.sizeButton.clicked.connect(self.handleSizeButton)
 
 
-        # -----------------------------
-        # Preference Buttons
-        # -----------------------------
 
-        self.sizeButton = QPushButton(self)
-        self.sizeButton.setFixedSize(buttonSize)
-        self.sizeButton.setIcon(QIcon(":/assets/size.png"))
-        self.sizeButton.setCheckable(True)
-        self.buttons['sizeButton'] = self.sizeButton
 
 
 
         self.setButtonState()
 
+        sliderSize = QSize(8,140)
 
-        self.slider = QSlider(Qt.Vertical)
-        self.slider.setMinimum(10)
-        self.slider.setMaximum(30)
-        self.slider.setValue(20)
+        self.slider = QSlider(Qt.Vertical, self)
+        self.slider.setMinimum(0)
+        self.slider.setMaximum(100)
+        self.slider.setValue(100)
         self.slider.setTickPosition(QSlider.TicksBelow)
-        self.slider.setTickInterval(5)
+        self.slider.setTickInterval(10)
         self.slider.move(self.bottomMiddle)
+        self.slider.setFixedSize(sliderSize)
+        self.slider.setEnabled(False)
+        self.slider.valueChanged.connect(self.handleSlider)
 
     def paintEvent(self, event):
         '''
@@ -241,11 +249,11 @@ class ToolBoxWidget(QWidget):
         # shapePainter.setPen(QPen(QColor(14,125,145),  OUTERLINEWIDTH, Qt.SolidLine))
         # shapePainter.drawArc(outerCircleRect, CIRCLE/2, CIRCLE/2)
 
-        shapePainter.setPen(QPen(QColor(14,125,145),  5, Qt.SolidLine))
-        shapePainter.drawLine(topMiddle, bottomMiddle)
+        # shapePainter.setPen(QPen(QColor(14,125,145),  5, Qt.SolidLine))
+        # shapePainter.drawLine(topMiddle, bottomMiddle)
 
         shapePainter.setPen(QPen(QColor(14,125,145),  2, Qt.SolidLine))
-        arcRect = QRect(bottomMiddle.x() - 6, bottomMiddle.y()+1, 12, 12)
+        arcRect = QRect(bottomMiddle.x() - 7, bottomMiddle.y()+1, 13, 13)
         shapePainter.drawArc(arcRect, 0, CIRCLE)
 
         self.pTextEdit.setEnabled(False)
@@ -521,3 +529,15 @@ class ToolBoxWidget(QWidget):
             self.currentPageNumber = -1
             self.currentX = -1
             self.currentY = -1
+
+    def handleSizeButton(self):
+        '''
+        This method will set the slider value to match the current size
+        '''
+        pass
+
+    def handleSlider(self):
+        '''
+        Triggered when user changes slider value
+        '''
+        pass
