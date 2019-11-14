@@ -19,13 +19,14 @@
 - [ ] Smoother scrolling
 - [ ] Search functionality
 - [ ] Custom colors for drawing
-- [ ] Text Size for Text Boxes
+- [x] Text Size for Text Boxes
 - [ ] Automatic text size from pdf text
 - [ ] Change start position of text box line
 - [ ] Auto-save in intervalls
 - [ ] Focus main window after file handling
 - [ ] Store preferred Toolbox position
 - [ ] Implement easy toggling of annotation modes
+- [ ] Smoother drawing
 
 ## Features for v2.x
 
