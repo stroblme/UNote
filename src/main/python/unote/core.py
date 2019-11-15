@@ -29,7 +29,7 @@ from indexed import IndexedOrderedDict
 import fitz
 
 from editHelper import editModes
-from filters import Kalman, Savgol
+from filters import Kalman, Savgol, FormEstimator
 
 sys.path.append('./style')
 from styledef import rgb, norm_rgb, pdf_annots
@@ -64,6 +64,7 @@ class QPdfView(QGraphicsPixmapItem):
         self.eh = EventHelper()
 
         self.savgol = Savgol()
+        self.formEstimator = FormEstimator()
 
 
     def setPixMap(self, qImg, pageNumber):
@@ -444,6 +445,8 @@ class QPdfView(QGraphicsPixmapItem):
         # self.drawPoints = self.kalman.applyKalman(self.drawPoints)
 
         self.drawPoints = self.savgol.applySavgol(self.drawPoints)
+        self.estPoints = self.formEstimator.estimateLine(self.drawPoints)
+
 
         g = []
         g.append(self.drawPoints)
