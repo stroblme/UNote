@@ -43,12 +43,22 @@ class FormEstimator(object):
 
         input_columns = range(n_inputs) # the first columns of the np.array
         output_columns = [n_inputs+i for i in range(n_outputs)] # the last columns of the np.array
-        model = LinearLeastSquaresModel(input_columns,output_columns)
+        model = LinearLeastSquaresModel(input_columns,
+                                        output_columns)
+
+        MINNUMBEROFDATAPOINTS = 50
+        MINNUMBEROFITERATIONS = 1000
+        THRESPOINTSFITWELL = 7e3
+        CLOSEDATAPOINTSFORWELLFITTING = 300
 
         # run RANSAC algorithm
         ransac_fit, ransac_data = self.ransac(all_data,model,
-                                        50, 1000, 7e3, 300, # misc. parameters
-                                        debug=debug,return_all=True)
+                                        MINNUMBEROFDATAPOINTS,
+                                        MINNUMBEROFITERATIONS,
+                                        THRESPOINTSFITWELL,
+                                        CLOSEDATAPOINTSFORWELLFITTING, # misc. parameters
+                                        debug=False,
+                                        return_all=True)
         return ransac_data
 
 
