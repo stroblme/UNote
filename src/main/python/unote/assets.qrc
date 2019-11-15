@@ -1,5 +1,6 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
+    <file>./assets/icon.png</file>
     <file>./assets/text.png</file>
     <file>./assets/marker.png</file>
     <file>./assets/freehand.png</file>

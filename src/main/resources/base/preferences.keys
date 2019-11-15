@@ -1,5 +1,8 @@
 radioButtonDarkTheme
-windowHeight
-windowWidth
-windowXPos
-windowYPos
+state
+geometry
+textSize
+markerSize
+markerColor
+freehandSize
+freehandColor

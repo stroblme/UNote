@@ -95,7 +95,7 @@ class UNote():
         self.ui.setupUi(self.MainWindow)
 
         # Load the icon
-        self.MainWindow.setWindowIcon(QtGui.QIcon(self.appctxt.get_resource('assets/icon.png')))
+        self.MainWindow.setWindowIcon(QtGui.QIcon(":/assets/icon.png"))
 
         # Initialize graphicviewhandler. This is a core component of unote
         self.ui.graphicsView = GraphicsViewHandler(self.ui.centralwidget)

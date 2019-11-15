@@ -75,7 +75,7 @@ class PreferencesGUI(App):
         self.ui = Ui_PreferencesDialog()
         self.ui.setupUi(self.MainWindow)
 
-        self.MainWindow.setWindowIcon(QtGui.QIcon("./assets/icon.png"))
+        self.MainWindow.setWindowIcon(QtGui.QIcon(":/assets/icon.png"))
 
     def run(self):
         '''
@@ -103,7 +103,8 @@ class PreferencesGUI(App):
         '''
 
         scriptPath = os.path.dirname(os.path.abspath(__file__)) + '\\'
-        absKeysFilePath = os.path.normpath(scriptPath + KEYSFILEPATH)
+        # absKeysFilePath = os.path.normpath(scriptPath + KEYSFILEPATH)
+        absKeysFilePath = self.appctxt.get_resource('assets/preferences.keys')
 
         keysFileContent = readFile(absKeysFilePath)
 
