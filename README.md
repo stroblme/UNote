@@ -1,12 +1,29 @@
 # UNote
 
-**Latest release: v1.5**
+**Latest release: v1.3**
 
-Fills the lack of an open-source PDF Editor with the capability to draw and add notes not only on the PDF page.
+Fills the lack of an open-source PDF Editor with the capability to draw and add notes not only to the PDF pages but to a virtually unlimited space.
 
 ## Features
 
-See [CHANGELOG.md](https://gitlab.com/stroblme/unote/blob/master/CHANGELOG.md) for a list of latest features in the current release
+- PDF Annotating
+    - Text Boxes (with and without pointers)
+    - Highlighting
+    - Freehand drawing
+    - Erasing
+- PDF Tools
+    - Insert/ Delete Pages
+    - Rearrange Pages
+    - Create PDFs
+- Additional Features
+    - Active Pen Support
+    - Automatic Form Detection From Freehand Annotations
+    - Various Options For Annotation Tools
+    - Dark/ Light Mode
+    - Fast PDF Loading
+
+
+See [CHANGELOG.md](https://gitlab.com/stroblme/unote/blob/master/CHANGELOG.md) for a complete list of latest features in the current release
 
 Installer files will be updated once, a major version (vX.0) is achieved.
 
