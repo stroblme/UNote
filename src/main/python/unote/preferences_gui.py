@@ -104,7 +104,7 @@ class PreferencesGUI(App):
 
         scriptPath = os.path.dirname(os.path.abspath(__file__)) + '\\'
         # absKeysFilePath = os.path.normpath(scriptPath + KEYSFILEPATH)
-        absKeysFilePath = self.appctxt.get_resource('assets/preferences.keys')
+        absKeysFilePath = self.appctxt.get_resource('preferences.keys')
 
         keysFileContent = readFile(absKeysFilePath)
 

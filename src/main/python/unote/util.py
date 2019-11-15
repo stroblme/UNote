@@ -86,3 +86,6 @@ def last(self):
      out=self.popitem()
      self[out[0]]=out[1]
      return out
+
+def toByteArray(self, string):
+    pass

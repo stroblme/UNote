@@ -25,7 +25,7 @@ class FormEstimator(object):
     def __init__(self):
         super().__init__()
 
-        ransac = Ransac()
+        self.ransac = Ransac()
 
     def estimateForm(self, observedPoints):
         pass
@@ -52,13 +52,13 @@ class FormEstimator(object):
         CLOSEDATAPOINTSFORWELLFITTING = 300
 
         # run RANSAC algorithm
-        ransac_fit, ransac_data = self.ransac(all_data,model,
+        ransac_fit, ransac_data = self.ransac.applyRansac(
+                                        all_data,
+                                        model,
                                         MINNUMBEROFDATAPOINTS,
                                         MINNUMBEROFITERATIONS,
                                         THRESPOINTSFITWELL,
-                                        CLOSEDATAPOINTSFORWELLFITTING, # misc. parameters
-                                        debug=False,
-                                        return_all=True)
+                                        CLOSEDATAPOINTSFORWELLFITTING,)
         return ransac_data
 
 
@@ -179,7 +179,7 @@ class Ransac():
     def __init__(self):
         super().__init__()
 
-    def applyRansac(data,model,n,k,t,d,debug=False,return_all=False):
+    def applyRansac(self, data,model,n,k,t,d,debug=False,return_all=True):
         """
         Fit model parameters to data using the RANSAC algorithm
         """
@@ -188,7 +188,7 @@ class Ransac():
         besterr = np.inf
         best_inlier_idxs = None
         while iterations < k:
-            maybe_idxs, test_idxs = random_partition(n,data.shape[0])
+            maybe_idxs, test_idxs = self.random_partition(n,data.shape[0])
             maybeinliers = data[maybe_idxs,:]
             test_points = data[test_idxs]
             maybemodel = model.fit(maybeinliers)
@@ -212,7 +212,7 @@ class Ransac():
         else:
             return bestfit
 
-    def random_partition(n,n_data):
+    def random_partition(self, n,n_data):
         """return n random rows of data (and also the other len(data)-n rows)"""
         all_idxs = np.arange( n_data )
         np.random.shuffle(all_idxs)
