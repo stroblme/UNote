@@ -127,27 +127,20 @@ class UNote():
         '''
         Executed immediately when Application started
         '''
-        #Update window sizes
+        #Restore window pos
         try:
-            # Use local preferences to restore window sizes
-            self.MainWindow.setGeometry(int(Preferences.data['windowXPos']), int(Preferences.data['windowYPos']), int(Preferences.data['windowWidth']), int(Preferences.data['windowHeight']))
+            self.MainWindow.restoreGeometry(toByteArray(Preferences.data['geometry']))
+            self.MainWindow.restoreState(toByteArray(Preferences.data['state']))
         except Exception as identifier:
             print("Unable to restore window size: " + str(identifier))
 
-            # Try to use default geometry if that fails
-            try:
-                self.MainWindow.setGeometry(MAINWINDOWSTARTX, MAINWINDOWSTARTY, MAINWINDOWWIDTH, MAINWINDOWHEIGHT)
-            except:
-                print("Even unable to restore default window size. Is there even a monitor attached?")
 
     def onQApplicationQuit(self):
         '''
         Executed immediately when Application stops
         '''
-        Preferences.updateKeyValue('windowHeight', self.MainWindow.height())
-        Preferences.updateKeyValue('windowWidth', self.MainWindow.width())
-        Preferences.updateKeyValue('windowXPos', self.MainWindow.x())
-        Preferences.updateKeyValue('windowYPos', self.MainWindow.y())
+        Preferences.updateKeyValue('geometry', self.MainWindow.saveGeometry())
+        Preferences.updateKeyValue('state', self.MainWindow.saveState())
 
         self.preferencesGui.storeSettings()
 
