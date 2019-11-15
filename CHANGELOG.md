@@ -27,6 +27,7 @@
 - [ ] Store preferred Toolbox position
 - [ ] Implement easy toggling of annotation modes
 - [ ] Smoother drawing
+- [ ] Form estimation (machine vision)
 
 ## Features for v2.x
 

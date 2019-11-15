@@ -212,12 +212,6 @@ class ToolBoxWidget(QWidget):
         self.sizeButton.clicked.connect(self.handleSizeButton)
         self.colorButton.clicked.connect(self.handleColorButton)
 
-
-
-
-
-
-
         sliderSize = QSize(9,140)
 
         self.slider = QSlider(Qt.Vertical, self)
