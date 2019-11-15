@@ -25,6 +25,8 @@ class FormEstimator(object):
     def __init__(self):
         super().__init__()
 
+        ransac = Ransac()
+
     def estimateForm(self, observedPoints):
         pass
 
@@ -44,7 +46,7 @@ class FormEstimator(object):
         model = LinearLeastSquaresModel(input_columns,output_columns)
 
         # run RANSAC algorithm
-        ransac_fit, ransac_data = ransac(all_data,model,
+        ransac_fit, ransac_data = self.ransac(all_data,model,
                                         50, 1000, 7e3, 300, # misc. parameters
                                         debug=debug,return_all=True)
         return ransac_data
@@ -53,7 +55,7 @@ class FormEstimator(object):
 class Kalman(object):
 
     def __init__(self):
-        pass
+        super().__init__()
 
     def kalman_xy(self, x, P, measurement, R, motion = np.matrix('0. 0. 0. 0.').T, Q = np.matrix(np.eye(4))):
         """
@@ -115,14 +117,8 @@ class Kalman(object):
 
         self.x = np.matrix(xC).T
         self.P = np.matrix(np.eye(4))*1000 # initial uncertainty
-        # self.true_x = np.linspace(0.0, 10.0, N)
-        # self.true_y = true_x**2
 
     def applyKalman(self, observedPoints):
-        # observed_x = true_x + 0.05*np.random.random(N)*self.true_x
-
-        # observed_y = true_y + 0.05*np.random.random(N)*self.true_y
-
         result = []
         R = 0.01**2
         for meas in observedPoints:
@@ -144,7 +140,7 @@ class Kalman(object):
 class Savgol(object):
 
     def __init__(self):
-        pass
+        super().__init__()
 
     def initSavgol(self):
         pass
@@ -169,49 +165,14 @@ class Savgol(object):
 
         return points
 
-class ransac():
+class Ransac():
+    def __init__(self):
+        super().__init__()
+
     def applyRansac(data,model,n,k,t,d,debug=False,return_all=False):
-        """fit model parameters to data using the RANSAC algorithm
-
-    This implementation written from pseudocode found at
-    http://en.wikipedia.org/w/index.php?title=RANSAC&oldid=116358182
-
-    {{{
-    Given:
-        data - a set of observed data points
-        model - a model that can be fitted to data points
-        n - the minimum number of data values required to fit the model
-        k - the maximum number of iterations allowed in the algorithm
-        t - a threshold value for determining when a data point fits a model
-        d - the number of close data values required to assert that a model fits well to data
-    Return:
-        bestfit - model parameters which best fit the data (or nil if no good model is found)
-    iterations = 0
-    bestfit = nil
-    besterr = something really large
-    while iterations < k {
-        maybeinliers = n randomly selected values from data
-        maybemodel = model parameters fitted to maybeinliers
-        alsoinliers = empty set
-        for every point in data not in maybeinliers {
-            if point fits maybemodel with an error smaller than t
-                add point to alsoinliers
-        }
-        if the number of elements in alsoinliers is > d {
-            % this implies that we may have found a good model
-            % now test how good it is
-            bettermodel = model parameters fitted to all points in maybeinliers and alsoinliers
-            thiserr = a measure of how well model fits these points
-            if thiserr < besterr {
-                bestfit = bettermodel
-                besterr = thiserr
-            }
-        }
-        increment iterations
-    }
-    return bestfit
-    }}}
-    """
+        """
+        Fit model parameters to data using the RANSAC algorithm
+        """
         iterations = 0
         bestfit = None
         besterr = np.inf
