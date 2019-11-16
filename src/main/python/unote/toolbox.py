@@ -74,7 +74,7 @@ class ToolBoxWidget(QWidget):
         textBoxRect.adjust(+30,+30,-12,-12)
 
         buttonRect = self.rect()
-        buttonRect.adjust(+35,+30,5,-20)
+        buttonRect.adjust(+29,+30,+15,-20)
 
         self.row1Left = buttonRect.topLeft()
         self.row1Right = buttonRect.topRight()
@@ -84,7 +84,7 @@ class ToolBoxWidget(QWidget):
         self.row3Right = QPoint(self.row2Right.x(), self.row2Right.y()+35)
         self.bottomLeft = QPoint(buttonRect.topLeft().x(), buttonRect.topLeft().y()+130)
         self.bottomRight = QPoint(self.row1Right.x(), self.row1Right.y()+130)
-        self.bottomMiddle = QPoint(self.row1Left.x()+60, self.row1Right.y())
+        self.bottomMiddle = QPoint(self.row1Left.x()+65, self.row1Right.y())
 
         # We use a textEdit for making text boxes editable for user
         self.pTextEdit = QTextEdit(self)
@@ -212,7 +212,7 @@ class ToolBoxWidget(QWidget):
         self.sizeButton.clicked.connect(self.handleSizeButton)
         self.colorButton.clicked.connect(self.handleColorButton)
 
-        sliderSize = QSize(9,140)
+        sliderSize = QSize(15,140)
 
         self.slider = QSlider(Qt.Vertical, self)
         self.slider.setMinimum(50)
@@ -261,7 +261,7 @@ class ToolBoxWidget(QWidget):
         # shapePainter.drawLine(topMiddle, bottomMiddle)
 
         shapePainter.setPen(QPen(QColor(14,125,145),  2, Qt.SolidLine))
-        arcRect = QRect(bottomMiddle.x() - 7, bottomMiddle.y()+1, 13, 13)
+        arcRect = QRect(bottomMiddle.x() - 5, bottomMiddle.y()+1, 13, 13)
         shapePainter.drawArc(arcRect, 0, CIRCLE)
 
         self.pTextEdit.setEnabled(False)
@@ -405,14 +405,17 @@ class ToolBoxWidget(QWidget):
         Overrides the default event
         '''
         if event.buttons() == QtCore.Qt.LeftButton:
-            # adjust offset from clicked point to origin of widget
-            currPos = self.mapToGlobal(self.pos())
-            globalPos = event.globalPos()
-            diff = globalPos - self.__mouseMovePos
-            newPos = self.mapFromGlobal(currPos + diff)
-            self.move(newPos)
+            try:
+                # adjust offset from clicked point to origin of widget
+                currPos = self.mapToGlobal(self.pos())
+                globalPos = event.globalPos()
+                diff = globalPos - self.__mouseMovePos
+                newPos = self.mapFromGlobal(currPos + diff)
+                self.move(newPos)
 
-            self.__mouseMovePos = globalPos
+                self.__mouseMovePos = globalPos
+            except AttributeError:
+                pass    # We are in touch screen mode here
 
         QWidget.mouseMoveEvent(self, event)
 
@@ -550,21 +553,27 @@ class ToolBoxWidget(QWidget):
             self.currentY = -1
 
     def restoreSliderValue(self):
-        if self.sizeButton.isChecked():
-            if self.editMode == editModes.newTextBox:
-                lastSliderValue = Preferences.data['textSize']
-            elif self.editMode == editModes.marker:
-                lastSliderValue = Preferences.data['markerSize']
-            elif self.editMode == editModes.freehand:
-                lastSliderValue = Preferences.data['freehandSize']
+        try:
+            if self.sizeButton.isChecked():
+                if self.editMode == editModes.newTextBox:
+                    lastSliderValue = int(Preferences.data['textSize'])
+                elif self.editMode == editModes.marker:
+                    lastSliderValue = int(Preferences.data['markerSize'])
+                elif self.editMode == editModes.freehand:
+                    lastSliderValue = int(Preferences.data['freehandSize'])
 
-        elif self.colorButton.isChecked():
-            if self.editMode == editModes.marker:
-                lastSliderValue = Preferences.data['markerColor']
-            elif self.editMode == editModes.freehand:
-                lastSliderValue = Preferences.data['freehandColor']
+            elif self.colorButton.isChecked():
+                if self.editMode == editModes.marker:
+                    lastSliderValue = int(Preferences.data['markerColor'])
+                elif self.editMode == editModes.freehand:
+                    lastSliderValue = int(Preferences.data['freehandColor'])
 
-        self.slider.setValue(int(lastSliderValue))
+        except ValueError:
+            self.storeSliderValue()
+            return
+
+        self.slider.setValue(lastSliderValue)
+
 
     def storeSliderValue(self):
         if self.sizeButton.isChecked():

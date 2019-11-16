@@ -2,13 +2,11 @@
 
 # Form implementation generated from reading ui file '.\ui\preferences_gui.ui'
 #
-# Created by: PyQt5 UI code generator 5.13.1
+# Created by: PyQt5 UI code generator 5.9.2
 #
 # WARNING! All changes made in this file will be lost!
 
-
 from PyQt5 import QtCore, QtGui, QtWidgets
-
 
 class Ui_PreferencesDialog(object):
     def setupUi(self, PreferencesDialog):
@@ -83,3 +81,4 @@ if __name__ == "__main__":
     ui.setupUi(PreferencesDialog)
     PreferencesDialog.show()
     sys.exit(app.exec_())
+

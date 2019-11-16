@@ -6,9 +6,9 @@
 # Author: Melvin Strobl
 # ---------------------------------------------------------------
 
-from PyQt5.QtWidgets import QSizePolicy, QFrame, QDialog, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGesture, QGraphicsLineItem, QGraphicsEllipseItem
+from PyQt5.QtWidgets import QSizePolicy, QFrame, QDialog, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGesture, QGraphicsLineItem, QGraphicsEllipseItem, QGesture
 from PyQt5.QtCore import Qt, QRectF, QEvent, QThread, pyqtSignal, pyqtSlot, QObject, QPoint
-from PyQt5.QtGui import QPixmap, QBrush, QColor, QImage
+from PyQt5.QtGui import QPixmap, QBrush, QColor, QImage, QPaintEvent, QFocusEvent, QHoverEvent, QTouchEvent
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 import threading
 from preferences import Preferences
@@ -161,7 +161,10 @@ class QPdfView(QGraphicsPixmapItem):
             borderText = {"width": pdf_annots.lineWidth, "dashes": [pdf_annots.dashLevel]}
             colors = {"stroke": black, "fill": cyan}
 
-            textSize = pdf_annots.defaultTextSize * (int(Preferences.data['textSize'])/100)
+            try:
+                textSize = pdf_annots.defaultTextSize * (int(Preferences.data['textSize'])/100)
+            except ValueError:
+                textSize = pdf_annots.defaultTextSize
 
             textAnnot = self.page.addFreetextAnnot(textRect, content)
             textAnnot.setBorder(borderText)
@@ -369,8 +372,10 @@ class QPdfView(QGraphicsPixmapItem):
         yMin = min(self.startPos.y(), self.endPos.y())
         yMax = max(self.startPos.y(), self.endPos.y())
 
-
-        minWidth = pdf_annots.defaultMarkerSize * (int(Preferences.data['markerSize'])/100)
+        try:
+            minWidth = pdf_annots.defaultMarkerSize * (int(Preferences.data['markerSize'])/100)
+        except ValueError:
+            minWidth = pdf_annots.defaultMarkerSize
 
         # Ensure at least a width of 10
         if abs(yMin - yMax) < minWidth:
@@ -466,9 +471,21 @@ class QPdfView(QGraphicsPixmapItem):
         '''
 
         numOfLines = content.count('\n')+1
-        fontwidth = pdf_annots.defaultTextSize * (int(Preferences.data['textSize'])/100)
-        suggestedWidth = pdf_annots.defaultBoxWidth * (int(Preferences.data['textSize'])/100)
-        suggestedHeight = pdf_annots.defaultBoxHeight * numOfLines * (int(Preferences.data['textSize'])/100)
+        try:
+            fontwidth = pdf_annots.defaultTextSize * (int(Preferences.data['textSize'])/100)
+        except ValueError:
+            fontwidth = pdf_annots.defaultTextSize
+
+        try:
+            suggestedWidth = pdf_annots.defaultBoxWidth * (int(Preferences.data['textSize'])/100)
+        except ValueError:
+            suggestedWidth = pdf_annots.defaultBoxWidth
+
+        try:
+            suggestedHeight = pdf_annots.defaultBoxHeight * numOfLines * (int(Preferences.data['textSize'])/100)
+        except ValueError:
+            suggestedHeight = pdf_annots.defaultBoxHeight
+
 
         # while defaultWidth == suggestedWidth or suggestedHeight > suggestedWidth:
 
@@ -762,11 +779,16 @@ class GraphicsViewHandler(QGraphicsView):
         self.setTabletTracking(True)
         self.setFrameShape(QFrame.StyledPanel)
         self.setObjectName("graphicsView")
-
+        # self.setRenderHint(QPainter.Anti)
+        self.setAttribute(Qt.WA_AcceptTouchEvents)
         # self.setDragMode(self.ScrollHandDrag)
 
-        # self.grabGesture(QGesture.gestureType(self))
-        # self.resize(parent.size())
+        # # self.resize(parent.size())
+        # self.grabGesture(Qt.PanGesture)
+        # self.grabGesture(Qt.PinchGesture)
+        # self.grabGesture(Qt.SwipeGesture)
+        # self.grabGesture(Qt.TapAndHoldGesture)
+        # self.grabGesture(Qt.TapGesture)
 
     def __del__(self):
         self.saveCurrentPdf()
@@ -1071,11 +1093,19 @@ class GraphicsViewHandler(QGraphicsView):
 
         super(GraphicsViewHandler, self).keyReleaseEvent(event)
 
-    def gestureEvent(self, event):
-        '''
-        Overrides the default event
-        '''
-        print('gesture event received in core.py ')
+    def event(self, event):
+        # print(type(event))
+        if type(event) == QTouchEvent:
+            self.touchEvent(event)
+
+
+        return super(GraphicsViewHandler, self).event(event)
+
+
+    def touchEvent(self, event):
+        print('touch')
+
+
 
     def pageInsertHere(self):
         # Get all visible pages

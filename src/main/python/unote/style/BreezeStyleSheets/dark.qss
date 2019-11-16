@@ -1286,7 +1286,7 @@ QSlider::handle:horizontal
 QSlider::groove:vertical
 {
     border: 0.1ex solid #020B0D;
-    width: 1ex;
+    width: 3ex;
     background: #565a5e;
     margin: 0ex;
     border-radius: 0.3ex;
@@ -1295,9 +1295,9 @@ QSlider::groove:vertical
 QSlider::handle:vertical
 {
     background: #0A5766;
-    border: 0.1ex solid #626568;
-    width: 4ex;
-    height: 4ex;
+    border: 0ex solid #626568;
+    width: 8ex;
+    height: 6ex;
     margin: 0 0ex;
     border-radius: 2ex;
 }
