@@ -27,6 +27,6 @@ pip-log.txt
 pip-delete-this-directory.txt
 
 # fbs
-target/
+target/*
 
 venv/Lib/*

@@ -129,8 +129,8 @@ class UNote():
         '''
         #Restore window pos
         try:
-            self.MainWindow.restoreGeometry(Preferences.data['geometry'].toByteArray())
-            self.MainWindow.restoreState(Preferences.data['state'].toByteArray())
+            self.MainWindow.restoreGeometry(bytearray(Preferences.data['geometry'],"utf-8"))
+            self.MainWindow.restoreState(bytearray(Preferences.data['state'],"utf-8"))
         except Exception as identifier:
             print("Unable to restore window size: " + str(identifier))
 

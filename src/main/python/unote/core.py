@@ -445,7 +445,7 @@ class QPdfView(QGraphicsPixmapItem):
         # self.drawPoints = self.kalman.applyKalman(self.drawPoints)
 
         self.drawPoints = self.savgol.applySavgol(self.drawPoints)
-        self.estPoints = self.formEstimator.estimateLine(self.drawPoints)
+        # self.estPoints = self.formEstimator.estimateLine(self.drawPoints)
 
 
         g = []

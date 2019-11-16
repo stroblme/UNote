@@ -31,6 +31,14 @@ class FormEstimator(object):
         pass
 
     def estimateLine(self, observedPoints):
+        MINNUMBEROFDATAPOINTS = 10
+        MINNUMBEROFITERATIONS = 100
+        THRESPOINTSFITWELL = 7e3
+        CLOSEDATAPOINTSFORWELLFITTING = 300
+
+        if len(observedPoints) < MINNUMBEROFDATAPOINTS:
+            return observedPoints
+
         n_inputs = 1
         n_outputs = 1
 
@@ -46,10 +54,7 @@ class FormEstimator(object):
         model = LinearLeastSquaresModel(input_columns,
                                         output_columns)
 
-        MINNUMBEROFDATAPOINTS = 50
-        MINNUMBEROFITERATIONS = 1000
-        THRESPOINTSFITWELL = 7e3
-        CLOSEDATAPOINTSFORWELLFITTING = 300
+
 
         # run RANSAC algorithm
         ransac_fit, ransac_data = self.ransac.applyRansac(
@@ -189,7 +194,7 @@ class Ransac():
         best_inlier_idxs = None
         while iterations < k:
             maybe_idxs, test_idxs = self.random_partition(n,data.shape[0])
-            maybeinliers = data[maybe_idxs,:]
+            maybeinliers = data[maybe_idxs]
             test_points = data[test_idxs]
             maybemodel = model.fit(maybeinliers)
             test_err = model.get_error( test_points, maybemodel)
