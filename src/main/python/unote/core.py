@@ -721,15 +721,15 @@ class QPdfView(QGraphicsPixmapItem):
 
         QGraphicsPixmapItem.mouseMoveEvent(self, event)
 
-    def tabletEvent(self, event):
+    def tabletEvent(self, pos):
         self.blockEdit = False
 
         if self.ongoingEdit and PENONLY:
 
             if editMode == editModes.freehand:
-                self.updateDrawPoints(self.toPdfCoordinates(event.pos()))
+                self.updateDrawPoints(self.toPdfCoordinates(pos))
             elif editMode == editModes.eraser:
-                self.updateEraserPoints(self.toPdfCoordinates(event.pos()))
+                self.updateEraserPoints(self.toPdfCoordinates(pos))
 
     def toPdfCoordinates(self, qPos):
         '''
@@ -1113,7 +1113,9 @@ class GraphicsViewHandler(QGraphicsView):
 
     def tabletEvent(self, event):
 
-        self.itemAt(event.pos()).tabletEvent(event)
+        item = self.itemAt(event.pos())
+        if type(item) == QPdfView:
+            item.tabletEvent(self.mapFromScene(event.pos()))
         return super(GraphicsViewHandler, self).tabletEvent(event)
 
     def pageInsertHere(self):
