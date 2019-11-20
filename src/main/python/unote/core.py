@@ -712,7 +712,7 @@ class QPdfView(QGraphicsPixmapItem):
         '''
         self.blockEdit = False
 
-        if self.ongoingEdit:
+        if self.ongoingEdit and not PENONLY:
             if editMode == editModes.freehand:
                 self.updateDrawPoints(self.toPdfCoordinates(event.pos()))
             elif editMode == editModes.eraser:
@@ -722,7 +722,14 @@ class QPdfView(QGraphicsPixmapItem):
         QGraphicsPixmapItem.mouseMoveEvent(self, event)
 
     def tabletEvent(self, event):
-        print('received in ' + str(self.pageNumber))
+        self.blockEdit = False
+
+        if self.ongoingEdit and PENONLY:
+
+            if editMode == editModes.freehand:
+                self.updateDrawPoints(self.toPdfCoordinates(event.pos()))
+            elif editMode == editModes.eraser:
+                self.updateEraserPoints(self.toPdfCoordinates(event.pos()))
 
     def toPdfCoordinates(self, qPos):
         '''
