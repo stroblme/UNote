@@ -36,13 +36,14 @@
      <x>0</x>
      <y>0</y>
      <width>1680</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionNew_PDF"/>
     <addaction name="actionLoad_PDF"/>
     <addaction name="actionSave_PDF"/>
     <addaction name="actionSave_PDF_as"/>
@@ -175,6 +176,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Alt+S</string>
+   </property>
+  </action>
+  <action name="actionNew_PDF">
+   <property name="text">
+    <string>New PDF</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
    </property>
   </action>
  </widget>
