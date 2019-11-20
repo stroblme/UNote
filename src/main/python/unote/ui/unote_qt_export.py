@@ -23,7 +23,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_6.addLayout(self.gridLayout)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1680, 23))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1680, 21))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
@@ -65,6 +65,9 @@ class Ui_MainWindow(object):
         self.actionHelpAbout.setObjectName("actionHelpAbout")
         self.actionSave_PDF_as = QtWidgets.QAction(MainWindow)
         self.actionSave_PDF_as.setObjectName("actionSave_PDF_as")
+        self.actionNew_PDF = QtWidgets.QAction(MainWindow)
+        self.actionNew_PDF.setObjectName("actionNew_PDF")
+        self.menuFile.addAction(self.actionNew_PDF)
         self.menuFile.addAction(self.actionLoad_PDF)
         self.menuFile.addAction(self.actionSave_PDF)
         self.menuFile.addAction(self.actionSave_PDF_as)
@@ -114,6 +117,8 @@ class Ui_MainWindow(object):
         self.actionHelpAbout.setText(_translate("MainWindow", "About"))
         self.actionSave_PDF_as.setText(_translate("MainWindow", "Save PDF as"))
         self.actionSave_PDF_as.setShortcut(_translate("MainWindow", "Ctrl+Alt+S"))
+        self.actionNew_PDF.setText(_translate("MainWindow", "New PDF"))
+        self.actionNew_PDF.setShortcut(_translate("MainWindow", "Ctrl+N"))
 
 
 if __name__ == "__main__":

@@ -788,7 +788,7 @@ class GraphicsViewHandler(QGraphicsView):
         # self.setRenderHint(QPainter.Anti)
         self.setAttribute(Qt.WA_AcceptTouchEvents)
         # self.setDragMode(self.ScrollHandDrag)
-
+        self.setFrameShape(QGraphicsView.NoFrame)
         # # self.resize(parent.size())
         # self.grabGesture(Qt.PanGesture)
         # self.grabGesture(Qt.PinchGesture)
@@ -1115,8 +1115,23 @@ class GraphicsViewHandler(QGraphicsView):
 
         item = self.itemAt(event.pos())
         if type(item) == QPdfView:
-            item.tabletEvent(self.mapFromScene(event.pos()))
+            pos = self.mapToItem(event.pos(), item)
+            # print(event.pos())
+            print(pos)
+            item.tabletEvent(pos)
         return super(GraphicsViewHandler, self).tabletEvent(event)
+
+    def mapToItem(self, pos, item):
+        rect = self.mapToScene(self.viewport().geometry()).boundingRect()
+        # Store those properties for easy access
+        viewportHeight = rect.height()
+        viewportWidth = rect.width()
+        viewportX = rect.x()
+        viewportY = rect.y()
+
+        newPos = QPoint(pos.x() + viewportX - item.x(), pos.y() - viewportY - item.y())
+
+        return newPos
 
     def pageInsertHere(self):
         # Get all visible pages
