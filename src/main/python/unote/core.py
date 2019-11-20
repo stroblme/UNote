@@ -36,6 +36,8 @@ from styledef import rgb, norm_rgb, pdf_annots
 
 editMode = editModes.none
 
+PENONLY = True
+
 class textModes():
     plainText = 'plainText'
     mdText = 'markdownText'
@@ -65,7 +67,6 @@ class QPdfView(QGraphicsPixmapItem):
 
         self.savgol = Savgol()
         self.formEstimator = FormEstimator()
-
 
     def setPixMap(self, qImg, pageNumber):
         self.pageNumber = pageNumber
@@ -189,7 +190,6 @@ class QPdfView(QGraphicsPixmapItem):
             if self.startPos != self.endPos:
                 self.eh.deleteLastIndicatorPoint.emit()
 
-
     def insertLine(self, fStart, fEnd, subj):
         cyan  = norm_rgb.main
         borderLine = {"width": pdf_annots.borderWidth}
@@ -270,7 +270,6 @@ class QPdfView(QGraphicsPixmapItem):
             self.insertMarkdown(QPoint(x, y), content)
             self.resetEditMode()
             self.eh.deleteLastIndicatorPoint.emit()
-
 
     def deleteAnnot(self, annot):
         '''
@@ -434,14 +433,12 @@ class QPdfView(QGraphicsPixmapItem):
 
         self.drawPoints = []
 
-
     def updateDrawPoints(self, qpos):
         '''
         Called updates the currently ongoing marking to match the latest, provided position
         '''
         fPoint = self.qPointToFloatParirs(qpos)
         self.drawPoints.append(fPoint)
-
 
     def applyDrawPoints(self):
 
@@ -608,8 +605,6 @@ class QPdfView(QGraphicsPixmapItem):
 
         QGraphicsPixmapItem.wheelEvent(self, event)
 
-
-
     def mousePressEvent(self, event):
         '''
         Overrides the default event
@@ -725,6 +720,9 @@ class QPdfView(QGraphicsPixmapItem):
 
 
         QGraphicsPixmapItem.mouseMoveEvent(self, event)
+
+    def tabletEvent(self, event):
+        print('received in ' + str(self.pageNumber))
 
     def toPdfCoordinates(self, qPos):
         '''
@@ -1107,7 +1105,8 @@ class GraphicsViewHandler(QGraphicsView):
         print('touch')
 
     def tabletEvent(self, event):
-        print('tablet')
+
+        self.itemAt(event.pos()).tabletEvent(event)
         return super(GraphicsViewHandler, self).tabletEvent(event)
 
     def pageInsertHere(self):
