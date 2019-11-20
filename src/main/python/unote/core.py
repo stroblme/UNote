@@ -449,7 +449,7 @@ class QPdfView(QGraphicsPixmapItem):
 
         # self.drawPoints = self.kalman.applyKalman(self.drawPoints)
 
-        self.drawPoints = self.savgol.applySavgol(self.drawPoints)
+        self.drawPoints = self.savgol.applySavgol(self.drawPoints)  # Line smoothing
         # self.estPoints = self.formEstimator.estimateLine(self.drawPoints)
 
 
@@ -1106,7 +1106,9 @@ class GraphicsViewHandler(QGraphicsView):
     def touchEvent(self, event):
         print('touch')
 
-
+    def tabletEvent(self, event):
+        print('tablet')
+        return super(GraphicsViewHandler, self).tabletEvent(event)
 
     def pageInsertHere(self):
         # Get all visible pages
