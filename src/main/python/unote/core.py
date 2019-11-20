@@ -36,7 +36,6 @@ from styledef import rgb, norm_rgb, pdf_annots
 
 editMode = editModes.none
 
-PENONLY = True
 
 class textModes():
     plainText = 'plainText'
@@ -712,7 +711,7 @@ class QPdfView(QGraphicsPixmapItem):
         '''
         self.blockEdit = False
 
-        if self.ongoingEdit and not PENONLY:
+        if self.ongoingEdit and not bool(Preferences.data['radioButtonPenOnly']):
             if editMode == editModes.freehand:
                 self.updateDrawPoints(self.toPdfCoordinates(event.pos()))
             elif editMode == editModes.eraser:
@@ -724,7 +723,7 @@ class QPdfView(QGraphicsPixmapItem):
     def tabletEvent(self, pos):
         self.blockEdit = False
 
-        if self.ongoingEdit and PENONLY:
+        if self.ongoingEdit and bool(Preferences.data['radioButtonPenOnly']):
 
             if editMode == editModes.freehand:
                 self.updateDrawPoints(self.toPdfCoordinates(pos))
@@ -1117,7 +1116,7 @@ class GraphicsViewHandler(QGraphicsView):
         if type(item) == QPdfView:
             pos = self.mapToItem(event.pos(), item)
             # print(event.pos())
-            print(pos)
+            # print(pos)
             item.tabletEvent(pos)
         return super(GraphicsViewHandler, self).tabletEvent(event)
 
