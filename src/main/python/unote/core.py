@@ -459,10 +459,11 @@ class QPdfView(QGraphicsPixmapItem):
         annot = self.page.addInkAnnot(g)
 
         cyan  = norm_rgb.main
+        black  = norm_rgb.black
 
         # let it look a little nicer
         annot.setBorder({"width":1})# line thickness, some dashing
-        annot.setColors({"stroke":cyan})         # make the lines blue
+        annot.setColors({"stroke":black})         # make the lines blue
         annot.update()
 
     def calculateTextRectBounds(self, content):
