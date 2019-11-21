@@ -493,9 +493,9 @@ class QPdfView(QGraphicsPixmapItem):
         #         if delta > 0:
         #             suggestedHeight += (delta / suggestedWidth) * defaultHeight
         for line in content.split('\n'):
-                delta = len(line) * fontwidth - suggestedWidth
+                delta = len(line) * fontwidth / suggestedWidth
                 if delta > 0:
-                    suggestedHeight += (delta / suggestedWidth) * pdf_annots.defaultBoxHeight
+                    suggestedHeight *= delta
 
         return float(suggestedHeight), float(suggestedWidth)
 
