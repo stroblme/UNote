@@ -810,8 +810,7 @@ class GraphicsViewHandler(QGraphicsView):
         Just handles saving the pdf
         '''
         if self.pdf.filename:
-            self.pdf.savePdf()
-            print('PDF saved')
+            return self.pdf.savePdf()
 
     def saveCurrentPdfAs(self, fileName):
         '''
@@ -1065,7 +1064,6 @@ class GraphicsViewHandler(QGraphicsView):
         else:
             QGraphicsView.wheelEvent(self, event)
 
-
         self.updateRenderedPages()
 
     def mousePressEvent(self, event):
@@ -1145,17 +1143,18 @@ class GraphicsViewHandler(QGraphicsView):
         width, height = self.pdf.getPageSize(self.pdf.doc)
 
         # Iterate all visible items (shouldn't be that much normally)
-        for renderedItem in renderedItems:
+        for renderedItem in reversed(renderedItems):
             # Check if we have a pdf view here (visible could be anything)
             if type(renderedItem) != QPdfView:
                 continue
 
             newPage = self.pdf.insertPage(renderedItem.pageNumber)
-            self.saveCurrentPdf()
+            fileName = self.saveCurrentPdf()
             prevScroll = self.verticalScrollBar().value()
-            self.loadPdfToCurrentView(self.pdf.filename, renderedItem.pageNumber)
-            self.verticalScrollBar().setValue(prevScroll)
+            self.loadPdfToCurrentView(fileName, renderedItem.pageNumber)
             self.updateRenderedPages()
+            self.verticalScrollBar().setValue(prevScroll)
+            self.update()
             # posX = posY = 0
             # for cPage in self.pages:
             #     if (renderedItem.pageNumber - 2) <= cPage <= (renderedItem.pageNumber + 2):

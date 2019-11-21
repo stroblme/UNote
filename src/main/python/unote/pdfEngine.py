@@ -43,14 +43,17 @@ class pdfEngine():
         try:
             if self.incremental:
                 self.doc.save(self.filename, incremental = self.incremental)
+                return self.filename
             else:
                 name = name + '_m'
                 self.doc.save(name + ext, incremental = self.incremental)
 
+                #Suggest new filename
+                return (name + ext)
         except:
             print('Can\'t do incremental. Will save with _m appended')
             self.incremental = False
-            self.savePdf()
+            return self.savePdf()
 
     def savePdfAs(self, filename):
         name, ext = os.path.splitext(filename)
@@ -60,6 +63,9 @@ class pdfEngine():
         self.filename = name + ext
 
         self.doc.save(self.filename)
+
+        print('PDF saved as ' + self.filename)
+
 
     def getPage(self, pageNumber):
         page = self.extractPage(self.doc, pageNumber)
