@@ -89,3 +89,8 @@ def last(self):
 
 def toByteArray(self, string):
     pass
+
+def str2bool(v):
+    if type(v) == bool:
+        return v
+    return v.lower() in ("yes", "true", "t", "1")

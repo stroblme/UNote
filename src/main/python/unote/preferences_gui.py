@@ -13,7 +13,7 @@ from PyQt5.QtCore import pyqtSignal, QSettings, QObject
 from PyQt5.QtWidgets import QDialog
 
 
-from util import readFile, writeFile
+from util import readFile, writeFile, str2bool
 
 from preferences_receiver import Receivers
 from preferences import Preferences
@@ -81,6 +81,7 @@ class PreferencesGUI(App):
         '''
         Starts the Preferences Window
         '''
+        self.loadSettings()
         self.MainWindow.show()
 
         result = self.MainWindow.exec_()
@@ -115,7 +116,6 @@ class PreferencesGUI(App):
         '''
         Store the settings from the gui to the local dict and then to the settings instance
         '''
-
         for key in self.keys:
             self.settings.setValue(key, str(Preferences.data[key]))
 
@@ -128,8 +128,8 @@ class PreferencesGUI(App):
         '''
         Saves all entries, which have been entered without explicit confirmation
         '''
-        Preferences.updateKeyValue("radioButtonDarkTheme", self.ui.radioButtonDarkTheme.isChecked())
-        Preferences.updateKeyValue("radioButtonPenOnly", self.ui.radioButtonPenOnly.isChecked())
+        Preferences.updateKeyValue("radioButtonDarkTheme", str(self.ui.radioButtonDarkTheme.isChecked()))
+        Preferences.updateKeyValue("radioButtonPenOnly", str(self.ui.radioButtonPenOnly.isChecked()))
 
     def saveSettings(self):
         self.storeLooseEntries()
@@ -145,13 +145,14 @@ class PreferencesGUI(App):
         for key in self.keys:
             Preferences.updateKeyValue(key, self.settings.value(key, defaultValue=None, type=str))
 
-        self.ui.radioButtonDarkTheme.setChecked(bool(Preferences.data["radioButtonDarkTheme"]))
+        self.ui.radioButtonDarkTheme.setChecked(str2bool(Preferences.data["radioButtonDarkTheme"]))
+        self.ui.radioButtonPenOnly.setChecked(str2bool(Preferences.data["radioButtonPenOnly"]))
 
     def applySettings(self):
         '''
         Apply the settings from the local dict to the gui instance
         '''
-        if bool(Preferences.data["radioButtonDarkTheme"]) == True:
+        if str2bool(Preferences.data["radioButtonDarkTheme"]) == True:
             self.guiHelper.toggle_stylesheet(":/dark.qss")
         else:
             self.guiHelper.toggle_stylesheet(":/light.qss")
