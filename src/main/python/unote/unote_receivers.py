@@ -82,6 +82,12 @@ class Receivers(QObject):
     def pageInsertHere(self):
         self.uiInst.graphicsView.pageInsertHere()
 
+    def pageGoto(self):
+        pageNumber, ok = self.guiHelper.openInputDialog('Goto Page', 'Page Number (<' + str(len(self.uiInst.graphicsView.pages)) + '): ')
+
+        if ok:
+            self.uiInst.graphicsView.pageGoto(pageNumber)
+
     def pageDeleteActive(self):
         self.uiInst.graphicsView.pageDeleteActive()
 

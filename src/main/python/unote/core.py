@@ -1157,26 +1157,21 @@ class GraphicsViewHandler(QGraphicsView):
             self.verticalScrollBar().setMaximum(self.verticalScrollBar().maximumHeight())
             self.verticalScrollBar().setValue(prevScroll)
             self.update()
-            # posX = posY = 0
-            # for cPage in self.pages:
-            #     if (renderedItem.pageNumber - 2) <= cPage <= (renderedItem.pageNumber + 2):
-            #         # Load each page to a new position in the current view.
-            #         posX, posY = self.loadPdfPageToCurrentView(cPage, posX, posY, self.absZoomFactor)
-            #     else:
-            #         posX, posY = self.loadBlankImageToCurrentView(cPage, posX, posY, width, height)
-
-
-                # if pIt == renderedItem.pageNumber + 1:
-                #     # self.pages[pIt] = newPage
-                #     self.loadPdfPageToCurrentView(pIt, renderedItem.xOrigin, renderedItem.yOrigin, self.absZoomFactor)
-                #     break
-                # else:
-                #     self.pages[pIt] = self.pages[pIt-1]
 
             break
 
 
+    def pageGoto(self, pageNumber):
+        if self.pages and pageNumber in range(len(self.pages)):
+            scrollPos = (self.verticalScrollBar().maximumHeight()/len(self.pages)) * pageNumber
 
+            self.verticalScrollBar().setValue(self.pages[pageNumber].yOrigin)
+            self.update()
+
+            self.updateRenderedPages()
+
+        else:
+            print('No valid page entered')
 
 
     def pageDeleteActive(self):

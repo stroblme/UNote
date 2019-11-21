@@ -9,7 +9,7 @@
 import sys
 
 from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtWidgets import QFileDialog, QWidget
+from PyQt5.QtWidgets import QFileDialog, QWidget, QInputDialog
 from PyQt5.QtCore import QSettings, QFile, QTextStream
 
 from PyQt5.QtWidgets import QApplication
@@ -23,6 +23,15 @@ class GuiHelper(QWidget):
 
     def __init__(self):
         super().__init__()
+        self.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.FramelessWindowHint)
+
+    def openInputDialog(self, title, text):
+        qid = QInputDialog(self)
+        qid.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.FramelessWindowHint)
+
+        resp, ok = qid.getInt(self, title, text)
+
+        return resp, ok
 
     def openFileNameDialog(self, filter=None, dir = ""):
         '''
