@@ -128,6 +128,8 @@ class PreferencesGUI(App):
         '''
         Saves all entries, which have been entered without explicit confirmation
         '''
+        Preferences.updateKeyValue("radioButtonDarkTheme", self.ui.radioButtonDarkTheme.isChecked())
+        Preferences.updateKeyValue("radioButtonPenOnly", self.ui.radioButtonPenOnly.isChecked())
 
     def saveSettings(self):
         self.storeLooseEntries()

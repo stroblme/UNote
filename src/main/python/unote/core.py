@@ -716,7 +716,7 @@ class QPdfView(QGraphicsPixmapItem):
                 self.updateDrawPoints(self.toPdfCoordinates(event.pos()))
             elif editMode == editModes.eraser:
                 self.updateEraserPoints(self.toPdfCoordinates(event.pos()))
-
+            print('test')
 
         QGraphicsPixmapItem.mouseMoveEvent(self, event)
 
@@ -1114,7 +1114,7 @@ class GraphicsViewHandler(QGraphicsView):
 
         item = self.itemAt(event.pos())
         if type(item) == QPdfView:
-            pos = self.mapToItem(event.pos(), item)
+            pos = self.mapToItem(self.mapToScene(event.pos()), item)
             # print(event.pos())
             # print(pos)
             item.tabletEvent(pos)
