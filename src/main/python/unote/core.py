@@ -716,7 +716,6 @@ class QPdfView(QGraphicsPixmapItem):
                 self.updateDrawPoints(self.toPdfCoordinates(event.pos()))
             elif editMode == editModes.eraser:
                 self.updateEraserPoints(self.toPdfCoordinates(event.pos()))
-            print('test')
 
         QGraphicsPixmapItem.mouseMoveEvent(self, event)
 
@@ -768,7 +767,7 @@ class GraphicsViewHandler(QGraphicsView):
 
     def __init__(self, parent):
         '''
-        Creates the graphic view handler instance, which is a main feature of the unot application
+        Creates the graphic view handler instance, which is a main feature of the unote application
 
         :param parent: Parent editor widget.
         '''
@@ -821,7 +820,7 @@ class GraphicsViewHandler(QGraphicsView):
         self.pdf.savePdfAs(fileName)
         print('PDF saved as\t' + fileName)
 
-    def loadPdfToCurrentView(self, pdfFilePath):
+    def loadPdfToCurrentView(self, pdfFilePath, startPage=0):
         '''
         Renderes the whole pdf file in the current graphic view instance
         '''
@@ -846,11 +845,11 @@ class GraphicsViewHandler(QGraphicsView):
 
         for pIt in range(self.pdf.doc.pageCount):
 
-            if pIt > 2:
-                posX, posY = self.loadBlankImageToCurrentView(pIt, posX, posY, width, height)
-            else:
+            if (startPage-2) <= pIt <= (startPage+2):
                 # Load each page to a new position in the current view.
                 posX, posY = self.loadPdfPageToCurrentView(pIt, posX, posY, self.absZoomFactor)
+            else:
+                posX, posY = self.loadBlankImageToCurrentView(pIt, posX, posY, width, height)
 
         print("--- Loaded PDF within %s seconds ---" % (time.time() - start_time))
 
@@ -1143,6 +1142,7 @@ class GraphicsViewHandler(QGraphicsView):
             renderedItems = self.scene.items(self.mapToScene(self.viewport().geometry()))
         except Exception as e:
             return
+        width, height = self.pdf.getPageSize(self.pdf.doc)
 
         # Iterate all visible items (shouldn't be that much normally)
         for renderedItem in renderedItems:
@@ -1151,14 +1151,26 @@ class GraphicsViewHandler(QGraphicsView):
                 continue
 
             newPage = self.pdf.insertPage(renderedItem.pageNumber)
+            self.saveCurrentPdf()
+            prevScroll = self.verticalScrollBar().value()
+            self.loadPdfToCurrentView(self.pdf.filename, renderedItem.pageNumber)
+            self.verticalScrollBar().setValue(prevScroll)
+            self.updateRenderedPages()
+            # posX = posY = 0
+            # for cPage in self.pages:
+            #     if (renderedItem.pageNumber - 2) <= cPage <= (renderedItem.pageNumber + 2):
+            #         # Load each page to a new position in the current view.
+            #         posX, posY = self.loadPdfPageToCurrentView(cPage, posX, posY, self.absZoomFactor)
+            #     else:
+            #         posX, posY = self.loadBlankImageToCurrentView(cPage, posX, posY, width, height)
 
-            for pIt in range(len(self.pages),0):
-                if pIt == renderedItem.pageNumber + 1:
-                    self.loadPdfPageToCurrentView(pIt, renderedItem.xOrigin, renderedItem.yOrigin, self.absZoomFactor)
-                    break
-                else:
-                    self.pages[pIt] = self.pages[pIt-1]
 
+                # if pIt == renderedItem.pageNumber + 1:
+                #     # self.pages[pIt] = newPage
+                #     self.loadPdfPageToCurrentView(pIt, renderedItem.xOrigin, renderedItem.yOrigin, self.absZoomFactor)
+                #     break
+                # else:
+                #     self.pages[pIt] = self.pages[pIt-1]
 
             break
 
@@ -1193,6 +1205,12 @@ class GraphicsViewHandler(QGraphicsView):
         global editMode
 
         editMode = editModeUpdate
+
+        if editMode == editModes.none:
+            self.setDragMode(self.ScrollHandDrag)
+        else:
+            self.setDragMode(self.NoDrag)
+
 
     @pyqtSlot(int, int)
     def addIndicatorPoint(self, x, y):
