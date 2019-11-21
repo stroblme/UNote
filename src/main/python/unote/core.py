@@ -1148,11 +1148,13 @@ class GraphicsViewHandler(QGraphicsView):
             if type(renderedItem) != QPdfView:
                 continue
 
-            newPage = self.pdf.insertPage(renderedItem.pageNumber)
+            # Insert after current page
+            newPage = self.pdf.insertPage(renderedItem.pageNumber+1)
             fileName = self.saveCurrentPdf()
             prevScroll = self.verticalScrollBar().value()
-            self.loadPdfToCurrentView(fileName, renderedItem.pageNumber)
+            self.loadPdfToCurrentView(fileName, renderedItem.pageNumber+1)
             self.updateRenderedPages()
+            self.verticalScrollBar().setMaximum(self.verticalScrollBar().maximumHeight())
             self.verticalScrollBar().setValue(prevScroll)
             self.update()
             # posX = posY = 0
