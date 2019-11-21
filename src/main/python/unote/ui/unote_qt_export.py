@@ -117,6 +117,7 @@ class Ui_MainWindow(object):
         self.actionSave_PDF.setText(_translate("MainWindow", "Save PDF"))
         self.actionSave_PDF.setShortcut(_translate("MainWindow", "Ctrl+S"))
         self.actionPageInsertHere.setText(_translate("MainWindow", "Insert Here"))
+        self.actionPageInsertHere.setShortcut(_translate("MainWindow", "Ctrl+I"))
         self.actionExtract.setText(_translate("MainWindow", "Extract"))
         self.actionPageDeleteActive.setText(_translate("MainWindow", "Delete Active"))
         self.actionPageMoveUp.setText(_translate("MainWindow", "Up"))

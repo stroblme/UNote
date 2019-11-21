@@ -166,7 +166,7 @@ class QPdfView(QGraphicsPixmapItem):
             except ValueError:
                 textSize = pdf_annots.defaultTextSize
 
-            textAnnot = self.page.addFreetextAnnot(textRect, content)
+            textAnnot = self.page.addFreetextAnnot(textRect, content, rotate=90)
             textAnnot.setBorder(borderText)
             textAnnot.update(fontsize = textSize, border_color=cyan, fill_color=white, text_color=black)
 
@@ -484,19 +484,16 @@ class QPdfView(QGraphicsPixmapItem):
             suggestedHeight = pdf_annots.defaultBoxHeight
 
 
-        # while defaultWidth == suggestedWidth or suggestedHeight > suggestedWidth:
-
-        #     suggestedWidth += suggestedHeight
-
-        #     for line in content.split('\n'):
-        #         delta = len(line) * fontwidth - suggestedWidth
-        #         if delta > 0:
-        #             suggestedHeight += (delta / suggestedWidth) * defaultHeight
         for line in content.split('\n'):
-                delta = len(line) * fontwidth / suggestedWidth
+                delta = len(line) * fontwidth - suggestedWidth
                 if delta > 0:
-                    suggestedHeight *= delta
+                    suggestedHeight += (delta / suggestedWidth) * pdf_annots.defaultBoxHeight
 
+        # for line in content.split('\n'):
+        #         delta = len(line) * fontwidth / suggestedWidth
+        #         if delta > 0:
+        #             suggestedHeight *= delta
+        suggestedHeight *= (int(Preferences.data['textSize'])/100)
         return float(suggestedHeight), float(suggestedWidth)
 
     def calculateTextRectPos(self, frect):

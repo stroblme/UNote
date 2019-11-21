@@ -143,6 +143,9 @@
    <property name="text">
     <string>Insert Here</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
+   </property>
   </action>
   <action name="actionExtract">
    <property name="text">

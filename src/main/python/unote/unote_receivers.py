@@ -10,9 +10,11 @@ from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal, Qt, QObject, pyqtSlot
 
 import os
+import webbrowser
 
 from preferences import Preferences
 from guiHelper import GuiHelper
+
 
 class Receivers(QObject):
     '''
@@ -119,3 +121,6 @@ class Receivers(QObject):
         name, id, value
         '''
         self.SigSendMessageToJS.emit(msg)
+
+    def donate(self):
+        webbrowser.open("https://www.paypal.me/vinstrobl")
