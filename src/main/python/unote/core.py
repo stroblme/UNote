@@ -786,7 +786,7 @@ class GraphicsViewHandler(QGraphicsView):
         self.setObjectName("graphicsView")
         # self.setRenderHint(QPainter.Anti)
         self.setAttribute(Qt.WA_AcceptTouchEvents)
-        # self.setDragMode(self.ScrollHandDrag)
+        self.setDragMode(self.ScrollHandDrag)
         self.setFrameShape(QGraphicsView.NoFrame)
         # # self.resize(parent.size())
         # self.grabGesture(Qt.PanGesture)
