@@ -22,7 +22,14 @@ class pdfEngine():
 
                 os.replace(name + ext, self.filename)
 
+    def newPdf(self, filename):
+        self.doc = fitz.open()
+        self.filename = filename
 
+        # Insert empty page
+        self.doc.newPage(-1)
+
+        self.savePdfAs(self.filename)
 
     def openPdf(self, filename):
         # import fitz

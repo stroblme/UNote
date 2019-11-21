@@ -59,7 +59,7 @@ class Ui_PreferencesDialog(object):
         self.labelPenDraw.setObjectName("labelPenDraw")
         self.horizontalLayout_4.addWidget(self.labelPenDraw)
         self.radioButtonPenOnly = QtWidgets.QRadioButton(self.horizontalGroupBox2)
-        self.radioButtonPenOnly.setChecked(False)
+        self.radioButtonPenOnly.setChecked(True)
         self.radioButtonPenOnly.setObjectName("radioButtonPenOnly")
         self.horizontalLayout_4.addWidget(self.radioButtonPenOnly)
         self.formLayout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.horizontalGroupBox2)

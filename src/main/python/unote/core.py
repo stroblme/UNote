@@ -726,7 +726,7 @@ class QPdfView(QGraphicsPixmapItem):
         if self.ongoingEdit and bool(Preferences.data['radioButtonPenOnly']):
 
             if editMode == editModes.freehand:
-                self.updateDrawPoints(self.toPdfCoordinates(pos))
+                self.updateDrawPoints(self.mapFromScene(self.toPdfCoordinates(pos)))
             elif editMode == editModes.eraser:
                 self.updateEraserPoints(self.toPdfCoordinates(pos))
 
@@ -797,6 +797,14 @@ class GraphicsViewHandler(QGraphicsView):
 
     def __del__(self):
         self.saveCurrentPdf()
+
+    def createNewPdf(self, fileName):
+        '''
+        Creates a new PDf from the given fileName
+        '''
+        self.pdf.newPdf(fileName)
+
+        self.loadPdfToCurrentView(fileName)
 
     def saveCurrentPdf(self):
         '''
@@ -1114,10 +1122,7 @@ class GraphicsViewHandler(QGraphicsView):
 
         item = self.itemAt(event.pos())
         if type(item) == QPdfView:
-            pos = self.mapToItem(self.mapToScene(event.pos()), item)
-            # print(event.pos())
-            # print(pos)
-            item.tabletEvent(pos)
+            item.tabletEvent(event.pos())
         return super(GraphicsViewHandler, self).tabletEvent(event)
 
     def mapToItem(self, pos, item):

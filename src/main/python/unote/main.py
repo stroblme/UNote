@@ -156,6 +156,9 @@ class UNote():
         # Open Preferences
         self.ui.actionPreferences.triggered.connect(lambda:self.receiversInst.openPreferencesReceiver(self.preferencesGui))
 
+        # Create new PDF file
+        self.ui.actionNew_PDF.triggered.connect(lambda:self.receiversInst.newPdf())
+
         # Load PDF File
         self.ui.actionLoad_PDF.triggered.connect(lambda:self.receiversInst.loadPdf())
 

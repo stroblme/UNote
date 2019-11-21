@@ -9,7 +9,7 @@
 from PyQt5 import QtCore
 from PyQt5.QtCore import pyqtSignal, Qt, QObject, pyqtSlot
 
-import json
+import os
 
 from preferences import Preferences
 from guiHelper import GuiHelper
@@ -42,6 +42,20 @@ class Receivers(QObject):
         preferenceInstance.run()
 
         self.uiInst.graphicsView.updateRenderedPages()
+
+    def newPdf(self):
+        pdfFileName = self.guiHelper.saveFileDialog("PDF File (*.pdf)")
+
+        if pdfFileName == '':
+            return
+
+        name, ext = os.path.splitext(pdfFileName)
+
+        ext = '.pdf'
+
+        pdfFileName = name + ext
+
+        self.uiInst.graphicsView.createNewPdf(pdfFileName)
 
     def loadPdf(self):
         '''
