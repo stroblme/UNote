@@ -44,7 +44,7 @@ class GuiHelper(QWidget):
             filter = "All Files (*)"
 
         options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
+        # options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getOpenFileName(self, "Open File", "", filter, options=options)
 
         if fileName:
