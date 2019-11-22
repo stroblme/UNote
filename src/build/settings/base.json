@@ -1,6 +1,0 @@
-{
-    "app_name": "UNote",
-    "author": "Melvin Strobl",
-    "main_module": "src/main/python/unote/main.py",
-    "version": "0.0.0"
-}
