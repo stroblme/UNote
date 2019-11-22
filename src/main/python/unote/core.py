@@ -167,7 +167,7 @@ class QPdfView(QGraphicsPixmapItem):
             except ValueError:
                 textSize = pdf_annots.defaultTextSize
 
-            textAnnot = self.page.addFreetextAnnot(textRect, content, rotate=90)
+            textAnnot = self.page.addFreetextAnnot(textRect, content)
             textAnnot.setBorder(borderText)
             textAnnot.update(fontsize = textSize, border_color=cyan, fill_color=white, text_color=black)
 
