@@ -824,7 +824,7 @@ class GraphicsViewHandler(QGraphicsView):
         self.setObjectName("graphicsView")
         # self.setRenderHint(QPainter.Anti)
         self.setAttribute(Qt.WA_AcceptTouchEvents)
-        # self.setDragMode(self.ScrollHandDrag)
+        self.setDragMode(self.ScrollHandDrag)
         # self.setFrameShape(QGraphicsView.NoFrame)
         # # self.resize(parent.size())
         # self.grabGesture(Qt.PanGesture)
@@ -1142,17 +1142,17 @@ class GraphicsViewHandler(QGraphicsView):
 
         super(GraphicsViewHandler, self).keyReleaseEvent(event)
 
-    def event(self, event):
-        # print(type(event))
-        if type(event) == QTouchEvent:
-            self.touchEvent(event)
+    # def event(self, event):
+    #     # print(type(event))
+    #     if type(event) == QTouchEvent:
+    #         self.touchEvent(event)
 
 
-        return super(GraphicsViewHandler, self).event(event)
+    #     return super(GraphicsViewHandler, self).event(event)
 
 
-    def touchEvent(self, event):
-        print('touch')
+    # def touchEvent(self, event):
+    #     print('touch')
 
     def tabletEvent(self, event):
         item = self.itemAt(event.pos())
