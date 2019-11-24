@@ -165,49 +165,31 @@ class Savgol(object):
 
 
     def applySavgol(self, observedPoints):
-        WINDOW_LENGTH = 9 #odd!
-        POLYNOM_GRADE = 2
+        WINDOW_LENGTH = 5 #odd!
+        POLYNOM_GRADE = 3
 
-        xPoints, yPoints = tuplesToArrays(observedPoints)
 
         if len(observedPoints) > WINDOW_LENGTH:
+            xPoints, yPoints = tuplesToArrays(observedPoints)
+
             xPointsS = savgol_filter(xPoints, WINDOW_LENGTH, POLYNOM_GRADE)
             yPointsS = savgol_filter(yPoints, WINDOW_LENGTH, POLYNOM_GRADE)
 
             points = arraysToTuples(xPointsS, yPointsS)
+        elif len(observedPoints) == 1:
+            xPoints, yPoints = tuplesToArrays(observedPoints)
 
+            xPoints.extend([xPoints[0] - 1])
+
+            yPoints.extend([yPoints[0] - 1])
+
+            points = arraysToTuples(xPoints, yPoints)
         else:
-            # nx = 4; ny = 5
-            # for x in range(nx):
-            #     lon = 360 * ((x+0.5) / nx)
-            #     for y in range(ny):
-            #         midpt = (y+0.5) / ny
-            #         lat = 180 * asin(2*((y+0.5)/ny-0.5))
-            #         print lon,lat
-
             points = observedPoints
+            print('too short')
 
         return points
 
-    def fibonacci_sphere(samples=1,randomize=True):
-        rnd = 1.
-        if randomize:
-            rnd = random.random() * samples
-
-        points = []
-        offset = 2./samples
-        increment = math.pi * (3. - math.sqrt(5.));
-
-        for i in range(samples):
-            y = ((i * offset) - 1) + (offset / 2);
-            r = math.sqrt(1 - pow(y,2))
-
-            phi = ((i + rnd) % samples) * increment
-
-            x = math.cos(phi) * r
-            z = math.sin(phi) * r
-
-            points.append([x,y,z])
 
 class Ransac():
     def __init__(self):

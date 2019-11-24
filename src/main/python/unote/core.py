@@ -430,8 +430,8 @@ class QPdfView(QGraphicsPixmapItem):
     def stopDraw(self, qpos):
         self.ongoingEdit = False
 
-        fPoint = self.qPointToFloatParirs(qpos)
-        self.drawPoints.append(fPoint)
+        # fPoint = self.qPointToFloatParirs(qpos)
+        # self.drawPoints.append(fPoint)
 
         self.applyDrawPoints()
 
@@ -464,7 +464,7 @@ class QPdfView(QGraphicsPixmapItem):
         black  = norm_rgb.black
 
         # let it look a little nicer
-        annot.setBorder({"width":1})# line thickness, some dashing
+        # annot.setBorder({"width":1})# line thickness, some dashing
         annot.setColors({"stroke":black})         # make the lines blue
         annot.update()
 
@@ -729,6 +729,7 @@ class QPdfView(QGraphicsPixmapItem):
 
         if str2bool(Preferences.data['radioButtonPenOnly']):
         # if self.ongoingEdit and str2bool(Preferences.data['radioButtonPenOnly']):
+            print(event.pressure())
             if event.type() == QEvent.TabletMove:
                 if editMode == editModes.freehand:
                     self.updateDrawPoints(self.mapFromScene(self.fromSceneCoordinates(event.pos())))
@@ -753,6 +754,8 @@ class QPdfView(QGraphicsPixmapItem):
                 print('enter prox')
             elif event.type() == QEvent.TabletLeaveProximity:
                 print('leave prox')
+
+            event.accept()
 
     def toPdfCoordinates(self, qPos):
         '''
