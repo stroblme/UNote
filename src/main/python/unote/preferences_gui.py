@@ -13,7 +13,7 @@ from PyQt5.QtCore import pyqtSignal, QSettings, QObject
 from PyQt5.QtWidgets import QDialog
 
 
-from util import readFile, writeFile, str2bool
+from util import readFile, writeFile, toBool
 
 from preferences_receiver import Receivers
 from preferences import Preferences
@@ -145,14 +145,14 @@ class PreferencesGUI(App):
         for key in self.keys:
             Preferences.updateKeyValue(key, self.settings.value(key, defaultValue=None, type=str))
 
-        self.ui.radioButtonDarkTheme.setChecked(str2bool(Preferences.data["radioButtonDarkTheme"]))
-        self.ui.radioButtonPenOnly.setChecked(str2bool(Preferences.data["radioButtonPenOnly"]))
+        self.ui.radioButtonDarkTheme.setChecked(toBool(Preferences.data["radioButtonDarkTheme"]))
+        self.ui.radioButtonPenOnly.setChecked(toBool(Preferences.data["radioButtonPenOnly"]))
 
     def applySettings(self):
         '''
         Apply the settings from the local dict to the gui instance
         '''
-        if str2bool(Preferences.data["radioButtonDarkTheme"]) == True:
+        if toBool(Preferences.data["radioButtonDarkTheme"]) == True:
             self.guiHelper.toggle_stylesheet(":/dark.qss")
         else:
             self.guiHelper.toggle_stylesheet(":/light.qss")
