@@ -2,6 +2,7 @@ import numpy as np
 from scipy.signal import savgol_filter
 from scipy.linalg import lstsq
 from scipy import dot
+from math import asin
 
 def tuplesToArrays(points):
     xPoints = []
@@ -176,9 +177,37 @@ class Savgol(object):
             points = arraysToTuples(xPointsS, yPointsS)
 
         else:
+            # nx = 4; ny = 5
+            # for x in range(nx):
+            #     lon = 360 * ((x+0.5) / nx)
+            #     for y in range(ny):
+            #         midpt = (y+0.5) / ny
+            #         lat = 180 * asin(2*((y+0.5)/ny-0.5))
+            #         print lon,lat
+
             points = observedPoints
 
         return points
+
+    def fibonacci_sphere(samples=1,randomize=True):
+        rnd = 1.
+        if randomize:
+            rnd = random.random() * samples
+
+        points = []
+        offset = 2./samples
+        increment = math.pi * (3. - math.sqrt(5.));
+
+        for i in range(samples):
+            y = ((i * offset) - 1) + (offset / 2);
+            r = math.sqrt(1 - pow(y,2))
+
+            phi = ((i + rnd) % samples) * increment
+
+            x = math.cos(phi) * r
+            z = math.sin(phi) * r
+
+            points.append([x,y,z])
 
 class Ransac():
     def __init__(self):

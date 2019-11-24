@@ -71,9 +71,6 @@ class pdfEngine():
         '''
         For external call
         '''
-        if not pageNumber:
-            return None
-
         try:
             page = self.doc[pageNumber]
             return page

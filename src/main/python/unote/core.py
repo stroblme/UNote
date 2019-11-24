@@ -422,16 +422,21 @@ class QPdfView(QGraphicsPixmapItem):
 
     def startDraw(self, qpos):
         self.ongoingEdit = True
-        self.startPos = qpos
 
         self.drawPoints = []
+        fPoint = self.qPointToFloatParirs(qpos)
+        self.drawPoints.append(fPoint)
 
     def stopDraw(self, qpos):
         self.ongoingEdit = False
 
+        fPoint = self.qPointToFloatParirs(qpos)
+        self.drawPoints.append(fPoint)
+
         self.applyDrawPoints()
 
         self.drawPoints = []
+
 
     def updateDrawPoints(self, qpos):
         '''
@@ -610,22 +615,23 @@ class QPdfView(QGraphicsPixmapItem):
             return
 
         if event.button() == Qt.LeftButton:
-            if editMode == editModes.marker:
-                self.startMarkText(self.toPdfCoordinates(event.pos()))
-            elif editMode == editModes.freehand:
-                self.startDraw(self.toPdfCoordinates(event.pos()))
-            elif editMode == editModes.eraser:
-                self.startEraser(self.toPdfCoordinates(event.pos()))
+            if editMode == editModes.newTextBox:
+                scenePoint = self.toSceneCoordinates(event.pos())
+                self.eh.addIndicatorPoint.emit(scenePoint.x(), scenePoint.y())
+                self.startNewTextBox(self.toPdfCoordinates(event.pos()))
             elif editMode == editModes.markdown:
                 scenePoint = self.toSceneCoordinates(event.pos())
                 self.eh.addIndicatorPoint.emit(scenePoint.x(), scenePoint.y())
-
                 self.startNewMarkdownBox(self.toPdfCoordinates(event.pos()))
-            elif editMode == editModes.newTextBox:
-                scenePoint = self.toSceneCoordinates(event.pos())
-                self.eh.addIndicatorPoint.emit(scenePoint.x(), scenePoint.y())
 
-                self.startNewTextBox(self.toPdfCoordinates(event.pos()))
+            if not str2bool(Preferences.data['radioButtonPenOnly']):
+                if editMode == editModes.marker:
+                    self.startMarkText(self.toPdfCoordinates(event.pos()))
+                elif editMode == editModes.freehand:
+                    self.startDraw(self.toPdfCoordinates(event.pos()))
+                elif editMode == editModes.eraser:
+                    self.startEraser(self.toPdfCoordinates(event.pos()))
+
         elif event.button() == Qt.RightButton:
             # Check if there is not currently an active editing mode
             if editMode == editModes.none:
@@ -657,12 +663,13 @@ class QPdfView(QGraphicsPixmapItem):
 
                 self.stopNewMarkdownBox(self.toPdfCoordinates(event.pos()))
 
-            elif editMode == editModes.marker:
-                self.stopMarkText(self.toPdfCoordinates(event.pos()))
-            elif editMode == editModes.freehand:
-                self.stopDraw(self.toPdfCoordinates(event.pos()))
-            elif editMode == editModes.eraser:
-                self.stopEraser(self.toPdfCoordinates(event.pos()))
+            if not str2bool(Preferences.data['radioButtonPenOnly']):
+                if editMode == editModes.marker:
+                    self.stopMarkText(self.toPdfCoordinates(event.pos()))
+                elif editMode == editModes.freehand:
+                    self.stopDraw(self.toPdfCoordinates(event.pos()))
+                elif editMode == editModes.eraser:
+                    self.stopEraser(self.toPdfCoordinates(event.pos()))
 
         elif event.button() == Qt.RightButton:
             #Check if there is currently an ongoing edit (like moving an object)
@@ -717,15 +724,35 @@ class QPdfView(QGraphicsPixmapItem):
 
         QGraphicsPixmapItem.mouseMoveEvent(self, event)
 
-    def tabletEvent(self, pos):
+    def tabletEvent(self, event):
         self.blockEdit = False
 
-        if self.ongoingEdit and str2bool(Preferences.data['radioButtonPenOnly']):
+        if str2bool(Preferences.data['radioButtonPenOnly']):
+        # if self.ongoingEdit and str2bool(Preferences.data['radioButtonPenOnly']):
+            if event.type() == QEvent.TabletMove:
+                if editMode == editModes.freehand:
+                    self.updateDrawPoints(self.mapFromScene(self.fromSceneCoordinates(event.pos())))
+                elif editMode == editModes.eraser:
+                    self.updateEraserPoints(self.fromSceneCoordinates(event.pos()))
+            elif event.type() == QEvent.TabletPress:
+                if editMode == editModes.marker:
+                    self.startMarkText(self.fromSceneCoordinates(event.pos()))
+                elif editMode == editModes.freehand:
+                    self.startDraw(self.fromSceneCoordinates(event.pos()))
+                elif editMode == editModes.eraser:
+                    self.startEraser(self.fromSceneCoordinates(event.pos()))
+            elif event.type() == QEvent.TabletRelease:
+                if editMode == editModes.marker:
+                    self.stopMarkText(self.fromSceneCoordinates(event.pos()))
+                elif editMode == editModes.freehand:
+                    self.stopDraw(self.fromSceneCoordinates(event.pos()))
+                elif editMode == editModes.eraser:
+                    self.stopEraser(self.fromSceneCoordinates(event.pos()))
 
-            if editMode == editModes.freehand:
-                self.updateDrawPoints(self.mapFromScene(self.toPdfCoordinates(pos)))
-            elif editMode == editModes.eraser:
-                self.updateEraserPoints(self.toPdfCoordinates(pos))
+            elif event.type() == QEvent.TabletEnterProximity:
+                print('enter prox')
+            elif event.type() == QEvent.TabletLeaveProximity:
+                print('leave prox')
 
     def toPdfCoordinates(self, qPos):
         '''
@@ -743,6 +770,11 @@ class QPdfView(QGraphicsPixmapItem):
         sPos = QPoint(qPos.x() + xDif, qPos.y() + yDif)
 
         return sPos
+
+    def fromSceneCoordinates(self, qPos):
+        pPos = self.mapFromParent(qPos)
+        pPos = self.toPdfCoordinates(pPos)
+        return pPos
 
     def toQPos(self, fPos):
         qPos = QPoint(fPos.x, fPos.y)
@@ -783,8 +815,8 @@ class GraphicsViewHandler(QGraphicsView):
         self.setObjectName("graphicsView")
         # self.setRenderHint(QPainter.Anti)
         self.setAttribute(Qt.WA_AcceptTouchEvents)
-        self.setDragMode(self.ScrollHandDrag)
-        self.setFrameShape(QGraphicsView.NoFrame)
+        # self.setDragMode(self.ScrollHandDrag)
+        # self.setFrameShape(QGraphicsView.NoFrame)
         # # self.resize(parent.size())
         # self.grabGesture(Qt.PanGesture)
         # self.grabGesture(Qt.PinchGesture)
@@ -828,6 +860,8 @@ class GraphicsViewHandler(QGraphicsView):
         self.scene = QGraphicsScene()
         self.setScene(self.scene)
 
+        self.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+
         # Start at the top
         posX = float(0)
         posY = float(0)
@@ -860,7 +894,7 @@ class GraphicsViewHandler(QGraphicsView):
         pdfView.setPage(self.pdf.getPage(pageNumber), pageNumber)
 
         # Render a blank image
-        self.updateEmptyPdf(pdfView, width, height, pageNumber)
+        self.updateEmptyPdf(pdfView, width, height)
 
         # Store instance locally
         self.pages[pageNumber] = pdfView
@@ -1019,7 +1053,7 @@ class GraphicsViewHandler(QGraphicsView):
         else:
             pdfViewInstance.updatePixMap(qImg)
 
-    def updateEmptyPdf(self, width, height, pageNumber = None):
+    def updateEmptyPdf(self, pdfViewInstance, width, height):
         '''
         Update the provided pdf file at the desired page to render only the zoom and clip
         This methods is used when instantiating the pdf and later, when performance optimzation and zooming is required
@@ -1028,10 +1062,10 @@ class GraphicsViewHandler(QGraphicsView):
         qImg = QImage(width, height, QImage.Format_Mono)
         qImg.fill(0)
 
-        if pageNumber:
-            self.pdf.setPixMap(qImg, pageNumber)
+        if pdfViewInstance.pageNumber:
+            pdfViewInstance.setPixMap(qImg, pdfViewInstance.pageNumber)
         else:
-            self.pdf.updatePixMap(qImg)
+            pdfViewInstance.updatePixMap(qImg)
 
 
 
@@ -1117,7 +1151,7 @@ class GraphicsViewHandler(QGraphicsView):
 
         item = self.itemAt(event.pos())
         if type(item) == QPdfView:
-            item.tabletEvent(event.pos())
+            item.tabletEvent(event)
         return super(GraphicsViewHandler, self).tabletEvent(event)
 
     def mapToItem(self, pos, item):
