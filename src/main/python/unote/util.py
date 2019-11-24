@@ -87,10 +87,19 @@ def last(self):
      self[out[0]]=out[1]
      return out
 
-def toByteArray(self, string):
-    pass
+def toByteArray(string):
+    b = bytearray()
+    b.extend(string.encode())
+    return b
 
-def str2bool(v):
-    if type(v) == bool:
-        return v
-    return v.lower() in ("yes", "true", "t", "1")
+def toBool(anyType):
+    #Catch recursive call
+    if type(anyType) == bool:
+        return anyType
+    elif type(anyType) == str:
+        return anyType.lower() in ("yes", "true", "t", "1", "y")
+    elif type(anyType) == int:
+        return anyType in (0, -1)
+    else:
+        #Try again but with a str cast
+        return toBool(str(anyType))

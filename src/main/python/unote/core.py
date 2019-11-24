@@ -28,7 +28,7 @@ from indexed import IndexedOrderedDict
 
 import fitz
 
-from util import str2bool
+from util import toBool
 from editHelper import editModes
 from filters import Kalman, Savgol, FormEstimator
 
@@ -723,7 +723,7 @@ class QPdfView(QGraphicsPixmapItem):
         '''
         self.blockEdit = False
 
-        if self.ongoingEdit and not str2bool(Preferences.data['radioButtonPenOnly']):
+        if self.ongoingEdit and not toBool(Preferences.data['radioButtonPenOnly']):
             if editMode == editModes.freehand:
                 self.updateDrawPoints(self.toPdfCoordinates(event.pos()))
             elif editMode == editModes.eraser:
