@@ -58,7 +58,7 @@ class UNote():
     Main class for the UNote
     '''
 
-    def __init__(self, pdfLoad):
+    def __init__(self, args):
         super().__init__()
 
 
@@ -75,8 +75,11 @@ class UNote():
 
         self.connectReceivers()
 
-        if pdfLoad:
-            self.ui.graphicsView.loadPdfToCurrentView(os.path.abspath(pdfLoad))
+        if args.open:
+            self.ui.graphicsView.loadPdfToCurrentView(os.path.abspath(args.open))
+        elif args.new:
+            self.ui.graphicsView.createNewPdf(os.path.abspath(args.new))
+
 
 
     def initUI(self):
@@ -208,8 +211,10 @@ def argumentHelper():
     # Create ArgumentParser instance
     argparser = argparse.ArgumentParser(description=helpText)
 
-    argparser.add_argument('-p', '--pdf',
-                        help='Load pdf')
+    argparser.add_argument('-o', '--open',
+                        help='Open existing pdf from path')
+    argparser.add_argument('-n', '--new',
+                        help='Create new pdf at path')
 
     return argparser.parse_args()
 
@@ -245,7 +250,7 @@ def main():
     except ValueError as e:
         sys.exit("Unable to parse arguments:\n" + str(e))
 
-    UNoteGUI = UNote(args.pdf)
+    UNoteGUI = UNote(args)
     UNoteGUI.run(args)
 
 

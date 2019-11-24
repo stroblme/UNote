@@ -15,11 +15,24 @@
             "console": "integratedTerminal",
         },
         {
-            "name": "UNote Update UI and Preload",
+            "name": "UNote Preload",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/main/python/unote/main.py",
-            "args": ["-p","test.pdf"],
+            "args": ["-o","test.pdf"],
+            "cwd": "${workspaceFolder}/src/main/python/unote",
+            "console": "integratedTerminal"
+            // "preLaunchTask": {
+            //     "task": "Update UI",
+            //     "type": "shell"
+            // }
+        },
+        {
+            "name": "UNote Create New",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/main/python/unote/main.py",
+            "args": ["-n","new.pdf"],
             "cwd": "${workspaceFolder}/src/main/python/unote",
             "console": "integratedTerminal"
             // "preLaunchTask": {

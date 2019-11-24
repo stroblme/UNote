@@ -838,7 +838,7 @@ class GraphicsViewHandler(QGraphicsView):
         # self.thread = QThread
         # self.moveToThread(self.thread)
 
-        width, height = self.pdf.getPageSize(self.pdf.doc)
+        width, height = self.pdf.getPageSize()
 
         for pIt in range(self.pdf.doc.pageCount):
 
@@ -889,7 +889,7 @@ class GraphicsViewHandler(QGraphicsView):
         pdfView.setPage(self.pdf.getPage(pageNumber), pageNumber)
 
         # Render according to the parameters
-        self.updatePdf(pdfView, zoom = zoom, pageNumber = pageNumber)
+        self.updatePage(pdfView, zoom = zoom)
 
         # Store instance locally
         self.pages[pageNumber] = pdfView
@@ -983,7 +983,7 @@ class GraphicsViewHandler(QGraphicsView):
 
             clip = QRectF(clipX, clipY, clipW, clipH)
 
-            self.updatePdf(renderedItem, zoom = self.absZoomFactor, clip = clip)
+            self.updatePage(renderedItem, zoom = self.absZoomFactor, clip = clip)
 
             if clipX != 0:
                 rItx = viewportX
@@ -997,7 +997,7 @@ class GraphicsViewHandler(QGraphicsView):
             renderedItem.setPos(rItx, rIty)
 
 
-    def updatePdf(self, pdf, zoom=absZoomFactor, clip=None, pageNumber = None):
+    def updatePage(self, pdfViewInstance, zoom=absZoomFactor, clip=None):
         '''
         Update the provided pdf file at the desired page to render only the zoom and clip
         This methods is used when instantiating the pdf and later, when performance optimzation and zooming is required
@@ -1008,18 +1008,18 @@ class GraphicsViewHandler(QGraphicsView):
         if clip:
             fClip = fitz.Rect(clip.x(), clip.y(), clip.x() + clip.width(), clip.y() + clip.height())
 
-        pixmap = self.pdf.renderPixmap(pdf.page, mat = mat, clip = fClip)
+        pixmap = self.pdf.renderPixmap(pdfViewInstance.pageNumber, mat = mat, clip = fClip)
 
         qImg = self.pdf.getQImage(pixmap)
         qImg.setDevicePixelRatio(zoom)
         qImg = self.imageHelper.applyTheme(qImg)
 
-        if pageNumber:
-            pdf.setPixMap(qImg, pageNumber)
+        if pdfViewInstance.pageNumber:
+            pdfViewInstance.setPixMap(qImg, pdfViewInstance.pageNumber)
         else:
-            pdf.updatePixMap(qImg)
+            pdfViewInstance.updatePixMap(qImg)
 
-    def updateEmptyPdf(self, pdf, width, height, pageNumber = None):
+    def updateEmptyPdf(self, width, height, pageNumber = None):
         '''
         Update the provided pdf file at the desired page to render only the zoom and clip
         This methods is used when instantiating the pdf and later, when performance optimzation and zooming is required
@@ -1029,9 +1029,9 @@ class GraphicsViewHandler(QGraphicsView):
         qImg.fill(0)
 
         if pageNumber:
-            pdf.setPixMap(qImg, pageNumber)
+            self.pdf.setPixMap(qImg, pageNumber)
         else:
-            pdf.updatePixMap(qImg)
+            self.pdf.updatePixMap(qImg)
 
 
 
@@ -1138,7 +1138,6 @@ class GraphicsViewHandler(QGraphicsView):
             renderedItems = self.scene.items(self.mapToScene(self.viewport().geometry()))
         except Exception as e:
             return
-        width, height = self.pdf.getPageSize(self.pdf.doc)
 
         # Iterate all visible items (shouldn't be that much normally)
         for renderedItem in reversed(renderedItems):
