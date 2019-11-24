@@ -37,6 +37,9 @@ from styledef import rgb, norm_rgb, pdf_annots
 
 editMode = editModes.none
 
+class ExtQPoint(QPoint):
+    pressure = 0
+
 
 class textModes():
     plainText = 'plainText'
@@ -99,8 +102,8 @@ class QPdfView(QGraphicsPixmapItem):
     def qPointToFPoint(self, qPoint):
         return fitz.Point(qPoint.x(), qPoint.y())
 
-    def qPointToFloatParirs(self, qPoint):
-        p = (float(qPoint.x()), float(qPoint.y()))
+    def qPointToFloatParirs(self, qPoint, pressure=0):
+        p = (float(qPoint.x()), float(qPoint.y()), pressure)
         return p
 
     def fPointToQPoint(self, fPoint):
@@ -420,14 +423,14 @@ class QPdfView(QGraphicsPixmapItem):
     #-----------------------------------------------------------------------
 
 
-    def startDraw(self, qpos):
+    def startDraw(self, qpos, pressure=0):
         self.ongoingEdit = True
 
         self.drawPoints = []
-        fPoint = self.qPointToFloatParirs(qpos)
+        fPoint = self.qPointToFloatParirs(qpos, pressure)
         self.drawPoints.append(fPoint)
 
-    def stopDraw(self, qpos):
+    def stopDraw(self, qpos, pressure=0):
         self.ongoingEdit = False
 
         # fPoint = self.qPointToFloatParirs(qpos)
@@ -438,11 +441,11 @@ class QPdfView(QGraphicsPixmapItem):
         self.drawPoints = []
 
 
-    def updateDrawPoints(self, qpos):
+    def updateDrawPoints(self, qpos, pressure=0):
         '''
         Called updates the currently ongoing marking to match the latest, provided position
         '''
-        fPoint = self.qPointToFloatParirs(qpos)
+        fPoint = self.qPointToFloatParirs(qpos, pressure)
         self.drawPoints.append(fPoint)
 
     def applyDrawPoints(self):
@@ -773,9 +776,10 @@ class QPdfView(QGraphicsPixmapItem):
 
     def fromSceneCoordinates(self, qPos, zoom, xOff, yOff):
         # pPos = self.mapFromParent(qPos)
-        qPos = self.mapFromParent(qPos / zoom)
-        qPos.setX(qPos.x()+xOff)
-        qPos.setY(qPos.y()+yOff)
+        qPos = qPos / zoom
+
+        qPos.setX(abs(qPos.x())+xOff - self.xOrigin)
+        qPos.setY(abs(qPos.y())+yOff - self.yOrigin)
         return qPos
 
     def toQPos(self, fPos):
