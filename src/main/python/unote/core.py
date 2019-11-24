@@ -631,7 +631,7 @@ class QPdfView(QGraphicsPixmapItem):
                 self.eh.addIndicatorPoint.emit(scenePoint.x(), scenePoint.y())
                 self.startNewMarkdownBox(self.toPdfCoordinates(event.pos()))
 
-            if not str2bool(Preferences.data['radioButtonPenOnly']):
+            if not toBool(Preferences.data['radioButtonPenOnly']):
                 if editMode == editModes.marker:
                     self.startMarkText(self.toPdfCoordinates(event.pos()))
                 elif editMode == editModes.freehand:
@@ -670,7 +670,7 @@ class QPdfView(QGraphicsPixmapItem):
 
                 self.stopNewMarkdownBox(self.toPdfCoordinates(event.pos()))
 
-            if not str2bool(Preferences.data['radioButtonPenOnly']):
+            if not toBool(Preferences.data['radioButtonPenOnly']):
                 if editMode == editModes.marker:
                     self.stopMarkText(self.toPdfCoordinates(event.pos()))
                 elif editMode == editModes.freehand:
@@ -733,7 +733,7 @@ class QPdfView(QGraphicsPixmapItem):
 
     def tabletEvent(self, event, zoom, xOff, yOff):
         self.blockEdit = False
-        if str2bool(Preferences.data['radioButtonPenOnly']):
+        if toBool(Preferences.data['radioButtonPenOnly']):
             if event.type() == QEvent.TabletMove:
                 if editMode == editModes.freehand:
                     self.updateDrawPoints(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
