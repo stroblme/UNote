@@ -8,7 +8,7 @@
 
 from PyQt5.QtWidgets import QSizePolicy, QFrame, QDialog, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGesture, QGraphicsLineItem, QGraphicsEllipseItem, QGesture
 from PyQt5.QtCore import Qt, QRectF, QEvent, QThread, pyqtSignal, pyqtSlot, QObject, QPoint
-from PyQt5.QtGui import QPixmap, QBrush, QColor, QImage, QPaintEvent, QFocusEvent, QHoverEvent, QTouchEvent
+from PyQt5.QtGui import QPixmap, QBrush, QColor, QImage, QPaintEvent, QFocusEvent, QHoverEvent, QTouchEvent, QPainter
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 import threading
 from preferences import Preferences
@@ -466,8 +466,12 @@ class QPdfView(QGraphicsPixmapItem):
         cyan  = norm_rgb.main
         black  = norm_rgb.black
 
-        # let it look a little nicer
-        # annot.setBorder({"width":1})# line thickness, some dashing
+        try:
+            penSize = pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/100)
+        except ValueError:
+            penSize = pdf_annots.defaultPenSize
+
+        annot.setBorder({"width":penSize})# line thickness, some dashing
         annot.setColors({"stroke":black})         # make the lines blue
         annot.update()
 
@@ -798,7 +802,6 @@ class GraphicsViewHandler(QGraphicsView):
 
     # x, y, pageNumber, currentContent
     requestTextInput = pyqtSignal(int, int, int, str)
-
     tempObj = list()
 
     def __init__(self, parent):
@@ -1073,8 +1076,6 @@ class GraphicsViewHandler(QGraphicsView):
         else:
             pdfViewInstance.updatePixMap(qImg)
 
-
-
     def wheelEvent(self, event):
         '''
         Overrides the default event
@@ -1154,7 +1155,6 @@ class GraphicsViewHandler(QGraphicsView):
         print('touch')
 
     def tabletEvent(self, event):
-
         item = self.itemAt(event.pos())
         if type(item) == QPdfView:
             # get the rectable of the current viewport

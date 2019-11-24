@@ -240,7 +240,7 @@ class ToolBoxWidget(QWidget):
             self.drawToolBoxShape(event)
 
         # Run the parent paint Event
-        QWidget.paintEvent(self, event)
+        return QWidget.paintEvent(self, event)
 
     def drawToolBoxShape(self, paintEvent):
         '''
