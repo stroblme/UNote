@@ -43,9 +43,10 @@ class GuiHelper(QWidget):
         if not filter:
             filter = "All Files (*)"
 
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getOpenFileName(self, "Open File", "", filter, options=options)
+        qfd = QFileDialog(self)
+        options = qfd.Options()
+        # options |= qfd.DontUseNativeDialog
+        fileName, _ = qfd.getOpenFileName(self, "Open File", "", filter, options=options)
 
         if fileName:
             print(fileName)
@@ -62,9 +63,10 @@ class GuiHelper(QWidget):
         if not filter:
             filter = "All Files (*)"
 
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        fileNames, _ = QFileDialog.getOpenFileNames(self, "Open File", "", filter, options=options)
+        qfd = QFileDialog(self)
+        options = qfd.Options()
+        # options |= QFileDialog.DontUseNativeDialog
+        fileNames, _ = qfd.getOpenFileNames(self, "Open File", "", filter, options=options)
 
         if fileNames:
             print(fileNames)
@@ -81,9 +83,10 @@ class GuiHelper(QWidget):
         if not filter:
             filter = "All Files (*)"
 
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getSaveFileName(
+        qfd = QFileDialog(self)
+        options = qfd.Options()
+        # options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = qfd.getSaveFileName(
             self, "Save File", "", filter, options=options)
         if fileName:
             print(fileName)
