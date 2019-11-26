@@ -165,13 +165,18 @@ class Savgol(object):
 
 
     def applySavgol(self, observedPoints):
+        # Odd window length for Savgol
+        # Use even Polynoms for better results!
 
-        if len(observedPoints) > 17:
-            WINDOW_LENGTH = 17 #odd!
+        if len(observedPoints) > 31:
+            WINDOW_LENGTH = 31 #odd!
+            POLYNOM_GRADE = 6
+        elif len(observedPoints) > 19:
+            WINDOW_LENGTH = 19 #odd!
             POLYNOM_GRADE = 4
         elif len(observedPoints) > 13:
             WINDOW_LENGTH = 13 #odd!
-            POLYNOM_GRADE = 3
+            POLYNOM_GRADE = 2
         elif len(observedPoints) > 7:
             WINDOW_LENGTH = 7 #odd!
             POLYNOM_GRADE = 2
