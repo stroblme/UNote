@@ -166,13 +166,22 @@ class Savgol(object):
 
     def applySavgol(self, observedPoints):
 
-
         if len(observedPoints) > 17:
             WINDOW_LENGTH = 17 #odd!
+            POLYNOM_GRADE = 4
+        elif len(observedPoints) > 13:
+            WINDOW_LENGTH = 13 #odd!
             POLYNOM_GRADE = 3
-        else:
+        elif len(observedPoints) > 7:
             WINDOW_LENGTH = 7 #odd!
+            POLYNOM_GRADE = 2
+        elif len(observedPoints) > 3:
+            WINDOW_LENGTH = 3 #odd!
             POLYNOM_GRADE = 1
+        else:
+            WINDOW_LENGTH = 1 #odd!
+            POLYNOM_GRADE = 1
+
 
         if len(observedPoints) > WINDOW_LENGTH:
             xPoints, yPoints = tuplesToArrays(observedPoints)
