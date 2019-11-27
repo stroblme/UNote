@@ -5,28 +5,27 @@
 #
 # Author: Melvin Strobl
 # ---------------------------------------------------------------
-
-from PyQt5.QtWidgets import QSizePolicy, QFrame, QDialog, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGesture, QGraphicsLineItem, QGraphicsEllipseItem, QGesture
-from PyQt5.QtCore import Qt, QRectF, QEvent, QThread, pyqtSignal, pyqtSlot, QObject, QPoint
-from PyQt5.QtGui import QPixmap, QBrush, QColor, QImage, QPaintEvent, QFocusEvent, QHoverEvent, QTouchEvent, QPainter
-from PyQt5.QtWebEngineWidgets import QWebEngineView
+import subprocess  # for running external cmds
+import os
+import sys
+import time
 import threading
+
+from indexed import IndexedOrderedDict
+from enum import Enum
+
+from PyQt5.QtWidgets import QFrame, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGesture, QGraphicsLineItem, QGraphicsEllipseItem
+from PyQt5.QtCore import Qt, QRectF, QEvent, QThread, pyqtSignal, pyqtSlot, QObject, QPoint
+from PyQt5.QtGui import QPixmap, QBrush, QColor, QImage,   QTouchEvent, QPainter
+from PyQt5.QtWebEngineWidgets import QWebEngineView
+
+import fitz
+
 from preferences import Preferences
 
 from pdfEngine import pdfEngine
 from imageHelper import imageHelper
 from markdownHelper import markdownHelper
-
-from enum import Enum
-
-import subprocess  # for running external cmds
-import os
-import sys
-import time
-
-from indexed import IndexedOrderedDict
-
-import fitz
 
 from util import toBool
 from editHelper import editModes
