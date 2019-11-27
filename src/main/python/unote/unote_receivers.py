@@ -5,12 +5,11 @@
 #
 # Author: Melvin Strobl
 # ---------------------------------------------------------------
-
-from PyQt5 import QtCore
-from PyQt5.QtCore import pyqtSignal, Qt, QObject, pyqtSlot
-
 import os
 import webbrowser
+
+from PyQt5 import QtCore
+from PyQt5.QtCore import pyqtSignal, QObject, pyqtSlot
 
 from preferences import Preferences
 from guiHelper import GuiHelper

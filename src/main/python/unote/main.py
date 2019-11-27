@@ -10,24 +10,12 @@
 # ----------------------------------------------------------
 # Import region
 # ----------------------------------------------------------
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtCore import pyqtSignal, QFile, QTextStream, pyqtSlot, QObject
-from PyQt5.QtWidgets import QDialog, QGraphicsView, QGraphicsScene, QWidget
-
-
 import argparse  # parsing cmdline arguments
 import os  # launching external python script
 import sys  # exit script, file parsing
-import subprocess  # for running external cmds
 import atexit
 
-
-# app = QApplication(sys.argv)
-# file = QFile(":/dark.qss")
-# file.open(QFile.ReadOnly | QFile.Text)
-# stream = QTextStream(file)
-# app.setStyleSheet(stream.readAll())
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 SCRIPTDIR = os.path.dirname(os.path.realpath(__file__))
 

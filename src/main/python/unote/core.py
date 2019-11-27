@@ -438,8 +438,6 @@ class QPdfView(QGraphicsPixmapItem):
 
         self.applyDrawPoints()
 
-        self.drawPoints = []
-
 
     def updateDrawPoints(self, qpos, pressure=0):
         '''
@@ -453,13 +451,15 @@ class QPdfView(QGraphicsPixmapItem):
         # self.kalman.initKalman(self.qPointToFloatParirs(self.startPos))
 
         # self.drawPoints = self.kalman.applyKalman(self.drawPoints)
-
-        self.drawPoints = self.savgol.applySavgol(self.drawPoints)  # Line smoothing
+        segment = self.drawPoints
+        self.drawPoints = []
+        segment = self.savgol.applySavgol(segment)
+        # Line smoothing
         # self.estPoints = self.formEstimator.estimateLine(self.drawPoints)
 
 
         g = []
-        g.append(self.drawPoints)
+        g.append(segment)
 
         annot = self.page.addInkAnnot(g)
 

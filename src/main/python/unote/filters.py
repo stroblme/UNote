@@ -184,8 +184,7 @@ class Savgol(object):
             WINDOW_LENGTH = 3 #odd!
             POLYNOM_GRADE = 1
         else:
-            WINDOW_LENGTH = 1 #odd!
-            POLYNOM_GRADE = 1
+            return observedPoints
 
 
         if len(observedPoints) > WINDOW_LENGTH:
@@ -203,9 +202,6 @@ class Savgol(object):
             yPoints.extend([yPoints[0] - 1])
 
             points = arraysToTuples(xPoints, yPoints)
-        else:
-            points = observedPoints
-            print('too short')
 
         return points
 
