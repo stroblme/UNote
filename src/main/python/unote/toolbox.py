@@ -1,12 +1,9 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtGui import QPixmap, QPainter, QPen, QBrush, QColor, QPolygon, QIcon
-from PyQt5.QtCore import pyqtSignal, QFile, QTextStream, pyqtSlot, QObject, QPoint, Qt, QRect, QSize
-from PyQt5.QtWidgets import QDialog, QGraphicsView, QGraphicsScene, QWidget, QPushButton, QVBoxLayout, QTextEdit, QGridLayout, QSlider
-
+from math import sin, cos
 from indexed import IndexedOrderedDict
 
-
-from math import sin, cos
+from PyQt5.QtGui import QPainter, QPen, QColor, QIcon
+from PyQt5.QtCore import pyqtSignal, pyqtSlot, QPoint, Qt, QRect, QSize
+from PyQt5.QtWidgets import QWidget, QPushButton, QTextEdit, QGridLayout, QSlider
 
 import assets
 

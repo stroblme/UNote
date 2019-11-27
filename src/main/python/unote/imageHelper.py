@@ -1,6 +1,5 @@
-from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtWidgets import QFileDialog, QWidget, QGraphicsPixmapItem
-from PyQt5.QtGui import QPixmap, QImage, QColor
+from PyQt5.QtWidgets import QWidget
+from PyQt5.QtGui import QPixmap, QImage
 
 from preferences import Preferences
 from util import toBool
