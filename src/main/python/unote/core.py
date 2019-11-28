@@ -60,6 +60,7 @@ class QPdfView(QGraphicsPixmapItem):
     ongoingEdit = False
     blockEdit = False
     drawPoints = []
+    formPoints = []
     drawIndicators = []
 
     def __init__(self):
@@ -181,7 +182,7 @@ class QPdfView(QGraphicsPixmapItem):
             if self.startPos != self.endPos:
                 fStart, fEnd = self.recalculateLinePoints(textRect, self.startPos)
 
-                lineXref = self.insertLine(fStart, fEnd, "")
+                lineXref = self.insertArrow(fStart, fEnd, "")
 
                 textAnnotInfo = textAnnot.info
                 textAnnotInfo["subject"] = str(lineXref)
@@ -197,7 +198,7 @@ class QPdfView(QGraphicsPixmapItem):
             if self.startPos != self.endPos:
                 self.eh.deleteLastIndicatorPoint.emit()
 
-    def insertLine(self, fStart, fEnd, subj):
+    def insertArrow(self, fStart, fEnd, subj):
         cyan  = norm_rgb.main
         borderLine = {"width": pdf_annots.borderWidth}
 
@@ -209,6 +210,23 @@ class QPdfView(QGraphicsPixmapItem):
 
         lineAnnot.setBorder(borderLine)
         lineAnnot.setLineEnds(fitz.ANNOT_LE_Circle, fitz.ANNOT_LE_Circle)
+        lineAnnot.update(border_color=cyan, fill_color=cyan)
+        lineAnnot.update()
+
+        return lineAnnot.xref
+
+    def insertLine(self, fStart, fEnd, subj):
+        cyan  = norm_rgb.main
+        borderLine = {"width": pdf_annots.borderWidth}
+
+        lineAnnot = self.page.addLineAnnot(fStart, fEnd)
+
+        lineAnnotInfo = lineAnnot.info
+        lineAnnotInfo["subject"] = subj
+        lineAnnot.setInfo(lineAnnotInfo)
+
+        lineAnnot.setBorder(borderLine)
+        # lineAnnot.setLineEnds(fitz.ANNOT_LE_Circle, fitz.ANNOT_LE_Circle)
         lineAnnot.update(border_color=cyan, fill_color=cyan)
         lineAnnot.update()
 
@@ -350,7 +368,7 @@ class QPdfView(QGraphicsPixmapItem):
             fStart, fEnd = self.recalculateLinePoints(annot.rect, QPoint(*startPos))
 
             self.deleteAnnot(corrAnnot)
-            newXRef = self.insertLine(fStart, fEnd, lineSubj)
+            newXRef = self.insertArrow(fStart, fEnd, lineSubj)
 
             textInfo = annot.info
             textInfo["subject"] = str(newXRef)
@@ -421,11 +439,33 @@ class QPdfView(QGraphicsPixmapItem):
 
         for annot in annots:
             self.deleteAnnot(annot)
+
     #-----------------------------------------------------------------------
     # Draw
     #-----------------------------------------------------------------------
+    def startForms(self, qpos):
+        self.ongoingEdit = True
+
+        self.formPoints = []
+
+    def stopForms(self, qpos):
+        self.applyFormPoints()
+        # self.drawIndicators = []
+
+        self.ongoingEdit = False
+
+    def updateFormPoints(self, qpos):
+        self.formPoints.append(self.qPointToFPoint(qpos))
 
 
+    def applyFormPoints(self):
+        fStart, fStop = self.formEstimator.estimateLine(self.formPoints[0], self.formPoints[-1])
+
+        lineXref = self.insertLine(fStart, fStop, "")
+
+    #-----------------------------------------------------------------------
+    # Draw
+    #-----------------------------------------------------------------------
     def startDraw(self, qpos, pressure=0):
         self.ongoingEdit = True
 
@@ -749,6 +789,8 @@ class QPdfView(QGraphicsPixmapItem):
                     self.updateDrawPoints(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
                 elif editMode == editModes.eraser:
                     self.updateEraserPoints(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
+                elif editMode == editModes.forms:
+                    self.updateFormPoints(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
             elif event.type() == QEvent.TabletPress:
                 if editMode == editModes.marker:
                     self.startMarkText(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
@@ -756,6 +798,8 @@ class QPdfView(QGraphicsPixmapItem):
                     self.startDraw(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
                 elif editMode == editModes.eraser:
                     self.startEraser(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
+                elif editMode == editModes.forms:
+                    self.startForms(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
             elif event.type() == QEvent.TabletRelease:
                 if editMode == editModes.marker:
                     self.stopMarkText(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
@@ -763,6 +807,8 @@ class QPdfView(QGraphicsPixmapItem):
                     self.stopDraw(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
                 elif editMode == editModes.eraser:
                     self.stopEraser(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
+                elif editMode == editModes.forms:
+                    self.stopForms(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
 
             elif event.type() == QEvent.TabletEnterProximity:
                 print('enter prox')

@@ -2,7 +2,7 @@ import numpy as np
 from scipy.signal import savgol_filter
 from scipy.linalg import lstsq
 from scipy import dot
-from math import asin
+from math import asin, sqrt
 
 def tuplesToArrays(points):
     xPoints = []
@@ -31,41 +31,18 @@ class FormEstimator(object):
     def estimateForm(self, observedPoints):
         pass
 
-    def estimateLine(self, observedPoints):
-        MINNUMBEROFDATAPOINTS = 10
-        MINNUMBEROFITERATIONS = 100
-        THRESPOINTSFITWELL = 7e3
-        CLOSEDATAPOINTSFORWELLFITTING = 300
+    def estimateLine(self, fStart, fStop):
+        MAXYDELTA = 0.1
+        MAXXDELTA = 0.1
 
-        if len(observedPoints) < MINNUMBEROFDATAPOINTS:
-            return observedPoints
+        distance = sqrt(pow(fStart.y - fStop.y, 2) + pow(fStart.x - fStop.x, 2))
 
-        n_inputs = 1
-        n_outputs = 1
+        if abs(fStart.y - fStop.y)/distance < MAXYDELTA:
+            fStop.y = fStart.y
+        if abs(fStart.x - fStop.x)/distance < MAXXDELTA:
+            fStop.x = fStart.x
 
-        xPoints, yPoints = tuplesToArrays(observedPoints)
-        A_exact = np.array(xPoints)
-        B_exact = np.array(yPoints)
-        all_data = np.hstack( (A_exact,B_exact) )
-
-        # setup model
-
-        input_columns = range(n_inputs) # the first columns of the np.array
-        output_columns = [n_inputs+i for i in range(n_outputs)] # the last columns of the np.array
-        model = LinearLeastSquaresModel(input_columns,
-                                        output_columns)
-
-
-
-        # run RANSAC algorithm
-        ransac_fit, ransac_data = self.ransac.applyRansac(
-                                        all_data,
-                                        model,
-                                        MINNUMBEROFDATAPOINTS,
-                                        MINNUMBEROFITERATIONS,
-                                        THRESPOINTSFITWELL,
-                                        CLOSEDATAPOINTSFORWELLFITTING,)
-        return ransac_data
+        return fStart, fStop
 
 
 class Kalman(object):
