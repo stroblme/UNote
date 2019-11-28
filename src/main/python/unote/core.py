@@ -59,6 +59,7 @@ class QPdfView(QGraphicsPixmapItem):
     endPos = 0
     ongoingEdit = False
     blockEdit = False
+    drawPoints = []
 
     def __init__(self):
         QGraphicsPixmapItem.__init__(self)
@@ -430,20 +431,19 @@ class QPdfView(QGraphicsPixmapItem):
         self.drawPoints.append(fPoint)
 
     def stopDraw(self, qpos, pressure=0):
-        self.ongoingEdit = False
 
         # fPoint = self.qPointToFloatParirs(qpos)
         # self.drawPoints.append(fPoint)
 
         self.applyDrawPoints()
+        self.ongoingEdit = False
 
 
     def updateDrawPoints(self, qpos, pressure=0):
         '''
         Called updates the currently ongoing marking to match the latest, provided position
         '''
-        fPoint = self.qPointToFloatParirs(qpos, pressure)
-        self.drawPoints.append(fPoint)
+        self.drawPoints.append(self.qPointToFloatParirs(qpos, pressure))
 
     def applyDrawPoints(self):
 
@@ -452,18 +452,18 @@ class QPdfView(QGraphicsPixmapItem):
         # self.drawPoints = self.kalman.applyKalman(self.drawPoints)
         segment = self.drawPoints
         self.drawPoints = []
+
         segment = self.savgol.applySavgol(segment)
         # Line smoothing
         # self.estPoints = self.formEstimator.estimateLine(self.drawPoints)
-
 
         g = []
         g.append(segment)
 
         annot = self.page.addInkAnnot(g)
 
-        cyan  = norm_rgb.main
-        black  = norm_rgb.black
+        cyan = norm_rgb.main
+        black = norm_rgb.black
 
         try:
             penSize = pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/100)

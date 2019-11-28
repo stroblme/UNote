@@ -391,7 +391,7 @@ class ToolBoxWidget(QWidget):
         '''
         self.__mousePressPos = None
         self.__mouseMovePos = None
-        if event.button() == QtCore.Qt.LeftButton:
+        if event.button() == Qt.LeftButton:
             self.__mousePressPos = event.globalPos()
             self.__mouseMovePos = event.globalPos()
 
@@ -401,7 +401,7 @@ class ToolBoxWidget(QWidget):
         '''
         Overrides the default event
         '''
-        if event.buttons() == QtCore.Qt.LeftButton:
+        if event.buttons() == Qt.LeftButton:
             try:
                 # adjust offset from clicked point to origin of widget
                 currPos = self.mapToGlobal(self.pos())
