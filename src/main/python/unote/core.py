@@ -1231,9 +1231,11 @@ class GraphicsViewHandler(QGraphicsView):
 
     def pageGoto(self, pageNumber):
         if self.pages and pageNumber in range(len(self.pages)):
-            scrollPos = (self.verticalScrollBar().maximumHeight()/len(self.pages)) * pageNumber
+            if pageNumber >= 1:
+                self.verticalScrollBar().setValue(self.pages[pageNumber - 1].yOrigin * self.absZoomFactor)
+            else:
+                self.verticalScrollBar().setValue(0)
 
-            self.verticalScrollBar().setValue(self.pages[pageNumber].yOrigin)
             self.update()
 
             self.updateRenderedPages()
