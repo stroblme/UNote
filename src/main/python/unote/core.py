@@ -451,7 +451,7 @@ class QPdfView(QGraphicsPixmapItem):
         curPos = self.qPointToFloatParirs(qpos, pressure)
 
         if len(self.drawPoints) > 1:
-            if self.qPointDistance(curPos, qpos) > 120:
+            if self.qPointDistance(self.drawPoints[-1], curPos) > 120:
                 return
 
         self.drawPoints.append(curPos)
