@@ -1,7 +1,6 @@
+import os
 import fitz
 from PIL import Image, ImageQt
-import PIL.ImageOps
-import os
 
 
 class pdfEngine():

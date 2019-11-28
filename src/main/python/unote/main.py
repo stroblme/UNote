@@ -15,7 +15,9 @@ import os  # launching external python script
 import sys  # exit script, file parsing
 import atexit
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtCore import QTimer, Qt, QRect
 
 SCRIPTDIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -52,7 +54,7 @@ class UNote():
 
         self.initUI()
 
-        t = QtCore.QTimer()
+        t = QTimer()
         t.singleShot(0, self.onQApplicationStarted)
 
 
@@ -78,7 +80,7 @@ class UNote():
         # self.app = QtWidgets.QApplication(sys.argv)
         self.appctxt = ApplicationContext()
 
-        self.MainWindow = QtWidgets.QMainWindow()
+        self.MainWindow = QMainWindow()
 
         self.ui = Ui_MainWindow()
 
@@ -86,7 +88,7 @@ class UNote():
         self.ui.setupUi(self.MainWindow)
 
         # Load the icon
-        self.MainWindow.setWindowIcon(QtGui.QIcon(":/assets/icon.png"))
+        self.MainWindow.setWindowIcon(QIcon(":/assets/icon.png"))
 
         # Initialize graphicviewhandler. This is a core component of unote
         self.ui.graphicsView = GraphicsViewHandler(self.ui.centralwidget)
@@ -95,9 +97,9 @@ class UNote():
 
         # Initialize a floating toolboxwidget. This is used for storing tools and editing texts
         self.ui.floatingToolBox = ToolBoxWidget(self.MainWindow)
-        self.ui.floatingToolBox.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.FramelessWindowHint)
+        self.ui.floatingToolBox.setWindowFlags(Qt.WindowTitleHint | Qt.FramelessWindowHint)
         self.ui.floatingToolBox.setObjectName("floatingToolBox")
-        self.ui.floatingToolBox.setGeometry(QtCore.QRect(TOOLBOXSTARTX, TOOLBOXSTARTY, TOOLBOXWIDTH, TOOLBOXHEIGHT))
+        self.ui.floatingToolBox.setGeometry(QRect(TOOLBOXSTARTX, TOOLBOXSTARTY, TOOLBOXWIDTH, TOOLBOXHEIGHT))
         self.ui.floatingToolBox.show()
         # self.ui.floatingToolBox.setStyleSheet("background-color:black")
 
@@ -145,28 +147,28 @@ class UNote():
         self.ui.actionExit.triggered.connect(self.appctxt.app.quit)
 
         # Open Preferences
-        self.ui.actionPreferences.triggered.connect(lambda:self.receiversInst.openPreferencesReceiver(self.preferencesGui))
+        self.ui.actionPreferences.triggered.connect(lambda: self.receiversInst.openPreferencesReceiver(self.preferencesGui))
 
         # Create new PDF file
-        self.ui.actionNew_PDF.triggered.connect(lambda:self.receiversInst.newPdf())
+        self.ui.actionNew_PDF.triggered.connect(lambda: self.receiversInst.newPdf())
 
         # Load PDF File
-        self.ui.actionLoad_PDF.triggered.connect(lambda:self.receiversInst.loadPdf())
+        self.ui.actionLoad_PDF.triggered.connect(lambda: self.receiversInst.loadPdf())
 
         # Save PDF
-        self.ui.actionSave_PDF.triggered.connect(lambda:self.receiversInst.savePdf())
+        self.ui.actionSave_PDF.triggered.connect(lambda: self.receiversInst.savePdf())
 
         # Save PDF as
-        self.ui.actionSave_PDF_as.triggered.connect(lambda:self.receiversInst.savePdfAs())
+        self.ui.actionSave_PDF_as.triggered.connect(lambda: self.receiversInst.savePdfAs())
 
         # Insert PDF Page
-        self.ui.actionPageInsertHere.triggered.connect(lambda:self.receiversInst.pageInsertHere())
+        self.ui.actionPageInsertHere.triggered.connect(lambda: self.receiversInst.pageInsertHere())
 
         # Goto Page
-        self.ui.actionPageGoto.triggered.connect(lambda:self.receiversInst.pageGoto())
+        self.ui.actionPageGoto.triggered.connect(lambda: self.receiversInst.pageGoto())
 
         # Delete Active PDF Page
-        self.ui.actionPageInsertHere.triggered.connect(lambda:self.receiversInst.pageDeleteActive())
+        self.ui.actionPageInsertHere.triggered.connect(lambda: self.receiversInst.pageDeleteActive())
 
         # Toolbox Edit modes available
         self.ui.floatingToolBox.editModeChange.connect(self.ui.graphicsView.editModeChangeRequest)
@@ -175,7 +177,7 @@ class UNote():
         self.ui.floatingToolBox.textInputFinished.connect(self.ui.graphicsView.toolBoxTextInputEvent)
         self.ui.graphicsView.requestTextInput.connect(self.ui.floatingToolBox.handleTextInputRequest)
 
-        self.ui.actionDonate.triggered.connect(lambda:self.receiversInst.donate())
+        self.ui.actionDonate.triggered.connect(lambda: self.receiversInst.donate())
 # ----------------------------------------------------------
 # User Parameter region
 # ----------------------------------------------------------

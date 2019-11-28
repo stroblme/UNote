@@ -9,9 +9,12 @@
 - [ ] Implement custom colors for annots and drawings
 - [ ] Drag&Drop PDF load
 - [ ] Custom file opening and saving dialog
-- [ ] Insert, extract and split pages in PDF
+- [ ] Implement Page extraction
+- [ ] Implement Page moving
+- [ ] Implement picture insert
+- [ ] Implement pdf drag&drop load
 - [ ] Smooth scrolling using QTimeLine
-- [ ] Implement bookmarks view pane
+- [ ] Implement bookmarks view panel
 - [ ] Add tooltips
 - [ ] Implement Forms fill functionality
 - [ ] Get more abstraction by splitting up core script
@@ -28,6 +31,7 @@
 - [ ] Implement easy toggling of annotation modes
 - [ ] Smoother drawing
 - [ ] Form estimation (machine vision)
+- [x] Implement Goto Page.. functionality
 
 ## Features for v2.x
 
@@ -42,7 +46,7 @@
 - [x] Improve moving of objects (lines)
 - [x] Implement free drawing
 - [x] Improve smoothness on free drawing
-- [ ] Implement active Pen Support https://doc.qt.io/qt-5/qtabletevent.html
+- [x] Implement active Pen Support https://doc.qt.io/qt-5/qtabletevent.html
 - [ ] Improve text wrapping
 - [x] Implement temporary points to indicate ongoing edit
 - [x] Improve PDF opening performance
@@ -50,32 +54,35 @@
 - [ ] Implement Undo and Redo functionality
 - [ ] Reduce Text Size with increasing annotation length
 - [o] Implement object resizing
-- [ ] Create new PDF
+- [x] Create new PDF
 - [ ] Improve text box endpoint position
 - [ ] Fix Annotation colors for inverted mode
 - [x] PDF overwriting
 - [ ] PDF loading indicator
 - [o] Implement markdown formatted annotations
 - [x] Implement eraser
+- [x] Implement Sizes for drawing and marker
 - [ ] Implement basic forms
 - [ ] Implement gestures for touch compatibility
 - [x] Improve highlighting by reducing noise on y axis (Kalman?); simply converted to simple rect
 - [ ] Threading for pdf loading
 - [ ] Threading for pdf saving
 - [ ] Threading for pdf rendering
-- [ ] Implement clear all indicator points
+- [x] Implement clear all indicator points
+- [x] Implement page insertion
+- [ ] Improve pdf saving
 
 ### Issues in 1.x
 
-- Performance drop when rendering edited pdf file; sometimes reproducable
-- Bug, that a page is displayed twice, after inserting annot; sometimes reproducable
-- Indiator points sometimes not displayed correctly
-- Text not displayed correctly when too much
-- Corporate design for freehand drawings
-- much noice while freehand drawing
-- In light theme, the button state keeps persistent after deactivation
-- Text box can be positioned outside pdf area
-- Indicator Points not disappear after cancelling edit
+- [ ] Performance drop when rendering edited pdf file; sometimes reproducable
+- [ ] Bug, that a page is displayed twice, after inserting annot; sometimes reproducable
+- [ ] Indiator points sometimes not displayed correctly
+- [ ] Text not displayed correctly when too much
+- [ ] Corporate design for freehand drawings
+- [x] much noice while freehand drawing
+- [x] In light theme, the button state keeps persistent after deactivation
+- [x] Text box can be positioned outside pdf area
+- [x] Indicator Points not disappear after cancelling edit
 
 ## Features for v1.x - Completed
 
@@ -104,5 +111,5 @@
 
 ### Issues in 0.x
 
-- PDF loading time
-- No 'Delete' option
+- [x] PDF loading time
+- [x] No 'Delete' option
