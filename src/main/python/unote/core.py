@@ -401,7 +401,6 @@ class QPdfView(QGraphicsPixmapItem):
 
     def startEraser(self, qpos):
         self.ongoingEdit = True
-        self.startPos = qpos
 
         self.eraserPoints = []
 
