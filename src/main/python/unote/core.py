@@ -110,6 +110,9 @@ class QPdfView(QGraphicsPixmapItem):
     def fPointToQPoint(self, fPoint):
         return QPoint(fPoint.x, fPoint.y)
 
+    def qPointDistance(self, qPosA, qPosB):
+        return abs(qPosA[0] - qPosB[0]) + abs(qPosA[1] - qPosB[1])
+
     #-----------------------------------------------------------------------
     # Markdown Box
     #-----------------------------------------------------------------------
@@ -376,7 +379,7 @@ class QPdfView(QGraphicsPixmapItem):
         yMax = max(self.startPos.y(), self.endPos.y())
 
         try:
-            minWidth = pdf_annots.defaultMarkerSize * (int(Preferences.data['markerSize'])/100)
+            minWidth = pdf_annots.defaultMarkerSize * (int(Preferences.data['markerSize'])/pdf_annots.markerScale)
         except ValueError:
             minWidth = pdf_annots.defaultMarkerSize
 
@@ -428,6 +431,7 @@ class QPdfView(QGraphicsPixmapItem):
         self.ongoingEdit = True
 
         self.drawPoints = []
+        # self.drawIndicators = []
         # self.drawPoints.append(self.qPointToFloatParirs(qpos, pressure))
 
     def stopDraw(self, qpos, pressure=0):
@@ -436,15 +440,22 @@ class QPdfView(QGraphicsPixmapItem):
         # self.drawPoints.append(fPoint)
 
         self.applyDrawPoints()
-        self.ongoingEdit = False
+        # self.drawIndicators = []
 
+        self.ongoingEdit = False
 
     def updateDrawPoints(self, qpos, pressure=0):
         '''
         Called updates the currently ongoing marking to match the latest, provided position
         '''
-        self.drawPoints.append(self.qPointToFloatParirs(qpos, pressure))
-        self.drawIndicators.append(qpos)
+        curPos = self.qPointToFloatParirs(qpos, pressure)
+
+        if len(self.drawPoints) > 1:
+            if self.qPointDistance(curPos, qpos) > 120:
+                return
+
+        self.drawPoints.append(curPos)
+        # self.drawIndicators.append(qpos)
 
     def applyDrawPoints(self):
 
@@ -467,7 +478,7 @@ class QPdfView(QGraphicsPixmapItem):
         black = norm_rgb.black
 
         try:
-            penSize = pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/100)
+            penSize = pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/pdf_annots.freeHandScale)
         except ValueError:
             penSize = pdf_annots.defaultPenSize
 
