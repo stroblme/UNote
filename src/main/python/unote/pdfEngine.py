@@ -37,6 +37,10 @@ class pdfEngine():
 
         return self.doc
 
+    def closePdf(self):
+        self.doc.close()
+
+
     def savePdf(self):
         name, ext = os.path.splitext(self.filename)
         try:

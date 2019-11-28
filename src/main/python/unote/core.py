@@ -427,7 +427,7 @@ class QPdfView(QGraphicsPixmapItem):
         self.ongoingEdit = True
 
         self.drawPoints = []
-        self.drawPoints.append(self.qPointToFloatParirs(qpos, pressure))
+        # self.drawPoints.append(self.qPointToFloatParirs(qpos, pressure))
 
     def stopDraw(self, qpos, pressure=0):
 
@@ -1194,8 +1194,11 @@ class GraphicsViewHandler(QGraphicsView):
             # Insert after current page
             newPage = self.pdf.insertPage(renderedItem.pageNumber+1)
             fileName = self.saveCurrentPdf()
+            self.pdf.closePdf()
+            os.replace(fileName, self.pdf.filename)
+
             prevScroll = self.verticalScrollBar().value()
-            self.loadPdfToCurrentView(fileName, renderedItem.pageNumber+1)
+            self.loadPdfToCurrentView(self.pdf.filename, renderedItem.pageNumber+1)
             self.updateRenderedPages()
             self.verticalScrollBar().setMaximum(self.verticalScrollBar().maximumHeight())
             self.verticalScrollBar().setValue(prevScroll)
