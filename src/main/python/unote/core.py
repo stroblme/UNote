@@ -60,6 +60,7 @@ class QPdfView(QGraphicsPixmapItem):
     ongoingEdit = False
     blockEdit = False
     drawPoints = []
+    drawIndicators = []
 
     def __init__(self):
         QGraphicsPixmapItem.__init__(self)
@@ -443,6 +444,7 @@ class QPdfView(QGraphicsPixmapItem):
         Called updates the currently ongoing marking to match the latest, provided position
         '''
         self.drawPoints.append(self.qPointToFloatParirs(qpos, pressure))
+        self.drawIndicators.append(qpos)
 
     def applyDrawPoints(self):
 
@@ -758,6 +760,16 @@ class QPdfView(QGraphicsPixmapItem):
                 print('leave prox')
 
             # event.accept()
+
+    # def paint(self, QPainter, QStyleOptionGraphicsItem, QWidget):
+    #     QPainter.begin(QWidget)
+    #     QPainter.setPen(QColor(255,255,255))
+    #     for point in self.drawIndicators:
+    #         QPainter.drawPoint(point)
+    #     QPainter.end()
+
+    #     return super().paint(QPainter, QStyleOptionGraphicsItem, QWidget)
+
 
     def toPdfCoordinates(self, qPos):
         '''
