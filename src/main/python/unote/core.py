@@ -1024,8 +1024,6 @@ class GraphicsViewHandler(QGraphicsView):
 
             clip = QRectF(clipX, clipY, clipW, clipH)
 
-            self.updatePage(renderedItem, zoom = self.absZoomFactor, clip = clip)
-
             if clipX != 0:
                 rItx = viewportX
             else:
@@ -1036,6 +1034,9 @@ class GraphicsViewHandler(QGraphicsView):
                 rIty = renderedItem.yOrigin
 
             renderedItem.setPos(rItx, rIty)
+
+            self.updatePage(renderedItem, zoom = self.absZoomFactor, clip = clip)
+
 
 
     def updatePage(self, pdfViewInstance, zoom=absZoomFactor, clip=None):
