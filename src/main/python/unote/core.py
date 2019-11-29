@@ -474,6 +474,7 @@ class QPdfView(QGraphicsPixmapItem):
         # self.drawPoints.append(self.qPointToFloatParirs(qpos, pressure))
 
     def stopDraw(self, qpos, pressure=0):
+        self.ongoingEdit = False
 
         # fPoint = self.qPointToFloatParirs(qpos)
         # self.drawPoints.append(fPoint)
@@ -481,7 +482,6 @@ class QPdfView(QGraphicsPixmapItem):
         self.applyDrawPoints()
         # self.drawIndicators = []
 
-        self.ongoingEdit = False
 
     def updateDrawPoints(self, qpos, pressure=0):
         '''
