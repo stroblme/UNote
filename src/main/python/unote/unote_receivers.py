@@ -121,5 +121,12 @@ class Receivers(QObject):
         '''
         self.SigSendMessageToJS.emit(msg)
 
-    def donate(self):
-        webbrowser.open("https://www.paypal.me/vinstrobl")
+    def aboutReceiver(self):
+        pass
+
+    def checkForUpdatesReceiver(self):
+        pass
+
+    def donateReceiver(self):
+        #Buy me a coffee <3
+        webbrowser.open("https://www.paypal.me/vinstrobl/coffee")

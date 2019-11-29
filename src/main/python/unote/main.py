@@ -177,7 +177,11 @@ class UNote():
         self.ui.floatingToolBox.textInputFinished.connect(self.ui.graphicsView.toolBoxTextInputEvent)
         self.ui.graphicsView.requestTextInput.connect(self.ui.floatingToolBox.handleTextInputRequest)
 
-        self.ui.actionDonate.triggered.connect(lambda: self.receiversInst.donate())
+        self.ui.actionHelpDonate.triggered.connect(lambda: self.receiversInst.donateReceiver())
+
+        self.ui.actionHelpCheck_for_Updates.triggered.connect(lambda: self.receiversInst.checkForUpdatesReceiver())
+
+        self.ui.actionHelpAbout.triggered.connect(lambda: self.receiversInst.aboutReceiver())
 # ----------------------------------------------------------
 # User Parameter region
 # ----------------------------------------------------------
