@@ -124,9 +124,9 @@ class Receivers(QObject):
     def aboutReceiver(self):
         pass
 
-    def checkForUpdatesReceiver(self):
-        pass
+    def checkForUpdatesReceiver(self, url):
+        webbrowser.open(url)
 
-    def donateReceiver(self):
+    def donateReceiver(self, url):
         #Buy me a coffee <3
-        webbrowser.open("https://www.paypal.me/vinstrobl/coffee")
+        webbrowser.open(url)

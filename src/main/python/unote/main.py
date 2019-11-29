@@ -33,17 +33,26 @@ from preferences_gui import PreferencesGUI
 
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
 
-TOOLBOXWIDTH = 200
-TOOLBOXHEIGHT = 200
-TOOLBOXSTARTX = 200
-TOOLBOXSTARTY = 200
 
-MAINWINDOWSTARTX = 0
-MAINWINDOWSTARTY = 0
-MAINWINDOWWIDTH = 1920
-MAINWINDOWHEIGHT = 1080
 
-class UNote():
+class App(Ui_MainWindow):
+    appctxt = ApplicationContext()
+
+    DONATEURL = "https://www.paypal.me/vinstrobl/coffee"
+    UPDATEURL = "http://www.foxbyrd.com/wp-content/uploads/2018/02/file-4.jpg"
+    ABOUTURL = "http://www.foxbyrd.com/wp-content/uploads/2018/02/file-4.jpg"
+
+    TOOLBOXWIDTH = 200
+    TOOLBOXHEIGHT = 200
+    TOOLBOXSTARTX = 200
+    TOOLBOXSTARTY = 200
+
+    # MAINWINDOWSTARTX = 0
+    # MAINWINDOWSTARTY = 0
+    # MAINWINDOWWIDTH = 1920
+    # MAINWINDOWHEIGHT = 1080
+
+class UNote(App):
     '''
     Main class for the UNote
     '''
@@ -99,7 +108,7 @@ class UNote():
         self.ui.floatingToolBox = ToolBoxWidget(self.MainWindow)
         self.ui.floatingToolBox.setWindowFlags(Qt.WindowTitleHint | Qt.FramelessWindowHint)
         self.ui.floatingToolBox.setObjectName("floatingToolBox")
-        self.ui.floatingToolBox.setGeometry(QRect(TOOLBOXSTARTX, TOOLBOXSTARTY, TOOLBOXWIDTH, TOOLBOXHEIGHT))
+        self.ui.floatingToolBox.setGeometry(QRect(self.TOOLBOXSTARTX, self.TOOLBOXSTARTY, self.TOOLBOXWIDTH, self.TOOLBOXHEIGHT))
         self.ui.floatingToolBox.show()
         # self.ui.floatingToolBox.setStyleSheet("background-color:black")
 
@@ -177,11 +186,11 @@ class UNote():
         self.ui.floatingToolBox.textInputFinished.connect(self.ui.graphicsView.toolBoxTextInputEvent)
         self.ui.graphicsView.requestTextInput.connect(self.ui.floatingToolBox.handleTextInputRequest)
 
-        self.ui.actionHelpDonate.triggered.connect(lambda: self.receiversInst.donateReceiver())
+        self.ui.actionHelpDonate.triggered.connect(lambda: self.receiversInst.donateReceiver(self.DONATEURL))
 
-        self.ui.actionHelpCheck_for_Updates.triggered.connect(lambda: self.receiversInst.checkForUpdatesReceiver())
+        self.ui.actionHelpCheck_for_Updates.triggered.connect(lambda: self.receiversInst.checkForUpdatesReceiver(self.UPDATEURL))
 
-        self.ui.actionHelpAbout.triggered.connect(lambda: self.receiversInst.aboutReceiver())
+        self.ui.actionHelpAbout.triggered.connect(lambda: self.receiversInst.aboutReceiver(self.ABOUTURL))
 # ----------------------------------------------------------
 # User Parameter region
 # ----------------------------------------------------------

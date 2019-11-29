@@ -29,4 +29,4 @@ pip-delete-this-directory.txt
 # fbs
 target/*
 
-venv/Lib/*
+venv/*
