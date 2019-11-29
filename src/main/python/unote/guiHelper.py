@@ -10,7 +10,7 @@ import sys
 
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QFileDialog, QWidget, QInputDialog
-from PyQt5.QtCore import QSettings, QFile, QTextStream
+from PyQt5.QtCore import QFile, QTextStream, Qt
 
 from PyQt5.QtWidgets import QApplication
 
@@ -23,11 +23,11 @@ class GuiHelper(QWidget):
 
     def __init__(self):
         super().__init__()
-        self.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.FramelessWindowHint)
+        self.setWindowFlags(Qt.WindowTitleHint | Qt.FramelessWindowHint)
 
     def openInputDialog(self, title, text):
         qid = QInputDialog(self)
-        qid.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.FramelessWindowHint)
+        qid.setWindowFlags(Qt.WindowTitleHint | Qt.FramelessWindowHint)
 
         resp, ok = qid.getInt(self, title, text)
 
@@ -43,9 +43,10 @@ class GuiHelper(QWidget):
         if not filter:
             filter = "All Files (*)"
 
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getOpenFileName(self, "Open File", "", filter, options=options)
+        qfd = QFileDialog(self)
+        options = qfd.Options()
+        # options |= qfd.DontUseNativeDialog
+        fileName, _ = qfd.getOpenFileName(self, "Open File", "", filter, options=options)
 
         if fileName:
             print(fileName)
@@ -62,9 +63,10 @@ class GuiHelper(QWidget):
         if not filter:
             filter = "All Files (*)"
 
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        fileNames, _ = QFileDialog.getOpenFileNames(self, "Open File", "", filter, options=options)
+        qfd = QFileDialog(self)
+        options = qfd.Options()
+        # options |= QFileDialog.DontUseNativeDialog
+        fileNames, _ = qfd.getOpenFileNames(self, "Open File", "", filter, options=options)
 
         if fileNames:
             print(fileNames)
@@ -81,9 +83,10 @@ class GuiHelper(QWidget):
         if not filter:
             filter = "All Files (*)"
 
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getSaveFileName(
+        qfd = QFileDialog(self)
+        options = qfd.Options()
+        # options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = qfd.getSaveFileName(
             self, "Save File", "", filter, options=options)
         if fileName:
             print(fileName)

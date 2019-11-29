@@ -33,7 +33,10 @@ class pdf_annots():
     lineWidth = 0.4
     borderWidth = 1
     dashLevel = 1
+    defaultPenSize = 1
     defaultMarkerSize = 15
     defaultTextSize = 12
     defaultBoxHeight = 14
     defaultBoxWidth = 130
+    freeHandScale = 90
+    markerScale = 90

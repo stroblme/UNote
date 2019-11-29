@@ -2,6 +2,7 @@ import numpy as np
 from scipy.signal import savgol_filter
 from scipy.linalg import lstsq
 from scipy import dot
+from math import asin, sqrt
 
 def tuplesToArrays(points):
     xPoints = []
@@ -30,41 +31,18 @@ class FormEstimator(object):
     def estimateForm(self, observedPoints):
         pass
 
-    def estimateLine(self, observedPoints):
-        MINNUMBEROFDATAPOINTS = 10
-        MINNUMBEROFITERATIONS = 100
-        THRESPOINTSFITWELL = 7e3
-        CLOSEDATAPOINTSFORWELLFITTING = 300
+    def estimateLine(self, fStart, fStop):
+        MAXYDELTA = 0.1
+        MAXXDELTA = 0.1
 
-        if len(observedPoints) < MINNUMBEROFDATAPOINTS:
-            return observedPoints
+        distance = sqrt(pow(fStart.y - fStop.y, 2) + pow(fStart.x - fStop.x, 2))
 
-        n_inputs = 1
-        n_outputs = 1
+        if abs(fStart.y - fStop.y)/distance < MAXYDELTA:
+            fStop.y = fStart.y
+        if abs(fStart.x - fStop.x)/distance < MAXXDELTA:
+            fStop.x = fStart.x
 
-        xPoints, yPoints = tuplesToArrays(observedPoints)
-        A_exact = np.array(xPoints)
-        B_exact = np.array(yPoints)
-        all_data = np.hstack( (A_exact,B_exact) )
-
-        # setup model
-
-        input_columns = range(n_inputs) # the first columns of the np.array
-        output_columns = [n_inputs+i for i in range(n_outputs)] # the last columns of the np.array
-        model = LinearLeastSquaresModel(input_columns,
-                                        output_columns)
-
-
-
-        # run RANSAC algorithm
-        ransac_fit, ransac_data = self.ransac.applyRansac(
-                                        all_data,
-                                        model,
-                                        MINNUMBEROFDATAPOINTS,
-                                        MINNUMBEROFITERATIONS,
-                                        THRESPOINTSFITWELL,
-                                        CLOSEDATAPOINTSFORWELLFITTING,)
-        return ransac_data
+        return fStart, fStop
 
 
 class Kalman(object):
@@ -164,21 +142,46 @@ class Savgol(object):
 
 
     def applySavgol(self, observedPoints):
-        WINDOW_LENGTH = 9 #odd!
-        POLYNOM_GRADE = 2
+        # Odd window length for Savgol
+        # Use even Polynoms for better results!
 
-        xPoints, yPoints = tuplesToArrays(observedPoints)
+        if len(observedPoints) > 31:
+            WINDOW_LENGTH = 31 #odd!
+            POLYNOM_GRADE = 6
+        elif len(observedPoints) > 19:
+            WINDOW_LENGTH = 19 #odd!
+            POLYNOM_GRADE = 4
+        elif len(observedPoints) > 13:
+            WINDOW_LENGTH = 13 #odd!
+            POLYNOM_GRADE = 2
+        elif len(observedPoints) > 7:
+            WINDOW_LENGTH = 7 #odd!
+            POLYNOM_GRADE = 2
+        elif len(observedPoints) > 3:
+            WINDOW_LENGTH = 3 #odd!
+            POLYNOM_GRADE = 1
+        else:
+            return observedPoints
+
 
         if len(observedPoints) > WINDOW_LENGTH:
+            xPoints, yPoints = tuplesToArrays(observedPoints)
+
             xPointsS = savgol_filter(xPoints, WINDOW_LENGTH, POLYNOM_GRADE)
             yPointsS = savgol_filter(yPoints, WINDOW_LENGTH, POLYNOM_GRADE)
 
             points = arraysToTuples(xPointsS, yPointsS)
+        elif len(observedPoints) == 1:
+            xPoints, yPoints = tuplesToArrays(observedPoints)
 
-        else:
-            points = observedPoints
+            xPoints.extend([xPoints[0] - 1])
+
+            yPoints.extend([yPoints[0] - 1])
+
+            points = arraysToTuples(xPoints, yPoints)
 
         return points
+
 
 class Ransac():
     def __init__(self):

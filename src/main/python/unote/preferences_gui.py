@@ -6,12 +6,14 @@
 # Author: Melvin Strobl
 # ---------------------------------------------------------------
 
+import os  # launching external python script
+import sys  # exit script, file parsing
+
 from fbs_runtime.application_context.PyQt5 import ApplicationContext
 
-from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import pyqtSignal, QSettings, QObject
 from PyQt5.QtWidgets import QDialog
-
+from PyQt5.QtGui import QIcon
 
 from util import readFile, writeFile, toBool
 
@@ -20,9 +22,7 @@ from preferences import Preferences
 from guiHelper import GuiHelper
 
 
-import os  # launching external python script
-import sys  # exit script, file parsing
-import subprocess  # for running external cmds
+
 
 # Reload the main ui
 
@@ -75,7 +75,7 @@ class PreferencesGUI(App):
         self.ui = Ui_PreferencesDialog()
         self.ui.setupUi(self.MainWindow)
 
-        self.MainWindow.setWindowIcon(QtGui.QIcon(":/assets/icon.png"))
+        self.MainWindow.setWindowIcon(QIcon(":/assets/icon.png"))
 
     def run(self):
         '''
@@ -96,7 +96,7 @@ class PreferencesGUI(App):
         '''
         Connects all the buttons to the right receivers
         '''
-        self.ui.radioButtonDarkTheme.toggled.connect(lambda:receiversInst.setTheme(self.ui))
+        self.ui.radioButtonDarkTheme.toggled.connect(lambda: receiversInst.setTheme(self.ui))
 
     def loadKeys(self):
         '''

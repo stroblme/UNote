@@ -1,9 +1,8 @@
-from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.QtWidgets import QFileDialog, QWidget, QGraphicsPixmapItem
-from PyQt5.QtGui import QPixmap, QImage, QColor
+from PyQt5.QtWidgets import QWidget
+from PyQt5.QtGui import QPixmap, QImage
 
 from preferences import Preferences
-from util import str2bool
+from util import toBool
 
 class imageHelper(QWidget):
     dark = False
@@ -20,7 +19,7 @@ class imageHelper(QWidget):
         return pixImgItem
 
     def applyTheme(self, qimage):
-        if str2bool(Preferences.data["radioButtonDarkTheme"]) == True:
+        if toBool(Preferences.data["radioButtonDarkTheme"]) == True:
             qimage.invertPixels()
             return qimage
         else:

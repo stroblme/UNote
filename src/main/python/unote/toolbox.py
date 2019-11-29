@@ -1,12 +1,9 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtGui import QPixmap, QPainter, QPen, QBrush, QColor, QPolygon, QIcon
-from PyQt5.QtCore import pyqtSignal, QFile, QTextStream, pyqtSlot, QObject, QPoint, Qt, QRect, QSize
-from PyQt5.QtWidgets import QDialog, QGraphicsView, QGraphicsScene, QWidget, QPushButton, QVBoxLayout, QTextEdit, QGridLayout, QSlider
-
+from math import sin, cos
 from indexed import IndexedOrderedDict
 
-
-from math import sin, cos
+from PyQt5.QtGui import QPainter, QPen, QColor, QIcon
+from PyQt5.QtCore import pyqtSignal, pyqtSlot, QPoint, Qt, QRect, QSize
+from PyQt5.QtWidgets import QWidget, QPushButton, QTextEdit, QGridLayout, QSlider
 
 import assets
 
@@ -240,7 +237,7 @@ class ToolBoxWidget(QWidget):
             self.drawToolBoxShape(event)
 
         # Run the parent paint Event
-        QWidget.paintEvent(self, event)
+        return QWidget.paintEvent(self, event)
 
     def drawToolBoxShape(self, paintEvent):
         '''
@@ -394,7 +391,7 @@ class ToolBoxWidget(QWidget):
         '''
         self.__mousePressPos = None
         self.__mouseMovePos = None
-        if event.button() == QtCore.Qt.LeftButton:
+        if event.button() == Qt.LeftButton:
             self.__mousePressPos = event.globalPos()
             self.__mouseMovePos = event.globalPos()
 
@@ -404,7 +401,7 @@ class ToolBoxWidget(QWidget):
         '''
         Overrides the default event
         '''
-        if event.buttons() == QtCore.Qt.LeftButton:
+        if event.buttons() == Qt.LeftButton:
             try:
                 # adjust offset from clicked point to origin of widget
                 currPos = self.mapToGlobal(self.pos())

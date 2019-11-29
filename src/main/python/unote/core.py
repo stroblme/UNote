@@ -5,28 +5,27 @@
 #
 # Author: Melvin Strobl
 # ---------------------------------------------------------------
-
-from PyQt5.QtWidgets import QSizePolicy, QFrame, QDialog, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGesture, QGraphicsLineItem, QGraphicsEllipseItem, QGesture
-from PyQt5.QtCore import Qt, QRectF, QEvent, QThread, pyqtSignal, pyqtSlot, QObject, QPoint
-from PyQt5.QtGui import QPixmap, QBrush, QColor, QImage, QPaintEvent, QFocusEvent, QHoverEvent, QTouchEvent
-from PyQt5.QtWebEngineWidgets import QWebEngineView
+import subprocess  # for running external cmds
+import os
+import sys
+import time
 import threading
+
+from indexed import IndexedOrderedDict
+from enum import Enum
+
+from PyQt5.QtWidgets import QFrame, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGesture, QGraphicsLineItem, QGraphicsEllipseItem
+from PyQt5.QtCore import Qt, QRectF, QEvent, QThread, pyqtSignal, pyqtSlot, QObject, QPoint
+from PyQt5.QtGui import QPixmap, QBrush, QColor, QImage,   QTouchEvent, QPainter
+from PyQt5.QtWebEngineWidgets import QWebEngineView
+
+import fitz
+
 from preferences import Preferences
 
 from pdfEngine import pdfEngine
 from imageHelper import imageHelper
 from markdownHelper import markdownHelper
-
-from enum import Enum
-
-import subprocess  # for running external cmds
-import os
-import sys
-import time
-
-from indexed import IndexedOrderedDict
-
-import fitz
 
 from util import toBool
 from editHelper import editModes
@@ -36,6 +35,9 @@ sys.path.append('./style')
 from styledef import rgb, norm_rgb, pdf_annots
 
 editMode = editModes.none
+
+class ExtQPoint(QPoint):
+    pressure = 0
 
 
 class textModes():
@@ -57,6 +59,9 @@ class QPdfView(QGraphicsPixmapItem):
     endPos = 0
     ongoingEdit = False
     blockEdit = False
+    drawPoints = []
+    formPoints = []
+    drawIndicators = []
 
     def __init__(self):
         QGraphicsPixmapItem.__init__(self)
@@ -99,12 +104,15 @@ class QPdfView(QGraphicsPixmapItem):
     def qPointToFPoint(self, qPoint):
         return fitz.Point(qPoint.x(), qPoint.y())
 
-    def qPointToFloatParirs(self, qPoint):
-        p = (float(qPoint.x()), float(qPoint.y()))
+    def qPointToFloatParirs(self, qPoint, pressure=0):
+        p = (float(qPoint.x()), float(qPoint.y()), pressure)
         return p
 
     def fPointToQPoint(self, fPoint):
         return QPoint(fPoint.x, fPoint.y)
+
+    def qPointDistance(self, qPosA, qPosB):
+        return abs(qPosA[0] - qPosB[0]) + abs(qPosA[1] - qPosB[1])
 
     #-----------------------------------------------------------------------
     # Markdown Box
@@ -167,14 +175,14 @@ class QPdfView(QGraphicsPixmapItem):
             except ValueError:
                 textSize = pdf_annots.defaultTextSize
 
-            textAnnot = self.page.addFreetextAnnot(textRect, content, rotate=90)
+            textAnnot = self.page.addFreetextAnnot(textRect, content)
             textAnnot.setBorder(borderText)
             textAnnot.update(fontsize = textSize, border_color=cyan, fill_color=white, text_color=black)
 
             if self.startPos != self.endPos:
                 fStart, fEnd = self.recalculateLinePoints(textRect, self.startPos)
 
-                lineXref = self.insertLine(fStart, fEnd, "")
+                lineXref = self.insertArrow(fStart, fEnd, "")
 
                 textAnnotInfo = textAnnot.info
                 textAnnotInfo["subject"] = str(lineXref)
@@ -190,7 +198,7 @@ class QPdfView(QGraphicsPixmapItem):
             if self.startPos != self.endPos:
                 self.eh.deleteLastIndicatorPoint.emit()
 
-    def insertLine(self, fStart, fEnd, subj):
+    def insertArrow(self, fStart, fEnd, subj):
         cyan  = norm_rgb.main
         borderLine = {"width": pdf_annots.borderWidth}
 
@@ -202,6 +210,23 @@ class QPdfView(QGraphicsPixmapItem):
 
         lineAnnot.setBorder(borderLine)
         lineAnnot.setLineEnds(fitz.ANNOT_LE_Circle, fitz.ANNOT_LE_Circle)
+        lineAnnot.update(border_color=cyan, fill_color=cyan)
+        lineAnnot.update()
+
+        return lineAnnot.xref
+
+    def insertLine(self, fStart, fEnd, subj):
+        cyan  = norm_rgb.main
+        borderLine = {"width": pdf_annots.borderWidth}
+
+        lineAnnot = self.page.addLineAnnot(fStart, fEnd)
+
+        lineAnnotInfo = lineAnnot.info
+        lineAnnotInfo["subject"] = subj
+        lineAnnot.setInfo(lineAnnotInfo)
+
+        lineAnnot.setBorder(borderLine)
+        # lineAnnot.setLineEnds(fitz.ANNOT_LE_Circle, fitz.ANNOT_LE_Circle)
         lineAnnot.update(border_color=cyan, fill_color=cyan)
         lineAnnot.update()
 
@@ -343,7 +368,7 @@ class QPdfView(QGraphicsPixmapItem):
             fStart, fEnd = self.recalculateLinePoints(annot.rect, QPoint(*startPos))
 
             self.deleteAnnot(corrAnnot)
-            newXRef = self.insertLine(fStart, fEnd, lineSubj)
+            newXRef = self.insertArrow(fStart, fEnd, lineSubj)
 
             textInfo = annot.info
             textInfo["subject"] = str(newXRef)
@@ -372,7 +397,7 @@ class QPdfView(QGraphicsPixmapItem):
         yMax = max(self.startPos.y(), self.endPos.y())
 
         try:
-            minWidth = pdf_annots.defaultMarkerSize * (int(Preferences.data['markerSize'])/100)
+            minWidth = pdf_annots.defaultMarkerSize * (int(Preferences.data['markerSize'])/pdf_annots.markerScale)
         except ValueError:
             minWidth = pdf_annots.defaultMarkerSize
 
@@ -394,7 +419,6 @@ class QPdfView(QGraphicsPixmapItem):
 
     def startEraser(self, qpos):
         self.ongoingEdit = True
-        self.startPos = qpos
 
         self.eraserPoints = []
 
@@ -415,51 +439,89 @@ class QPdfView(QGraphicsPixmapItem):
 
         for annot in annots:
             self.deleteAnnot(annot)
+
     #-----------------------------------------------------------------------
     # Draw
     #-----------------------------------------------------------------------
-
-
-    def startDraw(self, qpos):
+    def startForms(self, qpos):
         self.ongoingEdit = True
-        self.startPos = qpos
 
-        self.drawPoints = []
+        self.formPoints = []
 
-    def stopDraw(self, qpos):
+    def stopForms(self, qpos):
+        self.applyFormPoints()
+        # self.drawIndicators = []
+
         self.ongoingEdit = False
 
-        self.applyDrawPoints()
+    def updateFormPoints(self, qpos):
+        self.formPoints.append(self.qPointToFPoint(qpos))
+
+
+    def applyFormPoints(self):
+        fStart, fStop = self.formEstimator.estimateLine(self.formPoints[0], self.formPoints[-1])
+
+        lineXref = self.insertLine(fStart, fStop, "")
+
+    #-----------------------------------------------------------------------
+    # Draw
+    #-----------------------------------------------------------------------
+    def startDraw(self, qpos, pressure=0):
+        self.ongoingEdit = True
 
         self.drawPoints = []
+        # self.drawIndicators = []
+        # self.drawPoints.append(self.qPointToFloatParirs(qpos, pressure))
 
-    def updateDrawPoints(self, qpos):
+    def stopDraw(self, qpos, pressure=0):
+        self.ongoingEdit = False
+
+        # fPoint = self.qPointToFloatParirs(qpos)
+        # self.drawPoints.append(fPoint)
+
+        self.applyDrawPoints()
+        # self.drawIndicators = []
+
+
+    def updateDrawPoints(self, qpos, pressure=0):
         '''
         Called updates the currently ongoing marking to match the latest, provided position
         '''
-        fPoint = self.qPointToFloatParirs(qpos)
-        self.drawPoints.append(fPoint)
+        curPos = self.qPointToFloatParirs(qpos, pressure)
+
+        if len(self.drawPoints) > 1:
+            if self.qPointDistance(self.drawPoints[-1], curPos) > 120:
+                return
+
+        self.drawPoints.append(curPos)
+        # self.drawIndicators.append(qpos)
 
     def applyDrawPoints(self):
 
         # self.kalman.initKalman(self.qPointToFloatParirs(self.startPos))
 
         # self.drawPoints = self.kalman.applyKalman(self.drawPoints)
+        segment = self.drawPoints
+        self.drawPoints = []
 
-        self.drawPoints = self.savgol.applySavgol(self.drawPoints)  # Line smoothing
+        segment = self.savgol.applySavgol(segment)
+        # Line smoothing
         # self.estPoints = self.formEstimator.estimateLine(self.drawPoints)
 
-
         g = []
-        g.append(self.drawPoints)
+        g.append(segment)
 
         annot = self.page.addInkAnnot(g)
 
-        cyan  = norm_rgb.main
-        black  = norm_rgb.black
+        cyan = norm_rgb.main
+        black = norm_rgb.black
 
-        # let it look a little nicer
-        annot.setBorder({"width":1})# line thickness, some dashing
+        try:
+            penSize = pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/pdf_annots.freeHandScale)
+        except ValueError:
+            penSize = pdf_annots.defaultPenSize
+
+        annot.setBorder({"width":penSize})# line thickness, some dashing
         annot.setColors({"stroke":black})         # make the lines blue
         annot.update()
 
@@ -610,22 +672,23 @@ class QPdfView(QGraphicsPixmapItem):
             return
 
         if event.button() == Qt.LeftButton:
-            if editMode == editModes.marker:
-                self.startMarkText(self.toPdfCoordinates(event.pos()))
-            elif editMode == editModes.freehand:
-                self.startDraw(self.toPdfCoordinates(event.pos()))
-            elif editMode == editModes.eraser:
-                self.startEraser(self.toPdfCoordinates(event.pos()))
+            if editMode == editModes.newTextBox:
+                scenePoint = self.toSceneCoordinates(event.pos())
+                self.eh.addIndicatorPoint.emit(scenePoint.x(), scenePoint.y())
+                self.startNewTextBox(self.toPdfCoordinates(event.pos()))
             elif editMode == editModes.markdown:
                 scenePoint = self.toSceneCoordinates(event.pos())
                 self.eh.addIndicatorPoint.emit(scenePoint.x(), scenePoint.y())
-
                 self.startNewMarkdownBox(self.toPdfCoordinates(event.pos()))
-            elif editMode == editModes.newTextBox:
-                scenePoint = self.toSceneCoordinates(event.pos())
-                self.eh.addIndicatorPoint.emit(scenePoint.x(), scenePoint.y())
 
-                self.startNewTextBox(self.toPdfCoordinates(event.pos()))
+            if not toBool(Preferences.data['radioButtonPenOnly']):
+                if editMode == editModes.marker:
+                    self.startMarkText(self.toPdfCoordinates(event.pos()))
+                elif editMode == editModes.freehand:
+                    self.startDraw(self.toPdfCoordinates(event.pos()))
+                elif editMode == editModes.eraser:
+                    self.startEraser(self.toPdfCoordinates(event.pos()))
+
         elif event.button() == Qt.RightButton:
             # Check if there is not currently an active editing mode
             if editMode == editModes.none:
@@ -657,12 +720,13 @@ class QPdfView(QGraphicsPixmapItem):
 
                 self.stopNewMarkdownBox(self.toPdfCoordinates(event.pos()))
 
-            elif editMode == editModes.marker:
-                self.stopMarkText(self.toPdfCoordinates(event.pos()))
-            elif editMode == editModes.freehand:
-                self.stopDraw(self.toPdfCoordinates(event.pos()))
-            elif editMode == editModes.eraser:
-                self.stopEraser(self.toPdfCoordinates(event.pos()))
+            if not toBool(Preferences.data['radioButtonPenOnly']):
+                if editMode == editModes.marker:
+                    self.stopMarkText(self.toPdfCoordinates(event.pos()))
+                elif editMode == editModes.freehand:
+                    self.stopDraw(self.toPdfCoordinates(event.pos()))
+                elif editMode == editModes.eraser:
+                    self.stopEraser(self.toPdfCoordinates(event.pos()))
 
         elif event.button() == Qt.RightButton:
             #Check if there is currently an ongoing edit (like moving an object)
@@ -717,15 +781,51 @@ class QPdfView(QGraphicsPixmapItem):
 
         QGraphicsPixmapItem.mouseMoveEvent(self, event)
 
-    def tabletEvent(self, pos):
+    def tabletEvent(self, event, zoom, xOff, yOff):
         self.blockEdit = False
+        if toBool(Preferences.data['radioButtonPenOnly']):
+            if event.type() == QEvent.TabletMove:
+                if editMode == editModes.freehand:
+                    self.updateDrawPoints(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
+                elif editMode == editModes.eraser:
+                    self.updateEraserPoints(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
+                elif editMode == editModes.forms:
+                    self.updateFormPoints(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
+            elif event.type() == QEvent.TabletPress:
+                if editMode == editModes.marker:
+                    self.startMarkText(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
+                elif editMode == editModes.freehand:
+                    self.startDraw(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
+                elif editMode == editModes.eraser:
+                    self.startEraser(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
+                elif editMode == editModes.forms:
+                    self.startForms(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
+            elif event.type() == QEvent.TabletRelease:
+                if editMode == editModes.marker:
+                    self.stopMarkText(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
+                elif editMode == editModes.freehand:
+                    self.stopDraw(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
+                elif editMode == editModes.eraser:
+                    self.stopEraser(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
+                elif editMode == editModes.forms:
+                    self.stopForms(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
 
-        if self.ongoingEdit and toBool(Preferences.data['radioButtonPenOnly']):
+            elif event.type() == QEvent.TabletEnterProximity:
+                print('enter prox')
+            elif event.type() == QEvent.TabletLeaveProximity:
+                print('leave prox')
 
-            if editMode == editModes.freehand:
-                self.updateDrawPoints(self.mapFromScene(self.toPdfCoordinates(pos)))
-            elif editMode == editModes.eraser:
-                self.updateEraserPoints(self.toPdfCoordinates(pos))
+            # event.accept()
+
+    # def paint(self, QPainter, QStyleOptionGraphicsItem, QWidget):
+    #     QPainter.begin(QWidget)
+    #     QPainter.setPen(QColor(255,255,255))
+    #     for point in self.drawIndicators:
+    #         QPainter.drawPoint(point)
+    #     QPainter.end()
+
+    #     return super().paint(QPainter, QStyleOptionGraphicsItem, QWidget)
+
 
     def toPdfCoordinates(self, qPos):
         '''
@@ -744,6 +844,14 @@ class QPdfView(QGraphicsPixmapItem):
 
         return sPos
 
+    def fromSceneCoordinates(self, qPos, zoom, xOff, yOff):
+        # pPos = self.mapFromParent(qPos)
+        qPos = qPos / zoom
+
+        qPos.setX(abs(qPos.x())+xOff - self.xOrigin)
+        qPos.setY(abs(qPos.y())+yOff - self.yOrigin)
+        return qPos
+
     def toQPos(self, fPos):
         qPos = QPoint(fPos.x, fPos.y)
 
@@ -760,7 +868,6 @@ class GraphicsViewHandler(QGraphicsView):
 
     # x, y, pageNumber, currentContent
     requestTextInput = pyqtSignal(int, int, int, str)
-
     tempObj = list()
 
     def __init__(self, parent):
@@ -784,7 +891,7 @@ class GraphicsViewHandler(QGraphicsView):
         # self.setRenderHint(QPainter.Anti)
         self.setAttribute(Qt.WA_AcceptTouchEvents)
         self.setDragMode(self.ScrollHandDrag)
-        self.setFrameShape(QGraphicsView.NoFrame)
+        # self.setFrameShape(QGraphicsView.NoFrame)
         # # self.resize(parent.size())
         # self.grabGesture(Qt.PanGesture)
         # self.grabGesture(Qt.PinchGesture)
@@ -828,6 +935,8 @@ class GraphicsViewHandler(QGraphicsView):
         self.scene = QGraphicsScene()
         self.setScene(self.scene)
 
+        self.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+
         # Start at the top
         posX = float(0)
         posY = float(0)
@@ -838,7 +947,7 @@ class GraphicsViewHandler(QGraphicsView):
         # self.thread = QThread
         # self.moveToThread(self.thread)
 
-        width, height = self.pdf.getPageSize(self.pdf.doc)
+        width, height = self.pdf.getPageSize()
 
         for pIt in range(self.pdf.doc.pageCount):
 
@@ -860,7 +969,7 @@ class GraphicsViewHandler(QGraphicsView):
         pdfView.setPage(self.pdf.getPage(pageNumber), pageNumber)
 
         # Render a blank image
-        self.updateEmptyPdf(pdfView, width, height, pageNumber)
+        self.updateEmptyPdf(pdfView, width, height)
 
         # Store instance locally
         self.pages[pageNumber] = pdfView
@@ -889,7 +998,7 @@ class GraphicsViewHandler(QGraphicsView):
         pdfView.setPage(self.pdf.getPage(pageNumber), pageNumber)
 
         # Render according to the parameters
-        self.updatePdf(pdfView, zoom = zoom, pageNumber = pageNumber)
+        self.updatePage(pdfView, zoom = zoom)
 
         # Store instance locally
         self.pages[pageNumber] = pdfView
@@ -983,8 +1092,6 @@ class GraphicsViewHandler(QGraphicsView):
 
             clip = QRectF(clipX, clipY, clipW, clipH)
 
-            self.updatePdf(renderedItem, zoom = self.absZoomFactor, clip = clip)
-
             if clipX != 0:
                 rItx = viewportX
             else:
@@ -996,8 +1103,11 @@ class GraphicsViewHandler(QGraphicsView):
 
             renderedItem.setPos(rItx, rIty)
 
+            self.updatePage(renderedItem, zoom = self.absZoomFactor, clip = clip)
 
-    def updatePdf(self, pdf, zoom=absZoomFactor, clip=None, pageNumber = None):
+
+
+    def updatePage(self, pdfViewInstance, zoom=absZoomFactor, clip=None):
         '''
         Update the provided pdf file at the desired page to render only the zoom and clip
         This methods is used when instantiating the pdf and later, when performance optimzation and zooming is required
@@ -1008,18 +1118,18 @@ class GraphicsViewHandler(QGraphicsView):
         if clip:
             fClip = fitz.Rect(clip.x(), clip.y(), clip.x() + clip.width(), clip.y() + clip.height())
 
-        pixmap = self.pdf.renderPixmap(pdf.page, mat = mat, clip = fClip)
+        pixmap = self.pdf.renderPixmap(pdfViewInstance.pageNumber, mat = mat, clip = fClip)
 
         qImg = self.pdf.getQImage(pixmap)
         qImg.setDevicePixelRatio(zoom)
         qImg = self.imageHelper.applyTheme(qImg)
 
-        if pageNumber:
-            pdf.setPixMap(qImg, pageNumber)
+        if pdfViewInstance.pageNumber:
+            pdfViewInstance.setPixMap(qImg, pdfViewInstance.pageNumber)
         else:
-            pdf.updatePixMap(qImg)
+            pdfViewInstance.updatePixMap(qImg)
 
-    def updateEmptyPdf(self, pdf, width, height, pageNumber = None):
+    def updateEmptyPdf(self, pdfViewInstance, width, height):
         '''
         Update the provided pdf file at the desired page to render only the zoom and clip
         This methods is used when instantiating the pdf and later, when performance optimzation and zooming is required
@@ -1028,12 +1138,10 @@ class GraphicsViewHandler(QGraphicsView):
         qImg = QImage(width, height, QImage.Format_Mono)
         qImg.fill(0)
 
-        if pageNumber:
-            pdf.setPixMap(qImg, pageNumber)
+        if pdfViewInstance.pageNumber:
+            pdfViewInstance.setPixMap(qImg, pdfViewInstance.pageNumber)
         else:
-            pdf.updatePixMap(qImg)
-
-
+            pdfViewInstance.updatePixMap(qImg)
 
     def wheelEvent(self, event):
         '''
@@ -1101,23 +1209,29 @@ class GraphicsViewHandler(QGraphicsView):
 
         super(GraphicsViewHandler, self).keyReleaseEvent(event)
 
-    def event(self, event):
-        # print(type(event))
-        if type(event) == QTouchEvent:
-            self.touchEvent(event)
+    # def event(self, event):
+    #     # print(type(event))
+    #     if type(event) == QTouchEvent:
+    #         self.touchEvent(event)
 
 
-        return super(GraphicsViewHandler, self).event(event)
+    #     return super(GraphicsViewHandler, self).event(event)
 
 
-    def touchEvent(self, event):
-        print('touch')
+    # def touchEvent(self, event):
+    #     print('touch')
 
     def tabletEvent(self, event):
-
         item = self.itemAt(event.pos())
         if type(item) == QPdfView:
-            item.tabletEvent(event.pos())
+            # get the rectable of the current viewport
+            rect = self.mapToScene(self.viewport().geometry()).boundingRect()
+            # Store those properties for easy access
+            viewportHeight = rect.height()
+            viewportWidth = rect.width()
+            viewportX = rect.x()
+            viewportY = rect.y()
+            item.tabletEvent(event, self.absZoomFactor, viewportX, viewportY)
         return super(GraphicsViewHandler, self).tabletEvent(event)
 
     def mapToItem(self, pos, item):
@@ -1138,7 +1252,6 @@ class GraphicsViewHandler(QGraphicsView):
             renderedItems = self.scene.items(self.mapToScene(self.viewport().geometry()))
         except Exception as e:
             return
-        width, height = self.pdf.getPageSize(self.pdf.doc)
 
         # Iterate all visible items (shouldn't be that much normally)
         for renderedItem in reversed(renderedItems):
@@ -1149,8 +1262,11 @@ class GraphicsViewHandler(QGraphicsView):
             # Insert after current page
             newPage = self.pdf.insertPage(renderedItem.pageNumber+1)
             fileName = self.saveCurrentPdf()
+            self.pdf.closePdf()
+            os.replace(fileName, self.pdf.filename)
+
             prevScroll = self.verticalScrollBar().value()
-            self.loadPdfToCurrentView(fileName, renderedItem.pageNumber+1)
+            self.loadPdfToCurrentView(self.pdf.filename, renderedItem.pageNumber+1)
             self.updateRenderedPages()
             self.verticalScrollBar().setMaximum(self.verticalScrollBar().maximumHeight())
             self.verticalScrollBar().setValue(prevScroll)
@@ -1161,9 +1277,11 @@ class GraphicsViewHandler(QGraphicsView):
 
     def pageGoto(self, pageNumber):
         if self.pages and pageNumber in range(len(self.pages)):
-            scrollPos = (self.verticalScrollBar().maximumHeight()/len(self.pages)) * pageNumber
+            if pageNumber >= 1:
+                self.verticalScrollBar().setValue(self.pages[pageNumber - 1].yOrigin * self.absZoomFactor)
+            else:
+                self.verticalScrollBar().setValue(0)
 
-            self.verticalScrollBar().setValue(self.pages[pageNumber].yOrigin)
             self.update()
 
             self.updateRenderedPages()
