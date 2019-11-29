@@ -62,7 +62,7 @@
 - [o] Implement markdown formatted annotations
 - [x] Implement eraser
 - [x] Implement Sizes for drawing and marker
-- [ ] Implement basic forms
+- [x] Implement line drawing
 - [ ] Implement gestures for touch compatibility
 - [x] Improve highlighting by reducing noise on y axis (Kalman?); simply converted to simple rect
 - [ ] Threading for pdf loading
@@ -70,7 +70,7 @@
 - [ ] Threading for pdf rendering
 - [x] Implement clear all indicator points
 - [x] Implement page insertion
-- [ ] Improve pdf saving
+- [x] Improve pdf saving
 
 ### Issues in 1.x
 
