@@ -688,6 +688,8 @@ class QPdfView(QGraphicsPixmapItem):
                     self.startDraw(self.toPdfCoordinates(event.pos()))
                 elif editMode == editModes.eraser:
                     self.startEraser(self.toPdfCoordinates(event.pos()))
+                elif editMode == editModes.forms:
+                    self.startForms(self.toPdfCoordinates(event.pos()))
 
         elif event.button() == Qt.RightButton:
             # Check if there is not currently an active editing mode
@@ -727,6 +729,8 @@ class QPdfView(QGraphicsPixmapItem):
                     self.stopDraw(self.toPdfCoordinates(event.pos()))
                 elif editMode == editModes.eraser:
                     self.stopEraser(self.toPdfCoordinates(event.pos()))
+                elif editMode == editModes.forms:
+                    self.stopForms(self.toPdfCoordinates(event.pos()))
 
         elif event.button() == Qt.RightButton:
             #Check if there is currently an ongoing edit (like moving an object)
@@ -778,6 +782,8 @@ class QPdfView(QGraphicsPixmapItem):
                 self.updateDrawPoints(self.toPdfCoordinates(event.pos()))
             elif editMode == editModes.eraser:
                 self.updateEraserPoints(self.toPdfCoordinates(event.pos()))
+            elif editMode == editModes.forms:
+                self.updateFormPoints(self.toPdfCoordinates(event.pos()))
 
         QGraphicsPixmapItem.mouseMoveEvent(self, event)
 

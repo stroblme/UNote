@@ -1,6 +1,6 @@
 {
     "git.ignoreLimitWarning": true,
-    "python.pythonPath": "x:\\UNote\\venv\\Scripts\\python.exe",
+    "python.pythonPath": "venv\\Scripts\\python.exe",
     "python.linting.pylintEnabled": true,
     "python.linting.pylintArgs": [
         "--enable=W0614"
