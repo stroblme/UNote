@@ -50,11 +50,34 @@ Installer files will be updated once, a major version (vX.0) is achieved.
 - numpy
 - scipy
 
-In the environment, simply run:
+# Getting started
+
+1. Create a python environment
+
+'''
+py -m venv venv
+'''
+
+Tested in 3.6 but anything newer should work too.
+
+2. Activate the environment
+
+'''
+./venv/Scripts/activate
+'''
+
+3. Install the dependencies
+
 ```
 pip install -r requirements.txt
 ```
 
+4. Run
+
+Open vscode and run one of the predefined launch tasks.
+'''
+code .
+'''
 
 
 ## Building
