@@ -112,7 +112,10 @@ class pdfEngine():
         return page.bound().width, page.bound().height
 
     def renderPixmap(self, pageNumber=0, mat = None, clip = None, alpha = False):
-        return self.doc[pageNumber].getPixmap(matrix = mat, clip = clip, alpha = alpha)
+        try:
+            return self.doc[pageNumber].getPixmap(matrix = mat, clip = clip, alpha = alpha)
+        except RuntimeError as identifier:
+            raise RuntimeError(identifier)
 
 
     def getQImage(self, pixmap):

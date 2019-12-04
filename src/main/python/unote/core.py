@@ -1124,7 +1124,11 @@ class GraphicsViewHandler(QGraphicsView):
         if clip:
             fClip = fitz.Rect(clip.x(), clip.y(), clip.x() + clip.width(), clip.y() + clip.height())
 
-        pixmap = self.pdf.renderPixmap(pdfViewInstance.pageNumber, mat = mat, clip = fClip)
+        try:
+            pixmap = self.pdf.renderPixmap(pdfViewInstance.pageNumber, mat = mat, clip = fClip)
+        except RuntimeError as identifier:
+            print(str(identifier))
+            return
 
         qImg = self.pdf.getQImage(pixmap)
         qImg.setDevicePixelRatio(zoom)
