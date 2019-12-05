@@ -511,7 +511,11 @@ class QPdfView(QGraphicsPixmapItem):
         g = []
         g.append(segment)
 
-        annot = self.page.addInkAnnot(g)
+        try:
+            annot = self.page.addInkAnnot(g)
+        except RuntimeError as identifier:
+            print(str(identifier))
+            return
 
         cyan = norm_rgb.main
         black = norm_rgb.black
