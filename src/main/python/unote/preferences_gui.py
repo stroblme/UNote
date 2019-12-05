@@ -130,6 +130,8 @@ class PreferencesGUI(App):
         '''
         Preferences.updateKeyValue("radioButtonDarkTheme", str(self.ui.radioButtonDarkTheme.isChecked()))
         Preferences.updateKeyValue("radioButtonPenOnly", str(self.ui.radioButtonPenOnly.isChecked()))
+        Preferences.updateKeyValue("comboBoxAutosave", str(self.ui.comboBoxAutosave.currentText()))
+
 
     def saveSettings(self):
         self.storeLooseEntries()
@@ -147,6 +149,7 @@ class PreferencesGUI(App):
 
         self.ui.radioButtonDarkTheme.setChecked(toBool(Preferences.data["radioButtonDarkTheme"]))
         self.ui.radioButtonPenOnly.setChecked(toBool(Preferences.data["radioButtonPenOnly"]))
+        self.ui.comboBoxAutosave.setCurrentText(str(Preferences.data["comboBoxAutosave"]))
 
     def applySettings(self):
         '''

@@ -2,6 +2,7 @@ radioButtonDarkTheme
 radioButtonPenOnly
 state
 geometry
+comboBoxAutosave
 textSize
 markerSize
 markerColor

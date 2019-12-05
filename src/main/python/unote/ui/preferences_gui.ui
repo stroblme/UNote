@@ -31,12 +31,51 @@
           <item>
            <widget class="QLabel" name="labelAutosave">
             <property name="text">
-             <string>Autosave</string>
+             <string>Autosave (minutes)</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox"/>
+           <widget class="QComboBox" name="comboBoxAutosave">
+            <property name="currentText">
+             <string>never</string>
+            </property>
+            <item>
+             <property name="text">
+              <string>0.5</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>1</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>5</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>10</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>15</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>30</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>never</string>
+             </property>
+            </item>
+           </widget>
           </item>
          </layout>
         </widget>
