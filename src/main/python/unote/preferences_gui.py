@@ -26,7 +26,7 @@ from guiHelper import GuiHelper
 
 # Reload the main ui
 
-from ui.preferences_qt_export import Ui_PreferencesDialog
+from preferences_qt_export import Ui_PreferencesDialog
 
 COMPANY_NAME = "MSLS"
 APPLICATION_NAME = "UNote"

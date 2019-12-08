@@ -23,7 +23,6 @@ from PyQt5.QtCore import QTimer, Qt, QRect
 
 SCRIPTDIR = os.path.dirname(os.path.realpath(__file__))
 
-from ui.unote_exports import Ui_MainWindow
 
 from unote_receivers import Receivers
 from preferences import Preferences
@@ -31,6 +30,7 @@ from core import GraphicsViewHandler
 from toolbox import ToolBoxWidget
 from preferences_gui import PreferencesGUI
 
+from unote_qt_export import Ui_MainWindow
 
 
 
