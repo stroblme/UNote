@@ -26,8 +26,7 @@ from guiHelper import GuiHelper
 
 # Reload the main ui
 
-sys.path.append('./ui')
-from ui import Ui_PreferencesDialog
+from ui.preferences_qt_export import Ui_PreferencesDialog
 
 COMPANY_NAME = "MSLS"
 APPLICATION_NAME = "UNote"

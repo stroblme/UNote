@@ -15,15 +15,15 @@ import os  # launching external python script
 import sys  # exit script, file parsing
 import atexit
 
+from fbs_runtime.application_context.PyQt5 import ApplicationContext
+
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtCore import QTimer, Qt, QRect
 
 SCRIPTDIR = os.path.dirname(os.path.realpath(__file__))
 
-sys.path.append('./ui')
-
-from ui import Ui_MainWindow
+from ui.unote_exports import Ui_MainWindow
 
 from unote_receivers import Receivers
 from preferences import Preferences
@@ -31,7 +31,6 @@ from core import GraphicsViewHandler
 from toolbox import ToolBoxWidget
 from preferences_gui import PreferencesGUI
 
-from fbs_runtime.application_context.PyQt5 import ApplicationContext
 
 
 
