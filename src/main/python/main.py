@@ -10,12 +10,12 @@
 # ----------------------------------------------------------
 # Import region
 # ----------------------------------------------------------
+from fbs_runtime.application_context.PyQt5 import ApplicationContext
+
 import argparse  # parsing cmdline arguments
 import os  # launching external python script
 import sys  # exit script, file parsing
 import atexit
-
-from fbs_runtime.application_context.PyQt5 import ApplicationContext
 
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QMainWindow

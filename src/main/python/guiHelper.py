@@ -5,6 +5,7 @@
 #
 # Author: Melvin Strobl
 # ---------------------------------------------------------------
+from fbs_runtime.application_context.PyQt5 import ApplicationContext
 
 import sys
 
@@ -16,9 +17,13 @@ from PyQt5.QtWidgets import QApplication
 
 sys.path.append('./style')
 sys.path.append('./style/BreezeStyleSheets')
-from style.BreezeStyleSheets import breeze_resources
 
-class GuiHelper(QWidget):
+class App(QWidget):
+    appctxt = ApplicationContext()
+
+    ICONPATH = appctxt.get_resource('icon.png')
+
+class GuiHelper(App):
 
 
     def __init__(self):

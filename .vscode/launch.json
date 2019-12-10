@@ -9,8 +9,8 @@
             "name": "UNote Test",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/src/main/python/unote/main.py",
-            "cwd": "${workspaceFolder}/src/main/python/unote",
+            "program": "${workspaceFolder}/src/main/python/main.py",
+            "cwd": "${workspaceFolder}/src/main/python",
             "args": [],
             "console": "integratedTerminal",
         },
@@ -18,9 +18,9 @@
             "name": "UNote Preload",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/src/main/python/unote/main.py",
+            "program": "${workspaceFolder}/src/main/python/main.py",
             "args": ["-o","test.pdf"],
-            "cwd": "${workspaceFolder}/src/main/python/unote",
+            "cwd": "${workspaceFolder}/src/main/python",
             "console": "integratedTerminal"
             // "preLaunchTask": {
             //     "task": "Update UI",
@@ -31,9 +31,9 @@
             "name": "UNote Create New",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/src/main/python/unote/main.py",
+            "program": "${workspaceFolder}/src/main/python/main.py",
             "args": ["-n","new.pdf"],
-            "cwd": "${workspaceFolder}/src/main/python/unote",
+            "cwd": "${workspaceFolder}/src/main/python",
             "console": "integratedTerminal"
             // "preLaunchTask": {
             //     "task": "Update UI",
