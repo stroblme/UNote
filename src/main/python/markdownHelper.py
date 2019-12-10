@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QGraphicsPixmapItem
+from PyQt5.QtWebEngineWidgets import QWebEnginePage
 from PyQt5.QtCore import Qt, QRectF, QEvent, QThread, pyqtSignal, pyqtSlot,QObject, QPoint, pyqtProperty
 from PyQt5.QtGui import QPixmap, QImage, QPainter, QDesktopServices
-from PyQt5.QtWebEngineWidgets import QWebEnginePage
 from PyQt5.QtWebChannel import QWebChannel
 # from PyQt5.QtWebEngine import QWebFrame
 from PyQt5.QtWidgets import QWidget

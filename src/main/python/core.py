@@ -17,7 +17,7 @@ from enum import Enum
 from PyQt5.QtWidgets import QFrame, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGesture, QGraphicsLineItem, QGraphicsEllipseItem
 from PyQt5.QtCore import Qt, QRectF, QEvent, QThread, pyqtSignal, pyqtSlot, QObject, QPoint
 from PyQt5.QtGui import QPixmap, QBrush, QColor, QImage,   QTouchEvent, QPainter
-from PyQt5.QtWebEngineWidgets import QWebEngineView
+# from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 import fitz
 

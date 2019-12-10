@@ -28,14 +28,18 @@ from guiHelper import GuiHelper
 
 from preferences_qt_export import Ui_PreferencesDialog
 
-COMPANY_NAME = "MSLS"
-APPLICATION_NAME = "UNote"
 
-KEYSFILEPATH = "./preferences.keys"
 
 
 class App(Ui_PreferencesDialog):
     appctxt = ApplicationContext()
+
+    ICONPATH = appctxt.get_resource('icon.png')
+
+    COMPANY_NAME = "MSLS"
+    APPLICATION_NAME = "UNote"
+
+    KEYSFILEPATH = "./preferences.keys"
 
 class PreferencesGUI(App):
     '''
@@ -51,7 +55,7 @@ class PreferencesGUI(App):
 
         # self.MainWindow.setAttribute(QtCore.Qt.WA_DeleteOnClose)
 
-        self.settings = QSettings(COMPANY_NAME, APPLICATION_NAME)
+        self.settings = QSettings(self.COMPANY_NAME, self.APPLICATION_NAME)
 
         self.rec = Receivers()
         self.connectReceivers(self.rec)
@@ -74,7 +78,7 @@ class PreferencesGUI(App):
         self.ui = Ui_PreferencesDialog()
         self.ui.setupUi(self.MainWindow)
 
-        self.MainWindow.setWindowIcon(QIcon(":/assets/icon.png"))
+        self.MainWindow.setWindowIcon(QIcon(self.ICONPATH))
 
     def run(self):
         '''

@@ -24,9 +24,9 @@ from PyQt5.QtCore import QTimer, Qt, QRect
 SCRIPTDIR = os.path.dirname(os.path.realpath(__file__))
 
 
+from core import GraphicsViewHandler
 from unote_receivers import Receivers
 from preferences import Preferences
-from core import GraphicsViewHandler
 from toolbox import ToolBoxWidget
 from preferences_gui import PreferencesGUI
 
@@ -36,6 +36,8 @@ from unote_qt_export import Ui_MainWindow
 
 class App(Ui_MainWindow):
     appctxt = ApplicationContext()
+
+    ICONPATH = appctxt.get_resource('icon.png')
 
     DONATEURL = "https://www.paypal.me/vinstrobl/coffee"
     UPDATEURL = "http://www.foxbyrd.com/wp-content/uploads/2018/02/file-4.jpg"
@@ -96,7 +98,7 @@ class UNote(App):
         self.ui.setupUi(self.MainWindow)
 
         # Load the icon
-        self.MainWindow.setWindowIcon(QIcon(":/assets/icon.png"))
+        self.MainWindow.setWindowIcon(QIcon(self.ICONPATH))
 
         # Initialize graphicviewhandler. This is a core component of unote
         self.ui.graphicsView = GraphicsViewHandler(self.ui.centralwidget)

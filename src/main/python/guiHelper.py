@@ -15,13 +15,13 @@ from PyQt5.QtCore import QFile, QTextStream, Qt
 
 from PyQt5.QtWidgets import QApplication
 
-sys.path.append('./style')
+# sys.path.append('./style')
 sys.path.append('./style/BreezeStyleSheets')
+import style.BreezeStyleSheets.breeze_resources
 
 class App(QWidget):
     appctxt = ApplicationContext()
 
-    ICONPATH = appctxt.get_resource('icon.png')
 
 class GuiHelper(App):
 
