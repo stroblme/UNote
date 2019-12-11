@@ -6,10 +6,11 @@
 # Author: Melvin Strobl
 # ---------------------------------------------------------------
 
+from fbs_runtime.application_context.PyQt5 import ApplicationContext
+
 import os  # launching external python script
 import sys  # exit script, file parsing
 
-from fbs_runtime.application_context.PyQt5 import ApplicationContext
 
 from PyQt5.QtCore import pyqtSignal, QSettings, QObject
 from PyQt5.QtWidgets import QDialog
@@ -20,9 +21,6 @@ from util import readFile, writeFile, toBool
 from preferences_receiver import Receivers
 from preferences import Preferences
 from guiHelper import GuiHelper
-
-
-
 
 # Reload the main ui
 

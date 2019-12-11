@@ -3,5 +3,5 @@
     "author": "Melvin Strobl",
     "main_module": "src/main/python/main.py",
     "version": "0.0.0",
-    "hidden_imports": ["scipy"]
+    "hidden_imports": ["scipy.signal","scipy.linalg","scipy.fftpack","scipy.basic"]
 }
