@@ -1,0 +1,1 @@
+cmd.exe /K "cd /d X:\UNote\src\main\python && ..\..\..\venv\Scripts\python.exe main.py -o %1"
