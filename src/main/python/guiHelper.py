@@ -28,7 +28,6 @@ class GuiHelper(App):
 
     def __init__(self):
         super().__init__()
-        self.setWindowFlags(Qt.WindowTitleHint | Qt.FramelessWindowHint)
 
     def openInputDialog(self, title, text):
         qid = QInputDialog(self)
