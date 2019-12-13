@@ -7,8 +7,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>894</width>
-    <height>1032</height>
+    <width>640</width>
+    <height>720</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -38,7 +38,7 @@
           <item>
            <widget class="QComboBox" name="comboBoxAutosave">
             <property name="currentText">
-             <string>never</string>
+             <string>0.5</string>
             </property>
             <item>
              <property name="text">
@@ -152,7 +152,7 @@
        <item>
         <widget class="QDialogButtonBox" name="buttonBox">
          <property name="layoutDirection">
-          <enum>Qt::RightToLeft</enum>
+          <enum>Qt::LeftToRight</enum>
          </property>
          <property name="standardButtons">
           <set>QDialogButtonBox::Cancel|QDialogButtonBox::Save</set>

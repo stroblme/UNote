@@ -9,6 +9,7 @@ import os
 import webbrowser
 
 from PyQt5 import QtCore
+from PyQt5.QtWidgets import QGraphicsBlurEffect
 from PyQt5.QtCore import pyqtSignal, QObject, pyqtSlot
 
 from preferences import Preferences
@@ -28,6 +29,14 @@ class Receivers(QObject):
         self.uiInst = uiInst
         self.guiHelper = GuiHelper()
 
+        self.backgroundEffect = QGraphicsBlurEffect(self)
+        self.backgroundEffect.setBlurRadius(20)
+        self.backgroundEffect.setEnabled(False)
+
+
+        self.uiInst.centralwidget.setGraphicsEffect(self.backgroundEffect)
+
+
 
 
     def setLogHelperInst(self, logHelper):
@@ -40,7 +49,11 @@ class Receivers(QObject):
         '''
         Opens the Preference Window
         '''
+        self.backgroundEffect.setEnabled(True)
+
         preferenceInstance.run()
+
+        self.backgroundEffect.setEnabled(False)
 
         self.uiInst.graphicsView.updateRenderedPages()
 
@@ -93,7 +106,10 @@ class Receivers(QObject):
         self.uiInst.graphicsView.zoomIn()
 
     def zoomOut(self):
-        self.uiInst.graphicsView.zoomIn()
+        self.uiInst.graphicsView.zoomOut()
+
+    def zoomToFit(self):
+        self.uiInst.graphicsView.zoomToFit()
 
     def pageDeleteActive(self):
         self.uiInst.graphicsView.pageDeleteActive()

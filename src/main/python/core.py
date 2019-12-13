@@ -1320,6 +1320,21 @@ class GraphicsViewHandler(QGraphicsView):
 
         self.updateRenderedPages()
 
+    def zoomToFit(self):
+        pSize = self.pdf.getPageSize(0)
+
+        rect = self.mapToScene(self.viewport().geometry()).boundingRect()
+            # Store those properties for easy access
+        viewportHeight = rect.height()
+        viewportWidth = rect.width()
+
+        ratio = viewportWidth / pSize[0] / 1.15
+
+        self.absZoomFactor = self.absZoomFactor * ratio
+        self.scale(ratio, ratio)
+
+        self.updateRenderedPages()
+
     def pageDeleteActive(self):
         pass
 

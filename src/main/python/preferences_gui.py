@@ -12,7 +12,7 @@ import os  # launching external python script
 import sys  # exit script, file parsing
 
 
-from PyQt5.QtCore import pyqtSignal, QSettings, QObject
+from PyQt5.QtCore import pyqtSignal, QSettings, QObject, Qt
 from PyQt5.QtWidgets import QDialog
 from PyQt5.QtGui import QIcon
 
@@ -77,6 +77,8 @@ class PreferencesGUI(App):
         self.ui.setupUi(self.MainWindow)
 
         self.MainWindow.setWindowIcon(QIcon(self.ICONPATH))
+        self.MainWindow.setWindowFlags(Qt.WindowTitleHint | Qt.FramelessWindowHint)
+
 
     def run(self):
         '''

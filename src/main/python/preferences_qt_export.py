@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_PreferencesDialog(object):
     def setupUi(self, PreferencesDialog):
         PreferencesDialog.setObjectName("PreferencesDialog")
-        PreferencesDialog.resize(894, 1032)
+        PreferencesDialog.resize(640, 720)
         self.verticalLayout = QtWidgets.QVBoxLayout(PreferencesDialog)
         self.verticalLayout.setObjectName("verticalLayout")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout()
@@ -76,7 +76,7 @@ class Ui_PreferencesDialog(object):
         self.horizontalLayout_41 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_41.setObjectName("horizontalLayout_41")
         self.buttonBox = QtWidgets.QDialogButtonBox(PreferencesDialog)
-        self.buttonBox.setLayoutDirection(QtCore.Qt.RightToLeft)
+        self.buttonBox.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Save)
         self.buttonBox.setCenterButtons(True)
         self.buttonBox.setObjectName("buttonBox")
@@ -93,7 +93,7 @@ class Ui_PreferencesDialog(object):
         _translate = QtCore.QCoreApplication.translate
         PreferencesDialog.setWindowTitle(_translate("PreferencesDialog", "UNote - Preferences"))
         self.labelAutosave.setText(_translate("PreferencesDialog", "Autosave (minutes)"))
-        self.comboBoxAutosave.setCurrentText(_translate("PreferencesDialog", "never"))
+        self.comboBoxAutosave.setCurrentText(_translate("PreferencesDialog", "0.5"))
         self.comboBoxAutosave.setItemText(0, _translate("PreferencesDialog", "0.5"))
         self.comboBoxAutosave.setItemText(1, _translate("PreferencesDialog", "1"))
         self.comboBoxAutosave.setItemText(2, _translate("PreferencesDialog", "5"))
