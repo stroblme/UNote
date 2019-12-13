@@ -189,6 +189,12 @@ class UNote(App):
         # Goto Page
         self.ui.actionPageGoto.triggered.connect(lambda: self.receiversInst.pageGoto())
 
+        # Zoom In
+        self.ui.actionZoomIn.triggered.connect(lambda: self.receiversInst.zoomIn())
+
+        # Zoom Out
+        self.ui.actionZoomOut.triggered.connect(lambda: self.receiversInst.zoomOut())
+
         # Delete Active PDF Page
         self.ui.actionPageInsertHere.triggered.connect(lambda: self.receiversInst.pageDeleteActive())
 

@@ -36,7 +36,7 @@
      <x>0</x>
      <y>0</y>
      <width>1680</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -64,11 +64,22 @@
      <addaction name="actionPageMoveDown"/>
      <addaction name="actionPageMoveTo_Page"/>
     </widget>
+    <widget class="QMenu" name="menuZoom">
+     <property name="title">
+      <string>Zoom</string>
+     </property>
+     <addaction name="actionZoomToFit"/>
+     <addaction name="separator"/>
+     <addaction name="actionZoomIn"/>
+     <addaction name="actionZoomOut"/>
+    </widget>
     <addaction name="actionPageInsertHere"/>
     <addaction name="actionPageDeleteActive"/>
     <addaction name="menuPageMove"/>
     <addaction name="separator"/>
     <addaction name="actionPageGoto"/>
+    <addaction name="separator"/>
+    <addaction name="menuZoom"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -210,6 +221,27 @@
   <action name="actionHelpCheck_for_Updates">
    <property name="text">
     <string>Check for Updates</string>
+   </property>
+  </action>
+  <action name="actionZoomToFit">
+   <property name="text">
+    <string>To Fit</string>
+   </property>
+  </action>
+  <action name="actionZoomIn">
+   <property name="text">
+    <string>In</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+]</string>
+   </property>
+  </action>
+  <action name="actionZoomOut">
+   <property name="text">
+    <string>Out</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+-</string>
    </property>
   </action>
  </widget>

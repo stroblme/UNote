@@ -89,6 +89,12 @@ class Receivers(QObject):
         if ok:
             self.uiInst.graphicsView.pageGoto(pageNumber)
 
+    def zoomIn(self):
+        self.uiInst.graphicsView.zoomIn()
+
+    def zoomOut(self):
+        self.uiInst.graphicsView.zoomIn()
+
     def pageDeleteActive(self):
         self.uiInst.graphicsView.pageDeleteActive()
 

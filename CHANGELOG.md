@@ -71,6 +71,7 @@
 - [x] Implement clear all indicator points
 - [x] Implement page insertion
 - [x] Improve pdf saving
+- [ ] Zooming capability via menu
 
 ### Issues in 1.x
 

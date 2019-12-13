@@ -1303,6 +1303,22 @@ class GraphicsViewHandler(QGraphicsView):
         else:
             print('No valid page entered')
 
+    def zoomIn(self):
+        zoomInFactor = 1.1
+
+        self.absZoomFactor = self.absZoomFactor * zoomInFactor
+        self.scale(zoomInFactor, zoomInFactor)
+
+        self.updateRenderedPages()
+
+    def zoomOut(self):
+        zoomInFactor = 1.1
+        zoomOutFactor = 1 / zoomInFactor
+
+        self.absZoomFactor = self.absZoomFactor * zoomOutFactor
+        self.scale(zoomOutFactor, zoomOutFactor)
+
+        self.updateRenderedPages()
 
     def pageDeleteActive(self):
         pass
