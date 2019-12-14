@@ -471,12 +471,10 @@ class QPdfView(QGraphicsPixmapItem):
             return
         self.ongoingEdit = True
 
-        self.drawPoints = []
         # self.drawIndicators = []
         # self.drawPoints.append(self.qPointToFloatParirs(qpos, pressure))
 
     def stopDraw(self, qpos, pressure=0):
-        self.ongoingEdit = False
 
         # fPoint = self.qPointToFloatParirs(qpos)
         # self.drawPoints.append(fPoint)
@@ -507,13 +505,14 @@ class QPdfView(QGraphicsPixmapItem):
         # self.drawPoints = self.kalman.applyKalman(self.drawPoints)
         segment = self.drawPoints
         self.drawPoints = []
+        self.ongoingEdit = False
 
-        segment = self.savgol.applySavgol(segment)
+
         # Line smoothing
         # self.estPoints = self.formEstimator.estimateLine(self.drawPoints)
 
         g = []
-        g.append(segment)
+        g.append(self.savgol.applySavgol(segment))
 
         try:
             annot = self.page.addInkAnnot(g)
@@ -521,8 +520,6 @@ class QPdfView(QGraphicsPixmapItem):
             print(str(identifier))
             return
 
-        cyan = norm_rgb.main
-        black = norm_rgb.black
 
         try:
             penSize = pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/pdf_annots.freeHandScale)
@@ -530,7 +527,7 @@ class QPdfView(QGraphicsPixmapItem):
             penSize = pdf_annots.defaultPenSize
 
         annot.setBorder({"width":penSize})# line thickness, some dashing
-        annot.setColors({"stroke":black})         # make the lines blue
+        annot.setColors({"stroke":norm_rgb.black})         # make the lines blue
         annot.update()
 
     def calculateTextRectBounds(self, content):
