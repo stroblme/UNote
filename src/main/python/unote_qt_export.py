@@ -151,6 +151,7 @@ class Ui_MainWindow(object):
         self.actionHelpDonate.setText(_translate("MainWindow", "Support the DevOp"))
         self.actionHelpCheck_for_Updates.setText(_translate("MainWindow", "Check for Updates"))
         self.actionZoomToFit.setText(_translate("MainWindow", "To Fit"))
+        self.actionZoomToFit.setShortcut(_translate("MainWindow", "Ctrl+\\"))
         self.actionZoomIn.setText(_translate("MainWindow", "In"))
         self.actionZoomIn.setShortcut(_translate("MainWindow", "Ctrl+]"))
         self.actionZoomOut.setText(_translate("MainWindow", "Out"))

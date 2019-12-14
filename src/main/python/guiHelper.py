@@ -31,6 +31,9 @@ class GuiHelper(App):
 
     def openInputDialog(self, title, text):
         qid = QInputDialog(self)
+
+        qid.setAttribute(Qt.WA_TranslucentBackground)
+
         qid.setWindowFlags(Qt.WindowTitleHint | Qt.FramelessWindowHint)
 
         resp, ok = qid.getInt(self, title, text)

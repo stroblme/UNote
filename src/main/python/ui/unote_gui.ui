@@ -227,6 +227,9 @@
    <property name="text">
     <string>To Fit</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+\</string>
+   </property>
   </action>
   <action name="actionZoomIn">
    <property name="text">
