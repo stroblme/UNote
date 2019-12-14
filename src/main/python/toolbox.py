@@ -5,6 +5,8 @@ from PyQt5.QtGui import QPainter, QPen, QColor, QIcon
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QPoint, Qt, QRect, QSize
 from PyQt5.QtWidgets import QWidget, QPushButton, QTextEdit, QGridLayout, QSlider
 
+import colorsys
+
 import assets
 
 from editHelper import editModes
@@ -561,13 +563,22 @@ class ToolBoxWidget(QWidget):
 
             elif self.colorButton.isChecked():
                 if self.editMode == editModes.marker:
-                    lastSliderValue = int(Preferences.data['markerColor'])
+
+                    normRGB = tuple(map(lambda x: float(x), str(Preferences.data['markerColor'])))
+                    hsv = colorsys.rgb_to_hsv(*normRGB)
+
+                    lastSliderValue = int(hsv[0] * 100)
                 elif self.editMode == editModes.freehand:
-                    lastSliderValue = int(Preferences.data['freehandColor'])
+                    normRGB = tuple(map(lambda x: float(x), str(Preferences.data['freehandColor'])))
+                    hsv = colorsys.rgb_to_hsv(*normRGB)
+
+                    lastSliderValue = int(hsv[0] * 100)
 
         except ValueError:
             self.storeSliderValue()
             return
+
+
 
         self.slider.setValue(lastSliderValue)
 
@@ -581,10 +592,12 @@ class ToolBoxWidget(QWidget):
             elif self.editMode == editModes.freehand:
                 Preferences.updateKeyValue('freehandSize', self.slider.value())
         elif self.colorButton.isChecked():
+            normRGB = colorsys.hsv_to_rgb(self.slider.value() / 100,1,1)
+
             if self.editMode == editModes.marker:
-                Preferences.updateKeyValue('markerColor', self.slider.value())
+                Preferences.updateKeyValue('markerColor', tuple(map(lambda x: str(x), normRGB)))
             elif self.editMode == editModes.freehand:
-                Preferences.updateKeyValue('freehandColor', self.slider.value())
+                Preferences.updateKeyValue('freehandColor', tuple(map(lambda x: str(x), normRGB)))
 
     def handleSizeButton(self):
         '''
@@ -607,7 +620,9 @@ class ToolBoxWidget(QWidget):
             self.slider.setEnabled(True)
             self.restoreSliderValue()
         else:
-            self.storeSliderValue()
+            # restore defaults for better ux
+            Preferences.updateKeyValue('freehandColor', ("0","0","0"))
+            Preferences.updateKeyValue('markerColor', ("1","1","0"))
 
             self.slider.setEnabled(False)
             self.slider.setValue(100)

@@ -410,7 +410,10 @@ class QPdfView(QGraphicsPixmapItem):
         xMax = max(self.startPos.x(), self.endPos.x())
 
         rect = fitz.Rect(xMin, yMin, xMax, yMax)
-        self.page.addHighlightAnnot(rect)
+        annot = self.page.addHighlightAnnot(rect)
+
+        annot.setColors({"stroke":tuple(map(lambda x: float(x), Preferences.data['markerColor']))})         # make the lines blue
+        annot.update()
 
     #-----------------------------------------------------------------------
     # Eraser
@@ -527,7 +530,7 @@ class QPdfView(QGraphicsPixmapItem):
             penSize = pdf_annots.defaultPenSize
 
         annot.setBorder({"width":penSize})# line thickness, some dashing
-        annot.setColors({"stroke":norm_rgb.black})         # make the lines blue
+        annot.setColors({"stroke":tuple(map(lambda x: float(x), Preferences.data['freehandColor']))})         # make the lines blue
         annot.update()
 
     def calculateTextRectBounds(self, content):
