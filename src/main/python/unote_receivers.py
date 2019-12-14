@@ -9,7 +9,6 @@ import os
 import webbrowser
 
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QGraphicsBlurEffect
 from PyQt5.QtCore import pyqtSignal, QObject, pyqtSlot
 
 from preferences import Preferences
@@ -29,12 +28,13 @@ class Receivers(QObject):
         self.uiInst = uiInst
         self.guiHelper = GuiHelper()
 
-        self.backgroundEffect = QGraphicsBlurEffect(self)
-        self.backgroundEffect.setBlurRadius(20)
-        self.backgroundEffect.setEnabled(False)
+        # self.backgroundEffect = QGraphicsDropShadowEffect(self)
+        # self.backgroundEffect.setColor(QColor(0,0,0))
+        # self.backgroundEffect.setEnabled(False)
 
 
-        self.uiInst.centralwidget.setGraphicsEffect(self.backgroundEffect)
+        # self.uiInst.centralwidget.setGraphicsEffect(self.backgroundEffect)
+        # self.uiInst.centralwidget.setGraphicsEffect(self.backgroundEffect)
 
 
 
@@ -49,11 +49,11 @@ class Receivers(QObject):
         '''
         Opens the Preference Window
         '''
-        self.backgroundEffect.setEnabled(True)
+        # self.backgroundEffect.setEnabled(True)
 
         preferenceInstance.run()
 
-        self.backgroundEffect.setEnabled(False)
+        # self.backgroundEffect.setEnabled(False)
 
         self.uiInst.graphicsView.updateRenderedPages()
 

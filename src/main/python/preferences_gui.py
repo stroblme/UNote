@@ -11,6 +11,8 @@ from fbs_runtime.application_context.PyQt5 import ApplicationContext
 import os  # launching external python script
 import sys  # exit script, file parsing
 
+from PyQt5.QtWidgets import QGraphicsDropShadowEffect
+from PyQt5.QtGui import QColor
 
 from PyQt5.QtCore import pyqtSignal, QSettings, QObject, Qt
 from PyQt5.QtWidgets import QDialog
@@ -75,6 +77,15 @@ class PreferencesGUI(App):
         self.MainWindow = QDialog()
         self.ui = Ui_PreferencesDialog()
         self.ui.setupUi(self.MainWindow)
+
+        self.MainWindow.setAttribute(Qt.WA_TranslucentBackground)
+        self.backgroundEffect = QGraphicsDropShadowEffect(self.MainWindow)
+        self.backgroundEffect.setBlurRadius(30)
+        self.backgroundEffect.setOffset(0,0)
+        self.backgroundEffect.setEnabled(True)
+
+
+        self.ui.centralwidget.setGraphicsEffect(self.backgroundEffect)
 
         self.MainWindow.setWindowIcon(QIcon(self.ICONPATH))
         self.MainWindow.setWindowFlags(Qt.WindowTitleHint | Qt.FramelessWindowHint)
@@ -160,5 +171,8 @@ class PreferencesGUI(App):
         '''
         if toBool(Preferences.data["radioButtonDarkTheme"]) == True:
             self.guiHelper.toggle_stylesheet(":/dark.qss")
+            self.backgroundEffect.setColor(QColor(100,100,100))
+
         else:
             self.guiHelper.toggle_stylesheet(":/light.qss")
+            self.backgroundEffect.setColor(QColor(0,0,0))
