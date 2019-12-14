@@ -467,6 +467,8 @@ class QPdfView(QGraphicsPixmapItem):
     # Draw
     #-----------------------------------------------------------------------
     def startDraw(self, qpos, pressure=0):
+        if self.ongoingEdit:
+            return
         self.ongoingEdit = True
 
         self.drawPoints = []
@@ -487,10 +489,12 @@ class QPdfView(QGraphicsPixmapItem):
         '''
         Called updates the currently ongoing marking to match the latest, provided position
         '''
+
         curPos = self.qPointToFloatParirs(qpos, pressure)
 
         if len(self.drawPoints) > 1:
-            if self.qPointDistance(self.drawPoints[-1], curPos) > 120:
+            if self.qPointDistance(self.drawPoints[-1], curPos) > 100:
+                print("Prevented false drawing")
                 return
 
         self.drawPoints.append(curPos)
