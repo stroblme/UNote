@@ -248,7 +248,7 @@ QMenuBar::item:selected
 QMenuBar::item:pressed
 {
     border: 0.1ex solid #3C6188;
-    background-color: #9CCBD4;
+    background-color: #357581;
     color: #FFFFFF;
     margin-bottom: -0.1ex;
     padding-bottom: 0.1ex;
