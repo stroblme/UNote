@@ -493,10 +493,8 @@ class QPdfView(QGraphicsPixmapItem):
 
         curPos = self.qPointToFloatParirs(qpos, pressure)
 
-        if len(self.drawPoints) > 1:
-            if self.qPointDistance(self.drawPoints[-1], curPos) > 100:
-                print("Prevented false drawing")
-                return
+        if len(self.drawPoints) > 1 and self.qPointDistance(self.drawPoints[-1], curPos) > 30:
+            self.drawPoints = []
 
         self.drawPoints.append(curPos)
         # self.drawIndicators.append(qpos)
