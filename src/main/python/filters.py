@@ -145,12 +145,9 @@ class Savgol(object):
         # Odd window length for Savgol
         # Use even Polynoms for better results!
 
-        if len(observedPoints) > 31:
-            WINDOW_LENGTH = 31 #odd!
-            POLYNOM_GRADE = 6
-        elif len(observedPoints) > 19:
+        if len(observedPoints) > 19:
             WINDOW_LENGTH = 19 #odd!
-            POLYNOM_GRADE = 4
+            POLYNOM_GRADE = 3
         elif len(observedPoints) > 13:
             WINDOW_LENGTH = 13 #odd!
             POLYNOM_GRADE = 2
@@ -161,17 +158,6 @@ class Savgol(object):
             WINDOW_LENGTH = 3 #odd!
             POLYNOM_GRADE = 1
         else:
-            return observedPoints
-
-
-        if len(observedPoints) > WINDOW_LENGTH:
-            xPoints, yPoints = tuplesToArrays(observedPoints)
-
-            xPointsS = savgol_filter(xPoints, WINDOW_LENGTH, POLYNOM_GRADE)
-            yPointsS = savgol_filter(yPoints, WINDOW_LENGTH, POLYNOM_GRADE)
-
-            points = arraysToTuples(xPointsS, yPointsS)
-        elif len(observedPoints) == 1:
             xPoints, yPoints = tuplesToArrays(observedPoints)
 
             xPoints.extend([xPoints[0] - 1])
@@ -179,6 +165,16 @@ class Savgol(object):
             yPoints.extend([yPoints[0] - 1])
 
             points = arraysToTuples(xPoints, yPoints)
+
+            return points
+
+        xPoints, yPoints = tuplesToArrays(observedPoints)
+
+        xPointsS = savgol_filter(xPoints, WINDOW_LENGTH, POLYNOM_GRADE)
+        yPointsS = savgol_filter(yPoints, WINDOW_LENGTH, POLYNOM_GRADE)
+
+        points = arraysToTuples(xPointsS, yPointsS)
+
 
         return points
 

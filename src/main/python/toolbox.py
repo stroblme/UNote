@@ -567,12 +567,12 @@ class ToolBoxWidget(QWidget):
                     normRGB = tuple(map(lambda x: float(x), str(Preferences.data['markerColor'])))
                     hsv = colorsys.rgb_to_hsv(*normRGB)
 
-                    lastSliderValue = int(hsv[0] * 150)
+                    lastSliderValue = int(hsv[0] * 100)
                 elif self.editMode == editModes.freehand:
                     normRGB = tuple(map(lambda x: float(x), str(Preferences.data['freehandColor'])))
                     hsv = colorsys.rgb_to_hsv(*normRGB)
 
-                    lastSliderValue = int(hsv[0] * 150)
+                    lastSliderValue = int(hsv[0] * 100)
 
         except ValueError:
             self.storeSliderValue()
@@ -592,7 +592,7 @@ class ToolBoxWidget(QWidget):
             elif self.editMode == editModes.freehand:
                 Preferences.updateKeyValue('freehandSize', self.slider.value())
         elif self.colorButton.isChecked():
-            normRGB = colorsys.hsv_to_rgb(self.slider.value() / 150,1,1)
+            normRGB = colorsys.hsv_to_rgb(self.slider.value() / 100,1,1)
 
             if self.editMode == editModes.marker:
                 Preferences.updateKeyValue('markerColor', tuple(map(lambda x: str(x), normRGB)))
@@ -620,9 +620,12 @@ class ToolBoxWidget(QWidget):
             self.slider.setEnabled(True)
             self.restoreSliderValue()
         else:
+            black = (0,0,0)
+            yellow = (0,0,0)
+
             # restore defaults for better ux
-            Preferences.updateKeyValue('freehandColor', ("0","0","0"))
-            Preferences.updateKeyValue('markerColor', ("1","1","0"))
+            Preferences.updateKeyValue('freehandColor', tuple(map(lambda x: str(x), black)))
+            Preferences.updateKeyValue('markerColor', tuple(map(lambda x: str(x), yellow)))
 
             self.slider.setEnabled(False)
             self.slider.setValue(100)
