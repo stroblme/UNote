@@ -77,6 +77,8 @@ class UNote(App):
 
         if args.open:
             self.ui.graphicsView.loadPdfToCurrentView(os.path.abspath(args.open))
+
+            t.singleShot(10, self.applyPageDefaults)
         elif args.new:
             self.ui.graphicsView.createNewPdf(os.path.abspath(args.new))
 
@@ -140,6 +142,8 @@ class UNote(App):
         # Initialize auto saving
         # self.autoSaveReceiver()
 
+    def applyPageDefaults(self):
+        self.ui.graphicsView.zoomToFit()
 
     def autoSaveReceiver(self):
         if Preferences.data['comboBoxAutosave'] != 'never' and Preferences.data['comboBoxAutosave'] != '':

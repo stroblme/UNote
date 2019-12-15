@@ -143,8 +143,8 @@ class Receivers(QObject):
         '''
         self.SigSendMessageToJS.emit(msg)
 
-    def aboutReceiver(self):
-        pass
+    def aboutReceiver(self, url):
+        webbrowser.open(url)
 
     def checkForUpdatesReceiver(self, url):
         webbrowser.open(url)
