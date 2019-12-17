@@ -75,6 +75,8 @@ class UNote(App):
 
         self.connectReceivers()
 
+        self.ui.floatingToolBox.restoreDefaults()
+
         if args.open:
             self.ui.graphicsView.loadPdfToCurrentView(os.path.abspath(args.open))
 

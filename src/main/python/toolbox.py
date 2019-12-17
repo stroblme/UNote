@@ -228,6 +228,20 @@ class ToolBoxWidget(QWidget):
         self.setButtonState()
 
 
+
+    def restoreDefaults(self):
+        '''
+        Restores defaults for certain edit components
+        '''
+
+        black = (0,0,0)
+        yellow = (0,0,0)
+
+        # restore defaults for better ux
+        Preferences.updateKeyValue('freehandColor', tuple(map(lambda x: str(x), black)))
+        Preferences.updateKeyValue('markerColor', tuple(map(lambda x: str(x), yellow)))
+
+
     def paintEvent(self, event):
         '''
         Overrides the default paint event to either draw a textBox or a toolBox
@@ -620,12 +634,7 @@ class ToolBoxWidget(QWidget):
             self.slider.setEnabled(True)
             self.restoreSliderValue()
         else:
-            black = (0,0,0)
-            yellow = (0,0,0)
-
-            # restore defaults for better ux
-            Preferences.updateKeyValue('freehandColor', tuple(map(lambda x: str(x), black)))
-            Preferences.updateKeyValue('markerColor', tuple(map(lambda x: str(x), yellow)))
+            self.restoreDefaults()
 
             self.slider.setEnabled(False)
             self.slider.setValue(100)
