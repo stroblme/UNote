@@ -9,7 +9,7 @@ import os
 import webbrowser
 
 from PyQt5 import QtCore
-from PyQt5.QtCore import pyqtSignal, QObject, pyqtSlot
+from PyQt5.QtCore import pyqtSignal, QObject, pyqtSlot, QTimer
 
 from preferences import Preferences
 from guiHelper import GuiHelper
@@ -22,10 +22,10 @@ class Receivers(QObject):
 
     SigSendMessageToJS = pyqtSignal(str)
 
-    def __init__(self, uiInst):
+    def __init__(self, ui):
         super().__init__()
 
-        self.uiInst = uiInst
+        self.ui = ui
         self.guiHelper = GuiHelper()
 
         # self.backgroundEffect = QGraphicsDropShadowEffect(self)
@@ -33,8 +33,8 @@ class Receivers(QObject):
         # self.backgroundEffect.setEnabled(False)
 
 
-        # self.uiInst.centralwidget.setGraphicsEffect(self.backgroundEffect)
-        # self.uiInst.centralwidget.setGraphicsEffect(self.backgroundEffect)
+        # self.ui.centralwidget.setGraphicsEffect(self.backgroundEffect)
+        # self.ui.centralwidget.setGraphicsEffect(self.backgroundEffect)
 
 
 
@@ -55,10 +55,11 @@ class Receivers(QObject):
 
         # self.backgroundEffect.setEnabled(False)
 
-        self.uiInst.graphicsView.updateRenderedPages()
+        self.ui.graphicsView.updateRenderedPages()
 
-    def newPdf(self):
-        pdfFileName = self.guiHelper.saveFileDialog("PDF File (*.pdf)")
+    def newPdf(self, pdfFileName = None):
+        if not pdfFileName:
+            pdfFileName = self.guiHelper.saveFileDialog("PDF File (*.pdf)")
 
         if pdfFileName == '':
             return
@@ -69,60 +70,75 @@ class Receivers(QObject):
 
         pdfFileName = name + ext
 
-        self.uiInst.graphicsView.createNewPdf(pdfFileName)
+        self.ui.graphicsView.createNewPdf(pdfFileName)
 
-    def loadPdf(self):
+        self.applyWorkspaceDefaults()
+
+    def loadPdf(self, pdfFileName = None):
         '''
         Loads a pdf to the current view
         '''
-        pdfFileName = self.guiHelper.openFileNameDialog("PDF File (*.pdf)")
+        if not pdfFileName:
+            pdfFileName = self.guiHelper.openFileNameDialog("PDF File (*.pdf)")
 
         if pdfFileName == '':
             return
 
-        self.uiInst.graphicsView.loadPdfToCurrentView(pdfFileName)
+        self.ui.graphicsView.loadPdfToCurrentView(pdfFileName)
+
+        self.applyWorkspaceDefaults()
 
     def savePdf(self):
-        self.uiInst.graphicsView.saveCurrentPdf()
+        self.ui.graphicsView.saveCurrentPdf()
 
-    def savePdfAs(self):
-        pdfFileName = self.guiHelper.saveFileDialog("PDF File (*.pdf)")
+    def savePdfAs(self, pdfFileName = None):
+        if not pdfFileName:
+            pdfFileName = self.guiHelper.saveFileDialog("PDF File (*.pdf)")
 
         if pdfFileName == '':
             return
 
-        self.uiInst.graphicsView.saveCurrentPdfAs(pdfFileName)
+        self.ui.graphicsView.saveCurrentPdfAs(pdfFileName)
 
     def pageInsertHere(self):
-        self.uiInst.graphicsView.pageInsertHere()
+        self.ui.graphicsView.pageInsertHere()
 
     def pageGoto(self):
-        pageNumber, ok = self.guiHelper.openInputDialog('Goto Page', 'Page Number (<' + str(len(self.uiInst.graphicsView.pages)) + '): ')
+        pageNumber, ok = self.guiHelper.openInputDialog('Goto Page', 'Page Number (<' + str(len(self.ui.graphicsView.pages)) + '): ')
 
         if ok:
-            self.uiInst.graphicsView.pageGoto(pageNumber)
+            self.ui.graphicsView.pageGoto(pageNumber)
+
+    def applyWorkspaceDefaults(self):
+        t = QTimer()
+
+        t.singleShot(10, self.delayedWorkspaceDefaults)
+
+    def delayedWorkspaceDefaults(self):
+        self.ui.graphicsView.zoomToFit()
+
 
     def zoomIn(self):
-        self.uiInst.graphicsView.zoomIn()
+        self.ui.graphicsView.zoomIn()
 
     def zoomOut(self):
-        self.uiInst.graphicsView.zoomOut()
+        self.ui.graphicsView.zoomOut()
 
     def zoomToFit(self):
-        self.uiInst.graphicsView.zoomToFit()
+        self.ui.graphicsView.zoomToFit()
 
     def pageDeleteActive(self):
-        self.uiInst.graphicsView.pageDeleteActive()
+        self.ui.graphicsView.pageDeleteActive()
 
     def toggleTextMode(self):
-        self.uiInst.graphicsView.toggleTextMode()
+        self.ui.graphicsView.toggleTextMode()
 
-        # self.uiInst.actionText_Mode.setChecked(not bool(self.uiInst.actionText_Mode.isChecked()))
+        # self.ui.actionText_Mode.setChecked(not bool(self.ui.actionText_Mode.isChecked()))
 
     def toggleMarkMode(self):
-        self.uiInst.graphicsView.toggleMarkMode()
+        self.ui.graphicsView.toggleMarkMode()
 
-        # self.uiInst.actionMark_Mode.setChecked(not bool(self.uiInst.actionMark_Mode.isChecked()))
+        # self.ui.actionMark_Mode.setChecked(not bool(self.ui.actionMark_Mode.isChecked()))
 
 
     @pyqtSlot(str)
