@@ -959,7 +959,7 @@ class GraphicsViewHandler(QGraphicsView):
         # self.thread = QThread
         # self.moveToThread(self.thread)
 
-        width, height = self.pdf.getPageSize()
+        width, height = self.getPageSize()
 
         for pIt in range(self.pdf.doc.pageCount):
 
@@ -1159,6 +1159,9 @@ class GraphicsViewHandler(QGraphicsView):
         else:
             pdfViewInstance.updatePixMap(qImg)
 
+    def getPageSize(self, page = 0):
+        return self.pdf.getPageSize(0)
+
     def wheelEvent(self, event):
         '''
         Overrides the default event
@@ -1323,14 +1326,12 @@ class GraphicsViewHandler(QGraphicsView):
         self.updateRenderedPages()
 
     def zoomToFit(self):
-        pSize = self.pdf.getPageSize(0)
+        pSize = self.getPageSize()
 
         rect = self.mapToScene(self.viewport().geometry()).boundingRect()
             # Store those properties for easy access
-        viewportHeight = rect.height()
-        viewportWidth = rect.width()
 
-        ratio = viewportWidth / pSize[0] / 1.15
+        ratio = rect.width() / pSize[0] / 1.15
 
         self.absZoomFactor = self.absZoomFactor * ratio
         self.scale(ratio, ratio)

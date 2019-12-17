@@ -112,11 +112,18 @@ class Receivers(QObject):
     def applyWorkspaceDefaults(self):
         t = QTimer()
 
+
         t.singleShot(10, self.delayedWorkspaceDefaults)
 
     def delayedWorkspaceDefaults(self):
         self.ui.graphicsView.zoomToFit()
 
+        pW, pH = self.ui.graphicsView.getPageSize()
+
+        curY = self.ui.floatingToolBox.y()
+        # curW = self.ui.floatingToolBox.width()
+
+        self.ui.floatingToolBox.move(pW * self.ui.graphicsView.absZoomFactor, curY)
 
     def zoomIn(self):
         self.ui.graphicsView.zoomIn()
