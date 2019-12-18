@@ -235,7 +235,7 @@ class ToolBoxWidget(QWidget):
         '''
 
         black = (0,0,0)
-        yellow = (0,0,0)
+        yellow = (1,1,0)
 
         # restore defaults for better ux
         Preferences.updateKeyValue('freehandColor', tuple(map(lambda x: str(x), black)))
