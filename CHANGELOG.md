@@ -84,6 +84,7 @@
 - [x] In light theme, the button state keeps persistent after deactivation
 - [x] Text box can be positioned outside pdf area
 - [x] Indicator Points not disappear after cancelling edit
+- [ ] Still got issues that pen is suddenly not recogniced anymore. Fixed after restart
 
 ## Features for v1.x - Completed
 
