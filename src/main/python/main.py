@@ -34,7 +34,7 @@ from unote_qt_export import Ui_MainWindow
 
 
 
-class App(Ui_MainWindow):
+class App(QObject):
     appctxt = ApplicationContext()
 
     ICONPATH = appctxt.get_resource('icon.png')

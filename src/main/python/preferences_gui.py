@@ -46,14 +46,16 @@ class PreferencesGUI(App):
     Main class for the Preferences Window
     '''
     keys = list()
+    finished = pyqtSignal()
+
 
     def __init__(self):
         super().__init__()
         self.initUI()
 
-        # self.MainWindow.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.FramelessWindowHint)
+        # self.windowInst.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.FramelessWindowHint)
 
-        # self.MainWindow.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        # self.windowInst.setAttribute(QtCore.Qt.WA_DeleteOnClose)
 
         self.settings = QSettings(self.COMPANY_NAME, self.APPLICATION_NAME)
 
@@ -72,14 +74,15 @@ class PreferencesGUI(App):
         del self.settings
 
 
-    def initUI(self):
+    def initUI(self, windowInst):
         # self.app = QtWidgets.QApplication(sys.argv)
-        self.MainWindow = QDialog()
         self.ui = Ui_PreferencesDialog()
-        self.ui.setupUi(self.MainWindow)
+        self.ui.windowInst = windowInst
+        self.ui.windowInst.hide()
+        self.ui.setupUi(self.ui.windowInst)
 
-        self.MainWindow.setAttribute(Qt.WA_TranslucentBackground)
-        self.backgroundEffect = QGraphicsDropShadowEffect(self.MainWindow)
+        self.windowInst.setAttribute(Qt.WA_TranslucentBackground)
+        self.backgroundEffect = QGraphicsDropShadowEffect(self.windowInst)
         self.backgroundEffect.setBlurRadius(30)
         self.backgroundEffect.setOffset(0,0)
         self.backgroundEffect.setEnabled(True)
@@ -87,24 +90,13 @@ class PreferencesGUI(App):
 
         self.ui.centralwidget.setGraphicsEffect(self.backgroundEffect)
 
-        self.MainWindow.setWindowIcon(QIcon(self.ICONPATH))
-        self.MainWindow.setWindowFlags(Qt.WindowTitleHint | Qt.FramelessWindowHint)
-
 
     def run(self):
         '''
         Starts the Preferences Window
         '''
         self.loadSettings()
-        self.MainWindow.show()
-
-        result = self.MainWindow.exec_()
-
-        #settings confirmed
-        if result:
-            self.saveSettings()
-        else:
-            self.discardSettings()
+        self.windowInst.show()
 
     def connectReceivers(self, receiversInst):
         '''
