@@ -1,1 +1,1 @@
-cd /d X:\UNote\src\main\python && ..\..\..\venv\Scripts\python.exe main.py -o %1
+cd /d C:\Program Files\UNote\unote\src\main\python && ..\..\..\venv\Scripts\python.exe main.py -o %1
