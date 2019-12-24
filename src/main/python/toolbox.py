@@ -82,7 +82,7 @@ class ToolBoxWidget(QWidget):
         self.row3Left = QPoint(self.row2Left.x(), self.row2Left.y()+35)
         self.row3Right = QPoint(self.row2Right.x(), self.row2Right.y()+35)
         self.bottomLeft = QPoint(buttonRect.topLeft().x(), buttonRect.topLeft().y()+130)
-        self.bottomRight = QPoint(self.row1Right.x(), self.row1Right.y()+130)
+        self.bottomRight = QPoint(self.row1Right.x(), self.row1Right.y()+140)
         self.bottomMiddle = QPoint(self.row1Left.x()+65, self.row1Right.y())
 
         # We use a textEdit for making text boxes editable for user
@@ -169,6 +169,18 @@ class ToolBoxWidget(QWidget):
         self.deleteButton.setIcon(QIcon(":/assets/delete.png"))
         self.buttons['deleteButton'] = self.deleteButton
 
+        self.undoButton = QPushButton(self)
+        self.undoButton.setFixedSize(buttonSize)
+        self.undoButton.move(self.bottomLeft)
+        self.undoButton.setIcon(QIcon(":/assets/undo.png"))
+        self.buttons['undoButton'] = self.undoButton
+
+        self.redoButton = QPushButton(self)
+        self.redoButton.setFixedSize(buttonSize)
+        self.redoButton.move(self.bottomRight)
+        self.redoButton.setIcon(QIcon(":/assets/redo.png"))
+        self.buttons['redoButton'] = self.redoButton
+
         # -----------------------------
         # Preference Buttons
         # -----------------------------
@@ -195,6 +207,8 @@ class ToolBoxWidget(QWidget):
         self.okButton.setShortcut("Ctrl+Return")
         self.cancelButton.setShortcut("Esc")
         self.deleteButton.setShortcut("Ctrl+Del")
+        self.undoButton.setShortcut("Ctrl+Z")
+        self.redoButton.setShortcut("Ctrl+Y")
         self.sizeButton.setShortcut("Ctrl+X")
         self.colorButton.setShortcut("Ctrl+L")
 
@@ -208,6 +222,8 @@ class ToolBoxWidget(QWidget):
         self.markdownButton.clicked.connect(self.handleMarkdownButton)
         self.cancelButton.clicked.connect(self.handleCancelButton)
         self.deleteButton.clicked.connect(self.handleDeleteButton)
+        self.undoButton.clicked.connect(self.handleUndoButton)
+        self.redoButton.clicked.connect(self.handleRedoButton)
         self.sizeButton.clicked.connect(self.handleSizeButton)
         self.colorButton.clicked.connect(self.handleColorButton)
 
@@ -358,9 +374,9 @@ class ToolBoxWidget(QWidget):
             self.setEnableOnAllButtonsButThose(['markdownButton'])
 
         elif self.editMode == editModes.none:
-            self.setVisibleOnAllButtonsButThose(['textButton', 'eraserButton', 'formsButton', 'freehandButton', 'markerButton', 'markdownButton'])
+            self.setVisibleOnAllButtonsButThose(['textButton', 'eraserButton', 'formsButton', 'freehandButton', 'markerButton', 'markdownButton', 'undoButton', 'redoButton'])
 
-            self.setEnableOnAllButtonsButThose(['textButton', 'eraserButton', 'formsButton', 'freehandButton', 'markerButton', 'markdownButton'])
+            self.setEnableOnAllButtonsButThose(['textButton', 'eraserButton', 'formsButton', 'freehandButton', 'markerButton', 'markdownButton', 'undoButton', 'redoButton'])
 
             self.setCheckedOnAllButtonsButThose([])
 
@@ -564,6 +580,12 @@ class ToolBoxWidget(QWidget):
             self.currentPageNumber = -1
             self.currentX = -1
             self.currentY = -1
+
+    def handleUndoButton(self):
+        pass
+
+    def handleRedoButton(self):
+        pass
 
     def restoreSliderValue(self):
         try:

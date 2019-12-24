@@ -12,6 +12,8 @@
     <file>./assets/ok.png</file>
     <file>./assets/cancel.png</file>
     <file>./assets/delete.png</file>
+    <file>./assets/undo.png</file>
+    <file>./assets/redo.png</file>
     <file>./assets/size.png</file>
     <file>./assets/index.html</file>
 </qresource>
