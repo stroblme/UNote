@@ -309,7 +309,12 @@ class QPdfView(QGraphicsPixmapItem):
         self.page.deleteAnnot(annot)
 
     def getCorrespondingAnnot(self, annot):
-        info = annot.info
+        try:
+            info = annot.info
+        # Parent orphaned
+        except ValueError as identifier:
+            return None
+
         lineXRef = None
         # Try to get the corresponding xref for the line
         try:
@@ -513,11 +518,16 @@ class QPdfView(QGraphicsPixmapItem):
         # Line smoothing
         # self.estPoints = self.formEstimator.estimateLine(self.drawPoints)
 
-        g = []
-        g.append(self.savgol.applySavgol(segment))
+        pointList = []
+        pointList.append(self.savgol.applySavgol(segment))
 
+        annot = self.addInkAnnot(pointList)
+
+        History.addToHistory(self.deleteInkAnnot, annot, self.addInkAnnot, pointList)
+
+    def addInkAnnot(self, pointList):
         try:
-            annot = self.page.addInkAnnot(g)
+            annot = self.page.addInkAnnot(pointList)
         except RuntimeError as identifier:
             print(str(identifier))
             return
@@ -532,7 +542,16 @@ class QPdfView(QGraphicsPixmapItem):
         annot.setColors({"stroke":tuple(map(lambda x: float(x), Preferences.data['freehandColor']))})         # make the lines blue
         annot.update()
 
-        History.addToHistory(self.deleteAnnot, annot)
+        return annot
+
+    def deleteInkAnnot(self, annot):
+        pointList = []
+        pointList.append(annot.vertices)
+
+        self.deleteAnnot(annot)
+
+        # Currently not working quite well
+        return pointList
 
     def calculateTextRectBounds(self, content):
         '''

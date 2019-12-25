@@ -3,19 +3,20 @@ from indexed import IndexedOrderedDict
 
 class History():
 
-    timeline = IndexedOrderedDict()
-    pointer = 0 # Latest pointer
+    MAXTIMELINELENGTH = 20
+    timeline = list()
+    pointer = -1 # Latest pointer
 
     def __init__(self):
         pass
 
     @staticmethod
     def undo():
-        if History.pointer == 0:
+        if History.pointer+1 == len(History.timeline):
             return
 
         # Go back in time
-        History.pointer -= 1
+        History.pointer += 1
 
         action = History.timeline[History.pointer]
 
@@ -23,21 +24,29 @@ class History():
 
     @staticmethod
     def redo():
-        # Go back in time
-        History.pointer += 1
+        if History.pointer == -1:
+            return
 
         action = History.timeline[History.pointer]
 
-        action["undoFuncHandle"](action["undoFuncParam"])
+        # Go back in time
+        History.pointer -= 1
+
+        action["undoFuncParam"] = action["redoFuncHandle"](action["redoFuncParam"])
 
     @staticmethod
-    def addToHistory(undoFuncHandle, undoFuncParam):
-        action = {"undoFuncHandle":undoFuncHandle, "undoFuncParam":undoFuncParam}
+    def addToHistory(undoFuncHandle, undoFuncParam, redoFuncHandle, redoFuncParam):
+        action = {"undoFuncHandle":undoFuncHandle, "undoFuncParam":undoFuncParam, "redoFuncHandle":redoFuncHandle, "redoFuncParam":redoFuncParam}
+
+        if History.pointer != -1:
+            del History.timeline[0:History.pointer]
+            History.pointer = -1
 
         # Add action to timeline
-        History.timeline[History.pointer] = action
-        # Increment timeline
-        History.pointer += 1
+        History.timeline.insert(0, action)
+
+        if len(History.timeline) > History.MAXTIMELINELENGTH:
+            del History.timeline[-1]
 
     @staticmethod
     def removeFromHistory():

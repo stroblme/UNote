@@ -589,7 +589,8 @@ class ToolBoxWidget(QWidget):
         self.suggestUpdate.emit()
 
     def handleRedoButton(self):
-        pass
+        History.redo()
+        self.suggestUpdate.emit()
 
     def restoreSliderValue(self):
         try:
