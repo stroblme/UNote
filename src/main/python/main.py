@@ -214,6 +214,9 @@ class UNote(App):
         # Toolbox Edit modes available
         self.ui.floatingToolBox.editModeChange.connect(self.ui.graphicsView.editModeChangeRequest)
 
+        # Suggest update signal
+        self.ui.floatingToolBox.suggestUpdate.connect(self.ui.graphicsView.updateSuggested)
+
         # Toolboxspecific events
         self.ui.floatingToolBox.textInputFinished.connect(self.ui.graphicsView.toolBoxTextInputEvent)
         self.ui.graphicsView.requestTextInput.connect(self.ui.floatingToolBox.handleTextInputRequest)
