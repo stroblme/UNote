@@ -81,7 +81,7 @@ class ToolBoxWidget(QWidget):
         self.row2Right = QPoint(self.row1Right.x(), self.row1Right.y()+35)
         self.row3Left = QPoint(self.row2Left.x(), self.row2Left.y()+35)
         self.row3Right = QPoint(self.row2Right.x(), self.row2Right.y()+35)
-        self.bottomLeft = QPoint(buttonRect.topLeft().x(), buttonRect.topLeft().y()+130)
+        self.bottomLeft = QPoint(buttonRect.topLeft().x(), buttonRect.topLeft().y()+140)
         self.bottomRight = QPoint(self.row1Right.x(), self.row1Right.y()+140)
         self.bottomMiddle = QPoint(self.row1Left.x()+65, self.row1Right.y())
 
@@ -290,7 +290,7 @@ class ToolBoxWidget(QWidget):
         # shapePainter.drawLine(topMiddle, bottomMiddle)
 
         shapePainter.setPen(QPen(QColor(14,125,145),  2, Qt.SolidLine))
-        arcRect = QRect(bottomMiddle.x() - 5, bottomMiddle.y()+1, 13, 13)
+        arcRect = QRect(bottomMiddle.x() - 5, bottomMiddle.y()-6, 13, 13)
         shapePainter.drawArc(arcRect, 0, CIRCLE)
 
         self.pTextEdit.setEnabled(False)
