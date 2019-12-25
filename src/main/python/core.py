@@ -416,10 +416,21 @@ class QPdfView(QGraphicsPixmapItem):
         xMax = max(self.startPos.x(), self.endPos.x())
 
         rect = fitz.Rect(xMin, yMin, xMax, yMax)
+
+        annot = self.addHighlightAnnot(rect)
+        History.addToHistory(self.deleteHighlightAnnot, annot, self.addHighlightAnnot, rect)
+
+
+    def addHighlightAnnot(self, rect):
         annot = self.page.addHighlightAnnot(rect)
 
         annot.setColors({"stroke":tuple(map(lambda x: float(x), Preferences.data['markerColor']))})         # make the lines blue
         annot.update()
+
+        return annot
+
+    def deleteHighlightAnnot(self, annot):
+        self.deleteAnnot(annot)
 
     #-----------------------------------------------------------------------
     # Eraser
