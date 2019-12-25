@@ -5,7 +5,7 @@
 #
 # Author: Melvin Strobl
 # ---------------------------------------------------------------
-from PyQt5.QtCore import QObject
+from PyQt5.QtCore import QObject, pyqtSignal
 
 from guiHelper import GuiHelper
 from preferences import Preferences
@@ -14,20 +14,33 @@ class Receivers(QObject):
     '''
     Class for handling all the event calls from the ui
     '''
+    confirmSignal = pyqtSignal(bool)
 
-    def __init__(self):
+    def __init__(self, uiInst):
         super().__init__()
 
         self.guiHelper = GuiHelper()
 
-    def setTheme(self, uiInst):
+        self.uiInst = uiInst
+
+    def confirmReceiver(self):
+
+        self.uiInst.windowInst.hide()
+        self.confirmSignal.emit(True)
+
+    def rejectReceiver(self):
+
+        self.uiInst.windowInst.hide()
+        self.confirmSignal.emit(False)
+
+    def setTheme(self):
         '''
         Apply the selected theme
         '''
 
-        if uiInst.radioButtonDarkTheme.isChecked():
+        if self.uiInst.radioButtonDarkTheme.isChecked():
             self.guiHelper.toggle_stylesheet(":/dark.qss")
         else:
             self.guiHelper.toggle_stylesheet(":/light.qss")
 
-        Preferences.updateKeyValue("radioButtonDarkTheme", uiInst.radioButtonDarkTheme.isChecked())
+        Preferences.updateKeyValue("radioButtonDarkTheme", self.uiInst.radioButtonDarkTheme.isChecked())

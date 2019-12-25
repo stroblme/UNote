@@ -18,8 +18,8 @@ import sys  # exit script, file parsing
 import atexit
 
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QMainWindow
-from PyQt5.QtCore import QTimer, Qt, QRect
+from PyQt5.QtWidgets import QMainWindow, QWidget
+from PyQt5.QtCore import QTimer, Qt, QRect, QObject
 
 SCRIPTDIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -69,7 +69,7 @@ class UNote(App):
 
 
 
-        self.preferencesGui = PreferencesGUI()
+        self.preferencesGui = PreferencesGUI(self.PreferenceWindow)
 
         self.receiversInst = Receivers(self.ui)
 
@@ -102,6 +102,10 @@ class UNote(App):
 
         # Load the icon
         self.MainWindow.setWindowIcon(QIcon(self.ICONPATH))
+
+        # Get the preferences window ready
+        self.PreferenceWindow = QWidget(self.MainWindow)
+        self.PreferenceWindow.move(self.MainWindow.width()/2 - 500, self.MainWindow.height()/2 - 250)
 
         # Initialize graphicviewhandler. This is a core component of unote
         self.ui.graphicsView = GraphicsViewHandler(self.ui.centralwidget)

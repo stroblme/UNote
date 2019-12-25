@@ -14,7 +14,7 @@ import sys  # exit script, file parsing
 from PyQt5.QtWidgets import QGraphicsDropShadowEffect
 from PyQt5.QtGui import QColor
 
-from PyQt5.QtCore import pyqtSignal, QSettings, QObject, Qt
+from PyQt5.QtCore import pyqtSignal, pyqtSlot, QSettings, QObject, Qt
 from PyQt5.QtWidgets import QDialog
 from PyQt5.QtGui import QIcon
 
@@ -49,9 +49,9 @@ class PreferencesGUI(App):
     finished = pyqtSignal()
 
 
-    def __init__(self):
+    def __init__(self, windowInst):
         super().__init__()
-        self.initUI()
+        self.initUI(windowInst)
 
         # self.windowInst.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.FramelessWindowHint)
 
@@ -59,8 +59,9 @@ class PreferencesGUI(App):
 
         self.settings = QSettings(self.COMPANY_NAME, self.APPLICATION_NAME)
 
-        self.rec = Receivers()
-        self.connectReceivers(self.rec)
+        self.receiversInst = Receivers(self.ui)
+        self.receiversInst.confirmSignal.connect(self.handleExit)
+        self.connectReceivers()
 
         self.guiHelper = GuiHelper()
 
@@ -81,8 +82,8 @@ class PreferencesGUI(App):
         self.ui.windowInst.hide()
         self.ui.setupUi(self.ui.windowInst)
 
-        self.windowInst.setAttribute(Qt.WA_TranslucentBackground)
-        self.backgroundEffect = QGraphicsDropShadowEffect(self.windowInst)
+        windowInst.setAttribute(Qt.WA_TranslucentBackground)
+        self.backgroundEffect = QGraphicsDropShadowEffect(windowInst)
         self.backgroundEffect.setBlurRadius(30)
         self.backgroundEffect.setOffset(0,0)
         self.backgroundEffect.setEnabled(True)
@@ -96,13 +97,29 @@ class PreferencesGUI(App):
         Starts the Preferences Window
         '''
         self.loadSettings()
-        self.windowInst.show()
+        self.ui.windowInst.show()
 
-    def connectReceivers(self, receiversInst):
+    @pyqtSlot(bool)
+    def handleExit(self, confirmed):
+        if confirmed:
+            self.storeLooseEntries()
+            self.storeSettings()
+
+            print('Settings saved')
+        else:
+            self.loadSettings()
+
+            print('Settings discarded')
+
+        self.finished.emit()
+
+    def connectReceivers(self):
         '''
         Connects all the buttons to the right receivers
         '''
-        self.ui.radioButtonDarkTheme.toggled.connect(lambda: receiversInst.setTheme(self.ui))
+        self.ui.radioButtonDarkTheme.toggled.connect(lambda: self.receiversInst.setTheme())
+        self.ui.pushButtonOk.clicked.connect(lambda:self.receiversInst.confirmReceiver())
+        self.ui.pushButtonCancel.clicked.connect(lambda:self.receiversInst.rejectReceiver())
 
     def loadKeys(self):
         '''
