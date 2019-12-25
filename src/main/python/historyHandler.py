@@ -36,14 +36,12 @@ class History():
 
     @staticmethod
     def addToHistory(undoFuncHandle, undoFuncParam, redoFuncHandle, redoFuncParam):
-        action = {"undoFuncHandle":undoFuncHandle, "undoFuncParam":undoFuncParam, "redoFuncHandle":redoFuncHandle, "redoFuncParam":redoFuncParam}
-
         if History.pointer != -1:
             del History.timeline[0:History.pointer]
             History.pointer = -1
 
         # Add action to timeline
-        History.timeline.insert(0, action)
+        History.timeline.insert(0, {"undoFuncHandle":undoFuncHandle, "undoFuncParam":undoFuncParam, "redoFuncHandle":redoFuncHandle, "redoFuncParam":redoFuncParam})
 
         if len(History.timeline) > History.MAXTIMELINELENGTH:
             del History.timeline[-1]
