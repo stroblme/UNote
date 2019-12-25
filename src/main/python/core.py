@@ -61,7 +61,7 @@ class QPdfView(QGraphicsPixmapItem):
     endPos = 0
     ongoingEdit = False
     blockEdit = False
-    drawPoints = []
+    drawPoints = Queue()
     formPoints = []
     drawIndicators = []
 
@@ -511,10 +511,11 @@ class QPdfView(QGraphicsPixmapItem):
 
         curPos = self.qPointToFloatParirs(qpos, pressure)
 
-        if len(self.drawPoints) > 1 and self.qPointDistance(self.drawPoints[-1], curPos) > 30:
-            self.drawPoints = []
+        # if len(self.drawPoints) > 1 and self.qPointDistance(self.drawPoints[-1], curPos) > 30:
+        #     with self.drawPoints.mutex:
+        #         self.drawPoints.queue.clear()
 
-        self.drawPoints.append(curPos)
+        self.drawPoints.put(curPos)
         # self.drawIndicators.append(qpos)
 
     def applyDrawPoints(self):
@@ -522,8 +523,11 @@ class QPdfView(QGraphicsPixmapItem):
         # self.kalman.initKalman(self.qPointToFloatParirs(self.startPos))
 
         # self.drawPoints = self.kalman.applyKalman(self.drawPoints)
-        segment = self.drawPoints
-        self.drawPoints = []
+        segment = list(self.drawPoints.queue)
+
+        with self.drawPoints.mutex:
+            self.drawPoints.queue.clear()
+
         self.ongoingEdit = False
 
 
