@@ -11,6 +11,7 @@ import assets
 
 from editHelper import editModes
 from preferences import Preferences
+from historyHandler import History
 
 OUTEROFFSETTOP = 25
 OUTEROFFSETBOTTOM = 14
@@ -582,7 +583,7 @@ class ToolBoxWidget(QWidget):
             self.currentY = -1
 
     def handleUndoButton(self):
-        pass
+        History.undo()
 
     def handleRedoButton(self):
         pass

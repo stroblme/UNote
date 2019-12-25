@@ -30,6 +30,7 @@ from markdownHelper import markdownHelper
 from util import toBool
 from editHelper import editModes
 from filters import Kalman, Savgol, FormEstimator
+from historyHandler import History
 
 # sys.path.append('./style')
 from style.styledef import rgb, norm_rgb, pdf_annots
@@ -530,6 +531,8 @@ class QPdfView(QGraphicsPixmapItem):
         annot.setBorder({"width":penSize})# line thickness, some dashing
         annot.setColors({"stroke":tuple(map(lambda x: float(x), Preferences.data['freehandColor']))})         # make the lines blue
         annot.update()
+
+        History.addToHistory(self.deleteAnnot, annot)
 
     def calculateTextRectBounds(self, content):
         '''

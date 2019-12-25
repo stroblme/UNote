@@ -9,29 +9,33 @@ class History():
     def __init__(self):
         pass
 
-    def undo(self):
+    @staticmethod
+    def undo():
         # Go back in time
-        self.pointer -= 1
+        History.pointer -= 1
 
-        action = self.timeline[self.pointer]
+        action = History.timeline[History.pointer]
 
         action["undoFuncHandle"](action["undoFuncParam"])
 
-    def redo(self):
+    @staticmethod
+    def redo():
         # Go back in time
-        self.pointer += 1
+        History.pointer += 1
 
-        action = self.timeline[self.pointer]
+        action = History.timeline[History.pointer]
 
         action["undoFuncHandle"](action["undoFuncParam"])
 
-    def addToHistory(self, undoFuncHandle, undoFuncParam):
+    @staticmethod
+    def addToHistory(undoFuncHandle, undoFuncParam):
         action = {"undoFuncHandle":undoFuncHandle, "undoFuncParam":undoFuncParam}
 
         # Add action to timeline
-        self.timeline[self.pointer] = action
+        History.timeline[History.pointer] = action
         # Increment timeline
-        self.pointer += 1
+        History.pointer += 1
 
-    def removeFromHistory(self):
+    @staticmethod
+    def removeFromHistory():
         pass
