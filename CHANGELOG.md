@@ -51,7 +51,7 @@
 - [x] Implement temporary points to indicate ongoing edit
 - [x] Improve PDF opening performance
 - [x] Save as dialog
-- [ ] Implement Undo and Redo functionality
+- [x] Implement Undo and Redo functionality
 - [ ] Reduce Text Size with increasing annotation length
 - [o] Implement object resizing
 - [x] Create new PDF
