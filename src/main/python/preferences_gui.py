@@ -31,7 +31,7 @@ from preferences_qt_export import Ui_PreferencesDialog
 
 
 
-class App(Ui_PreferencesDialog):
+class App(QObject):
     appctxt = ApplicationContext()
 
     ICONPATH = appctxt.get_resource('icon.png')
@@ -143,9 +143,6 @@ class PreferencesGUI(App):
             self.settings.setValue(key, str(Preferences.data[key]))
 
         self.settings.sync()
-
-        print("Settings saved")
-
 
     def storeLooseEntries(self):
         '''
