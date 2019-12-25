@@ -50,6 +50,8 @@ class ToolBoxWidget(QWidget):
 
     editModeChange = pyqtSignal(str)
 
+    suggestUpdate = pyqtSignal()
+
     editTextBox = False
 
     buttons = IndexedOrderedDict()
@@ -584,6 +586,7 @@ class ToolBoxWidget(QWidget):
 
     def handleUndoButton(self):
         History.undo()
+        self.suggestUpdate.emit()
 
     def handleRedoButton(self):
         pass

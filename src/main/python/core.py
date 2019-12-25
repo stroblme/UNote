@@ -1391,3 +1391,7 @@ class GraphicsViewHandler(QGraphicsView):
             pass
         except Exception as e:
             print(e.with_traceback())
+
+    @pyqtSlot()
+    def updateSuggested(self):
+        self.updateRenderedPages()

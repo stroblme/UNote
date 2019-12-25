@@ -11,6 +11,9 @@ class History():
 
     @staticmethod
     def undo():
+        if History.pointer == 0:
+            return
+
         # Go back in time
         History.pointer -= 1
 
