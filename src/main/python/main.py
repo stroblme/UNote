@@ -19,7 +19,7 @@ import atexit
 
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QMainWindow, QWidget
-from PySide2.QtCore import QTimer, Qt, QRect, QObject
+from PySide2.QtCore import QTimer, Qt, QRect, QObject, Signal
 
 SCRIPTDIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -45,13 +45,19 @@ class App(QObject):
 
     TOOLBOXWIDTH = 200
     TOOLBOXHEIGHT = 200
-    TOOLBOXSTARTX = 200
-    TOOLBOXSTARTY = 50
+    TOOLBOXSTARTX = 400
+    TOOLBOXSTARTY = 500
 
     # MAINWINDOWSTARTX = 0
     # MAINWINDOWSTARTY = 0
     # MAINWINDOWWIDTH = 1920
     # MAINWINDOWHEIGHT = 1080
+class MainWindow(QMainWindow):
+    resizeSignal = Signal()
+
+    def resizeEvent(self, event):
+        self.resizeSignal.emit()
+        return QMainWindow.resizeEvent(self, event)
 
 class UNote(App):
     '''
@@ -92,7 +98,7 @@ class UNote(App):
         # Create an application context
         # self.app = QtWidgets.QApplication(sys.argv)
 
-        self.MainWindow = QMainWindow()
+        self.MainWindow = MainWindow()
 
         self.ui = Ui_MainWindow()
 
@@ -115,10 +121,11 @@ class UNote(App):
         self.ui.floatingToolBox = ToolBoxWidget(self.MainWindow)
         self.ui.floatingToolBox.setWindowFlags(Qt.WindowTitleHint | Qt.FramelessWindowHint)
         self.ui.floatingToolBox.setObjectName("floatingToolBox")
-        self.ui.floatingToolBox.setGeometry(QRect(self.TOOLBOXSTARTX, self.TOOLBOXSTARTY, self.TOOLBOXWIDTH, self.TOOLBOXHEIGHT))
+        self.ui.floatingToolBox.setGeometry(QRect(self.MainWindow.width() - self.TOOLBOXWIDTH,self.TOOLBOXHEIGHT, self.TOOLBOXWIDTH, self.TOOLBOXHEIGHT))
         self.ui.floatingToolBox.show()
         # self.ui.floatingToolBox.setStyleSheet("background-color:black")
 
+        self.MainWindow.resizeSignal.connect(self.onAppResize)
 
     def run(self, args):
         '''
@@ -145,10 +152,9 @@ class UNote(App):
 
         # Initialize auto saving
         # self.autoSaveReceiver()
-
-
-
-
+    def onAppResize(self):
+        self.PreferenceWindow.move(self.MainWindow.width()/2 - 500, self.MainWindow.height()/2 - 250)
+        self.ui.floatingToolBox.move(self.MainWindow.width() - self.TOOLBOXWIDTH, self.TOOLBOXHEIGHT)
 
     def autoSaveReceiver(self):
         if Preferences.data['comboBoxAutosave'] != 'never' and Preferences.data['comboBoxAutosave'] != '':
