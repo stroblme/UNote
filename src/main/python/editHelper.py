@@ -1,4 +1,4 @@
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, QObject
+from PySide2.QtCore import Signal, Slot, QObject
 
 class editModes(QObject):
     '''

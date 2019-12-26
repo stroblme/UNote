@@ -5,25 +5,19 @@
 #
 # Author: Melvin Strobl
 # ---------------------------------------------------------------
-from fbs_runtime.application_context.PyQt5 import ApplicationContext
-
 import sys
 
-from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtWidgets import QFileDialog, QWidget, QInputDialog
-from PyQt5.QtCore import QFile, QTextStream, Qt
+from PySide2.QtWidgets import QFileDialog, QWidget, QInputDialog
+from PySide2.QtCore import QFile, QTextStream, Qt
 
-from PyQt5.QtWidgets import QApplication
+from PySide2.QtWidgets import QApplication
 
 # sys.path.append('./style')
 sys.path.append('./style/BreezeStyleSheets')
 import style.BreezeStyleSheets.breeze_resources
 
-class App(QWidget):
-    appctxt = ApplicationContext()
 
-
-class GuiHelper(App):
+class GuiHelper(QWidget):
 
 
     def __init__(self):

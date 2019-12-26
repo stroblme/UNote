@@ -1,9 +1,9 @@
 from math import sin, cos
 from indexed import IndexedOrderedDict
 
-from PyQt5.QtGui import QPainter, QPen, QColor, QIcon
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, QPoint, Qt, QRect, QSize
-from PyQt5.QtWidgets import QWidget, QPushButton, QTextEdit, QGridLayout, QSlider
+from PySide2.QtGui import QPainter, QPen, QColor, QIcon
+from PySide2.QtCore import Signal, Slot, QPoint, Qt, QRect, QSize
+from PySide2.QtWidgets import QWidget, QPushButton, QTextEdit, QGridLayout, QSlider
 
 import colorsys
 
@@ -41,16 +41,16 @@ class ToolBoxWidget(QWidget):
 
     items = IndexedOrderedDict()
 
-    textInputFinished = pyqtSignal(int, int, int, bool, str)
+    textInputFinished = Signal(int, int, int, bool, str)
     currentPageNumber = -1
     currentX = -1
     currentY = -1
 
     editMode = editModes.none
 
-    editModeChange = pyqtSignal(str)
+    editModeChange = Signal(str)
 
-    suggestUpdate = pyqtSignal()
+    suggestUpdate = Signal()
 
     editTextBox = False
 
@@ -463,7 +463,7 @@ class ToolBoxWidget(QWidget):
 
     #     QWidget.mouseReleaseEvent(self, event)
 
-    @pyqtSlot(int, int, int, str)
+    @Slot(int, int, int, str)
     def handleTextInputRequest(self, x, y, pageNumber, currentContent):
         '''
         Slot when toolBox receives a textInput request. This is the case, when the user wants to insert a new or edit an existing textBox

@@ -2,7 +2,7 @@ radioButtonDarkTheme
 radioButtonPenOnly
 state
 geometry
-comboBoxAutosave
+spinBoxAutosave
 textSize
 markerSize
 markerColor

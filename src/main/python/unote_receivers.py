@@ -8,8 +8,7 @@
 import os
 import webbrowser
 
-from PyQt5 import QtCore
-from PyQt5.QtCore import pyqtSignal, QObject, pyqtSlot, QTimer
+from PySide2.QtCore import Signal, QObject, Slot, QTimer
 
 from preferences import Preferences
 from guiHelper import GuiHelper
@@ -20,7 +19,7 @@ class Receivers(QObject):
     Class for handling all the event calls from the ui
     '''
 
-    SigSendMessageToJS = pyqtSignal(str)
+    SigSendMessageToJS = Signal(str)
 
     def __init__(self, ui):
         super().__init__()
@@ -148,7 +147,7 @@ class Receivers(QObject):
         # self.ui.actionMark_Mode.setChecked(not bool(self.ui.actionMark_Mode.isChecked()))
 
 
-    @pyqtSlot(str)
+    @Slot(str)
     def JSSendMessage(self, msg):
         '''
         This method is called each time the webviewer receives a user input.

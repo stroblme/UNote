@@ -10,16 +10,16 @@
 # ----------------------------------------------------------
 # Import region
 # ----------------------------------------------------------
-from fbs_runtime.application_context.PyQt5 import ApplicationContext
+from fbs_runtime.application_context.PySide2 import ApplicationContext
 
 import argparse  # parsing cmdline arguments
 import os  # launching external python script
 import sys  # exit script, file parsing
 import atexit
 
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QMainWindow, QWidget
-from PyQt5.QtCore import QTimer, Qt, QRect, QObject
+from PySide2.QtGui import QIcon
+from PySide2.QtWidgets import QMainWindow, QWidget
+from PySide2.QtCore import QTimer, Qt, QRect, QObject
 
 SCRIPTDIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -69,7 +69,7 @@ class UNote(App):
 
 
 
-        self.preferencesGui = PreferencesGUI(self.PreferenceWindow)
+        self.preferencesGui = PreferencesGUI(self.appctxt, self.PreferenceWindow)
 
         self.receiversInst = Receivers(self.ui)
 
@@ -91,7 +91,6 @@ class UNote(App):
         '''
         # Create an application context
         # self.app = QtWidgets.QApplication(sys.argv)
-        self.appctxt = ApplicationContext()
 
         self.MainWindow = QMainWindow()
 

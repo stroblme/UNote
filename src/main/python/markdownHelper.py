@@ -1,10 +1,10 @@
-from PyQt5.QtWidgets import QGraphicsPixmapItem
-from PyQt5.QtWebEngineWidgets import QWebEnginePage
-from PyQt5.QtCore import Qt, QRectF, QEvent, QThread, pyqtSignal, pyqtSlot,QObject, QPoint, pyqtProperty
-from PyQt5.QtGui import QPixmap, QImage, QPainter, QDesktopServices
-from PyQt5.QtWebChannel import QWebChannel
-# from PyQt5.QtWebEngine import QWebFrame
-from PyQt5.QtWidgets import QWidget
+from PySide2.QtWidgets import QGraphicsPixmapItem
+from PySide2.QtWebEngineWidgets import QWebEnginePage
+from PySide2.QtCore import Qt, QRectF, QEvent, QThread, Signal, Slot, QObject, QPoint
+from PySide2.QtGui import QPixmap, QImage, QPainter, QDesktopServices
+from PySide2.QtWebChannel import QWebChannel
+# from PySide2.QtWebEngine import QWebFrame
+from PySide2.QtWidgets import QWidget
 
 
 import markups
@@ -40,7 +40,7 @@ class markdownHelper(QObject):
         return self.ppage
 
 class Document(QObject):
-    textChanged = pyqtSignal(str)
+    textChanged = Signal(str)
 
     m_text = ""
 

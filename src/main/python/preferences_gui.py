@@ -6,17 +6,17 @@
 # Author: Melvin Strobl
 # ---------------------------------------------------------------
 
-from fbs_runtime.application_context.PyQt5 import ApplicationContext
+from fbs_runtime.application_context.PySide2 import ApplicationContext
 
 import os  # launching external python script
 import sys  # exit script, file parsing
 
-from PyQt5.QtWidgets import QGraphicsDropShadowEffect
-from PyQt5.QtGui import QColor
+from PySide2.QtWidgets import QGraphicsDropShadowEffect
+from PySide2.QtGui import QColor
 
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, QSettings, QObject, Qt
-from PyQt5.QtWidgets import QDialog
-from PyQt5.QtGui import QIcon
+from PySide2.QtCore import Signal, Slot, QSettings, QObject, Qt
+from PySide2.QtWidgets import QDialog
+from PySide2.QtGui import QIcon
 
 from util import readFile, writeFile, toBool
 
@@ -32,10 +32,6 @@ from preferences_qt_export import Ui_PreferencesDialog
 
 
 class App(QObject):
-    appctxt = ApplicationContext()
-
-    ICONPATH = appctxt.get_resource('icon.png')
-
     COMPANY_NAME = "MSLS"
     APPLICATION_NAME = "UNote"
 
@@ -46,11 +42,12 @@ class PreferencesGUI(App):
     Main class for the Preferences Window
     '''
     keys = list()
-    finished = pyqtSignal()
+    finished = Signal()
 
 
-    def __init__(self, windowInst):
+    def __init__(self, appctxt, windowInst):
         super().__init__()
+        self.appctxt = appctxt
         self.initUI(windowInst)
 
         # self.windowInst.setWindowFlags(QtCore.Qt.WindowTitleHint | QtCore.Qt.FramelessWindowHint)
@@ -99,7 +96,7 @@ class PreferencesGUI(App):
         self.loadSettings()
         self.ui.windowInst.show()
 
-    @pyqtSlot(bool)
+    @Slot(bool)
     def handleExit(self, confirmed):
         if confirmed:
             self.storeLooseEntries()
@@ -150,7 +147,7 @@ class PreferencesGUI(App):
         '''
         Preferences.updateKeyValue("radioButtonDarkTheme", str(self.ui.radioButtonDarkTheme.isChecked()))
         Preferences.updateKeyValue("radioButtonPenOnly", str(self.ui.radioButtonPenOnly.isChecked()))
-        Preferences.updateKeyValue("comboBoxAutosave", str(self.ui.comboBoxAutosave.currentText()))
+        Preferences.updateKeyValue("spinBoxAutosave", int(self.ui.spinBoxAutosave.currentText()))
 
 
     def saveSettings(self):
@@ -169,7 +166,11 @@ class PreferencesGUI(App):
 
         self.ui.radioButtonDarkTheme.setChecked(toBool(Preferences.data["radioButtonDarkTheme"]))
         self.ui.radioButtonPenOnly.setChecked(toBool(Preferences.data["radioButtonPenOnly"]))
-        self.ui.comboBoxAutosave.setCurrentText(str(Preferences.data["comboBoxAutosave"]))
+        try:
+            self.ui.spinBoxAutosave.setValue(int(Preferences.data["spinBoxAutosave"]))
+        except ValueError as identifier:
+            self.ui.spinBoxAutosave.setValue(10)
+
 
     def applySettings(self):
         '''

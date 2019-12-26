@@ -15,10 +15,10 @@ from queue import Queue
 from indexed import IndexedOrderedDict
 from enum import Enum
 
-from PyQt5.QtWidgets import QFrame, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGesture, QGraphicsLineItem, QGraphicsEllipseItem
-from PyQt5.QtCore import Qt, QRectF, QEvent, QThread, pyqtSignal, pyqtSlot, QObject, QPoint
-from PyQt5.QtGui import QPixmap, QBrush, QColor, QImage,   QTouchEvent, QPainter
-# from PyQt5.QtWebEngineWidgets import QWebEngineView
+from PySide2.QtWidgets import QFrame, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGesture, QGraphicsLineItem, QGraphicsEllipseItem
+from PySide2.QtCore import Qt, QRectF, QEvent, QThread, Signal, Slot, QObject, QPoint
+from PySide2.QtGui import QPixmap, QBrush, QColor, QImage, QTouchEvent, QPainter
+# from PySide2.QtWebEngineWidgets import QWebEngineView
 
 import fitz
 
@@ -51,9 +51,9 @@ class EventHelper(QObject):
     This class is intended to extend an existing qt class which does not directly inherit from qobject and therefore does not contain signaling
     '''
     # x, y, pageNumber, currentContent
-    requestTextInput = pyqtSignal(int, int, int, str)
-    addIndicatorPoint = pyqtSignal(int, int)
-    deleteLastIndicatorPoint = pyqtSignal()
+    requestTextInput = Signal(int, int, int, str)
+    addIndicatorPoint = Signal(int, int)
+    deleteLastIndicatorPoint = Signal()
 
 
 class QPdfView(QGraphicsPixmapItem):
@@ -834,7 +834,7 @@ class QPdfView(QGraphicsPixmapItem):
     def tabletEvent(self, event, zoom, xOff, yOff):
         self.blockEdit = False
         if toBool(Preferences.data['radioButtonPenOnly']):
-            if event.type() == QEvent.TabletMove:
+            if event.type() == QEvent.TabletMove and self.ongoingEdit:
                 if editMode == editModes.freehand:
                     self.updateDrawPoints(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
                 elif editMode == editModes.eraser:
@@ -917,7 +917,7 @@ class GraphicsViewHandler(QGraphicsView):
     lowResZoomFactor = float(0.1)
 
     # x, y, pageNumber, currentContent
-    requestTextInput = pyqtSignal(int, int, int, str)
+    requestTextInput = Signal(int, int, int, str)
     tempObj = list()
 
     def __init__(self, parent):
@@ -1379,7 +1379,7 @@ class GraphicsViewHandler(QGraphicsView):
     def pageDeleteActive(self):
         pass
 
-    @pyqtSlot(int, int, int, bool, str)
+    @Slot(int, int, int, bool, str)
     def toolBoxTextInputEvent(self, x, y, pageNumber, result, content):
         '''
         Triggered by the toolBox when user finished text editing
@@ -1390,7 +1390,7 @@ class GraphicsViewHandler(QGraphicsView):
         # Redraw all, as there are some changes now
         self.updateRenderedPages()
 
-    @pyqtSlot(int, int, int, str)
+    @Slot(int, int, int, str)
     def toolBoxTextInputRequestedEvent(self, x, y, pageNumber, currentContent):
         '''
         Triggered by the pdfView when user requests text editing
@@ -1398,7 +1398,7 @@ class GraphicsViewHandler(QGraphicsView):
         # Call the class intern signal to forward this request to the toolbox
         self.requestTextInput.emit(x, y, pageNumber, currentContent)
 
-    @pyqtSlot(str)
+    @Slot(str)
     def editModeChangeRequest(self, editModeUpdate):
         global editMode
 
@@ -1410,13 +1410,13 @@ class GraphicsViewHandler(QGraphicsView):
             self.setDragMode(self.NoDrag)
 
 
-    @pyqtSlot(int, int)
+    @Slot(int, int)
     def addIndicatorPoint(self, x, y):
         self.tempObj.append(QGraphicsEllipseItem(x,y,8,8))
         self.tempObj[-1].setBrush(QBrush(QColor(*rgb.fore), style = Qt.SolidPattern))
         self.scene.addItem(self.tempObj[-1])
 
-    @pyqtSlot()
+    @Slot()
     def deleteLastIndicatorPoint(self):
         try:
             self.scene.removeItem(self.tempObj[-1])
@@ -1427,6 +1427,6 @@ class GraphicsViewHandler(QGraphicsView):
         except Exception as e:
             print(e.with_traceback())
 
-    @pyqtSlot()
+    @Slot()
     def updateSuggested(self):
         self.updateRenderedPages()

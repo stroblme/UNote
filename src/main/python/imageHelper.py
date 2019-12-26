@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QWidget
-from PyQt5.QtGui import QPixmap, QImage
+from PySide2.QtWidgets import QWidget
+from PySide2.QtGui import QPixmap, QImage
 
 from preferences import Preferences
 from util import toBool

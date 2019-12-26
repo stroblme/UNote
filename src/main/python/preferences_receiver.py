@@ -5,7 +5,7 @@
 #
 # Author: Melvin Strobl
 # ---------------------------------------------------------------
-from PyQt5.QtCore import QObject, pyqtSignal
+from PySide2.QtCore import QObject, Signal
 
 from guiHelper import GuiHelper
 from preferences import Preferences
@@ -14,7 +14,7 @@ class Receivers(QObject):
     '''
     Class for handling all the event calls from the ui
     '''
-    confirmSignal = pyqtSignal(bool)
+    confirmSignal = Signal(bool)
 
     def __init__(self, uiInst):
         super().__init__()

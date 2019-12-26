@@ -1,6 +1,10 @@
 ### Test Files ###
 *.pdf
 
+### Auto generated files
+.\src\main\python\style\BreezeStyleSheets\breeze_resources.py
+.\src\main\python\assets.py
+
 # Corel Draw backup files
 Backup_of_*
 
