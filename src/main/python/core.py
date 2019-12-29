@@ -5,12 +5,13 @@
 #
 # Author: Melvin Strobl
 # ---------------------------------------------------------------
-import subprocess  # for running external cmds
 import os
 import sys
 import time
-import threading
 from queue import Queue
+
+start_time = time.time()
+
 
 from indexed import IndexedOrderedDict
 from enum import Enum
@@ -27,11 +28,14 @@ from preferences import Preferences
 from pdfEngine import pdfEngine
 from imageHelper import imageHelper
 from markdownHelper import markdownHelper
+print("--- %s seconds ---" % (time.time() - start_time))
 
 from util import toBool
 from editHelper import editModes
-from filters import Kalman, Savgol, FormEstimator
+print("--- %s seconds ---" % (time.time() - start_time))
+from filters import Savgol, FormEstimator
 from historyHandler import History
+print("--- %s seconds ---" % (time.time() - start_time))
 
 # sys.path.append('./style')
 from style.styledef import rgb, norm_rgb, pdf_annots
