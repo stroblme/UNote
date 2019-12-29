@@ -1,8 +1,6 @@
-from PySide2.QtWidgets import QGraphicsPixmapItem
-from PySide2.QtWebEngineWidgets import QWebEnginePage
-from PySide2.QtCore import Qt, QRectF, QEvent, QThread, Signal, Slot, QObject, QPoint
-from PySide2.QtGui import QPixmap, QImage, QPainter, QDesktopServices
-from PySide2.QtWebChannel import QWebChannel
+# from PySide2.QtWebEngineWidgets import QWebEnginePage
+from PySide2.QtCore import Qt, Signal, QObject
+# from PySide2.QtWebChannel import QWebChannel
 # from PySide2.QtWebEngine import QWebFrame
 from PySide2.QtWidgets import QWidget
 
@@ -26,18 +24,18 @@ class markdownHelper(QObject):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
 
-        self.ppage = PreviewPage(self)
+        # self.ppage = PreviewPage(self)
 
     def loadGetMarkdownPage(self, markdown):
         content = Document()
         content.setText(markdown)
 
-        channel = QWebChannel(self)
-        channel.registerObject('content', content)
+        # channel = QWebChannel(self)
+        # channel.registerObject('content', content)
 
-        self.ppage.setWebChannel(channel)
+        # self.ppage.setWebChannel(channel)
 
-        return self.ppage
+        # return self.ppage
 
 class Document(QObject):
     textChanged = Signal(str)
@@ -54,15 +52,11 @@ class Document(QObject):
         self.textChanged.emit(self.m_text);
 
 
-class PreviewPage(QWebEnginePage):
+# class PreviewPage(QWebEnginePage):
 
-    def acceptNavigationRequest(qurl, navigationType, isMainFrame):
+#     def acceptNavigationRequest(qurl, navigationType, isMainFrame):
 
-        if (qurl.scheme() == "qrc"):
-            return True
-
-        openUrl(qurl)
-        return False
+#         pass
 
 # {
 #     Q_OBJECT
