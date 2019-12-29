@@ -5,6 +5,8 @@ class rgb():
     side = (42,41,41)
     page = (5,33,38)
 
+    red = (255,0,0)
+
     black = (0,0,0)
     white = (255,255,255)
 
@@ -20,6 +22,8 @@ class norm_rgb():
     black = rgb.black
     white = rgb.white
 
+    red = rgb.red
+
     fore = tuple(map(lambda x, y: x / y, fore, normTuple))
     bckg = tuple(map(lambda x, y: x / y, bckg, normTuple))
     main = tuple(map(lambda x, y: x / y, main, normTuple))
@@ -30,7 +34,7 @@ class norm_rgb():
     white = tuple(map(lambda x, y: x / y, white, normTuple))
 
 class pdf_annots():
-    lineWidth = 0.4
+    lineWidth = 0.6
     borderWidth = 1
     dashLevel = 1
     defaultPenSize = 1

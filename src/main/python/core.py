@@ -182,10 +182,10 @@ class QPdfView(QGraphicsPixmapItem):
             if self.startPos != self.endPos:
                 fStart, fEnd = self.recalculateLinePoints(textRect, self.startPos)
 
-                lineXref = self.insertArrow(fStart, fEnd, "")
+                nAnnot = self.addArrow(fStart, fEnd, "")
 
                 textAnnotInfo = textAnnot.info
-                textAnnotInfo["subject"] = str(lineXref)
+                textAnnotInfo["subject"] = str(nAnnot.xref)
                 textAnnot.setInfo(textAnnotInfo)
 
                 self.eh.deleteLastIndicatorPoint.emit()
@@ -198,7 +198,7 @@ class QPdfView(QGraphicsPixmapItem):
             if self.startPos != self.endPos:
                 self.eh.deleteLastIndicatorPoint.emit()
 
-    def insertArrow(self, fStart, fEnd, subj):
+    def addArrow(self, fStart, fEnd, subj):
         cyan  = norm_rgb.main
         borderLine = {"width": pdf_annots.borderWidth}
 
@@ -213,11 +213,15 @@ class QPdfView(QGraphicsPixmapItem):
         lineAnnot.update(border_color=cyan, fill_color=cyan)
         lineAnnot.update()
 
-        return lineAnnot.xref
+        return lineAnnot
 
-    def insertLine(self, fStart, fEnd, subj):
-        cyan  = norm_rgb.main
-        borderLine = {"width": pdf_annots.borderWidth}
+    def addLine(self, line):
+        fStart, fEnd, subj = line
+
+        try:
+            borderLine = {"width": pdf_annots.lineWidth * (int(Preferences.data['formSize'])/100)}
+        except ValueError:
+            borderLine = {"width": pdf_annots.lineWidth}
 
         lineAnnot = self.page.addLineAnnot(fStart, fEnd)
 
@@ -226,11 +230,13 @@ class QPdfView(QGraphicsPixmapItem):
         lineAnnot.setInfo(lineAnnotInfo)
 
         lineAnnot.setBorder(borderLine)
-        # lineAnnot.setLineEnds(fitz.ANNOT_LE_Circle, fitz.ANNOT_LE_Circle)
-        lineAnnot.update(border_color=cyan, fill_color=cyan)
+        lineAnnot.setColors({"stroke":tuple(map(lambda x: float(x), Preferences.data['formColor']))})
         lineAnnot.update()
 
-        return lineAnnot.xref
+        return lineAnnot
+
+    def deleteLine(self, annot):
+        self.deleteAnnot(annot)
 
     def recalculateLinePoints(self, textBoxRect, startPoint):
         '''
@@ -373,10 +379,10 @@ class QPdfView(QGraphicsPixmapItem):
             fStart, fEnd = self.recalculateLinePoints(annot.rect, QPoint(*startPos))
 
             self.deleteAnnot(corrAnnot)
-            newXRef = self.insertArrow(fStart, fEnd, lineSubj)
+            nAnnot = self.addArrow(fStart, fEnd, lineSubj)
 
             textInfo = annot.info
-            textInfo["subject"] = str(newXRef)
+            textInfo["subject"] = str(nAnnot.xref)
             annot.setInfo(textInfo)
             annot.update()
 
@@ -480,7 +486,9 @@ class QPdfView(QGraphicsPixmapItem):
     def applyFormPoints(self):
         fStart, fStop = self.formEstimator.estimateLine(self.formPoints[0], self.formPoints[-1])
 
-        lineXref = self.insertLine(fStart, fStop, "")
+        annot = self.addLine((fStart, fStop, ""))
+
+        History.addToHistory(self.deleteLine, annot, self.addLine, {fStart, fStop, ""})
 
     #-----------------------------------------------------------------------
     # Draw

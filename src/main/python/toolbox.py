@@ -13,6 +13,8 @@ from editHelper import editModes
 from preferences import Preferences
 from historyHandler import History
 
+from style.styledef import rgb, norm_rgb
+
 OUTEROFFSETTOP = 25
 OUTEROFFSETBOTTOM = 14
 
@@ -347,22 +349,22 @@ class ToolBoxWidget(QWidget):
             self.slider.setVisible(False)
 
         elif self.editMode == editModes.newTextBox:
-            self.setEnableOnAllButtonsButThose(['textButton', 'sizeButton','colorButton'])
-            self.setVisibleOnAllButtonsButThose(['textButton', 'sizeButton','colorButton'])
+            self.setEnableOnAllButtonsButThose(['textButton', 'sizeButton', 'colorButton'])
+            self.setVisibleOnAllButtonsButThose(['textButton', 'sizeButton', 'colorButton'])
 
             self.buttons['sizeButton'].move(self.row1Left)
             self.buttons['colorButton'].move(self.row2Left)
 
         elif self.editMode == editModes.marker:
-            self.setEnableOnAllButtonsButThose(['markerButton', 'sizeButton','colorButton'])
-            self.setVisibleOnAllButtonsButThose(['markerButton', 'sizeButton','colorButton'])
+            self.setEnableOnAllButtonsButThose(['markerButton', 'sizeButton', 'colorButton'])
+            self.setVisibleOnAllButtonsButThose(['markerButton', 'sizeButton', 'colorButton'])
 
             self.buttons['sizeButton'].move(self.row1Right)
             self.buttons['colorButton'].move(self.row2Right)
 
         elif self.editMode == editModes.freehand:
-            self.setEnableOnAllButtonsButThose(['freehandButton', 'sizeButton','colorButton'])
-            self.setVisibleOnAllButtonsButThose(['freehandButton', 'sizeButton','colorButton'])
+            self.setEnableOnAllButtonsButThose(['freehandButton', 'sizeButton', 'colorButton'])
+            self.setVisibleOnAllButtonsButThose(['freehandButton', 'sizeButton', 'colorButton'])
 
             self.buttons['sizeButton'].move(self.row1Right)
             self.buttons['colorButton'].move(self.row2Right)
@@ -371,8 +373,11 @@ class ToolBoxWidget(QWidget):
             self.setEnableOnAllButtonsButThose(['eraserButton'])
 
         elif self.editMode == editModes.forms:
-            self.setEnableOnAllButtonsButThose(['formsButton'])
+            self.setEnableOnAllButtonsButThose(['formsButton', 'sizeButton', 'colorButton'])
+            self.setVisibleOnAllButtonsButThose(['formsButton', 'sizeButton', 'colorButton'])
 
+            self.buttons['sizeButton'].move(self.row1Right)
+            self.buttons['colorButton'].move(self.row2Right)
         elif self.editMode == editModes.markdown:
             self.setEnableOnAllButtonsButThose(['markdownButton'])
 
@@ -601,17 +606,34 @@ class ToolBoxWidget(QWidget):
                     lastSliderValue = int(Preferences.data['markerSize'])
                 elif self.editMode == editModes.freehand:
                     lastSliderValue = int(Preferences.data['freehandSize'])
+                elif self.editMode == editModes.forms:
+                    lastSliderValue = int(Preferences.data['formSize'])
 
             elif self.colorButton.isChecked():
                 if self.editMode == editModes.marker:
+                    try:
+                        normRGB = tuple(map(lambda x: float(x), str(Preferences.data['markerColor'])))
+                        hsv = colorsys.rgb_to_hsv(*normRGB)
+                    except TypeError as identifier:
+                        raise ValueError
 
-                    normRGB = tuple(map(lambda x: float(x), str(Preferences.data['markerColor'])))
-                    hsv = colorsys.rgb_to_hsv(*normRGB)
 
                     lastSliderValue = int(hsv[0] * 100)
                 elif self.editMode == editModes.freehand:
-                    normRGB = tuple(map(lambda x: float(x), str(Preferences.data['freehandColor'])))
-                    hsv = colorsys.rgb_to_hsv(*normRGB)
+                    try:
+                        normRGB = tuple(map(lambda x: float(x), str(Preferences.data['freehandColor'])))
+                        hsv = colorsys.rgb_to_hsv(*normRGB)
+                    except TypeError as identifier:
+                        raise ValueError
+
+                    lastSliderValue = int(hsv[0] * 100)
+                elif self.editMode == editModes.forms:
+                    try:
+                        normRGB = tuple(map(lambda x: float(x), str(Preferences.data['formColor'])))
+                        hsv = colorsys.rgb_to_hsv(*normRGB)
+                    except TypeError as identifier:
+                        raise ValueError
+
 
                     lastSliderValue = int(hsv[0] * 100)
 
@@ -632,6 +654,8 @@ class ToolBoxWidget(QWidget):
                 Preferences.updateKeyValue('markerSize', self.slider.value())
             elif self.editMode == editModes.freehand:
                 Preferences.updateKeyValue('freehandSize', self.slider.value())
+            elif self.editMode == editModes.forms:
+                Preferences.updateKeyValue('formSize', self.slider.value())
         elif self.colorButton.isChecked():
             normRGB = colorsys.hsv_to_rgb(self.slider.value() / 100,1,1)
 
@@ -639,6 +663,8 @@ class ToolBoxWidget(QWidget):
                 Preferences.updateKeyValue('markerColor', tuple(map(lambda x: str(x), normRGB)))
             elif self.editMode == editModes.freehand:
                 Preferences.updateKeyValue('freehandColor', tuple(map(lambda x: str(x), normRGB)))
+            elif self.editMode == editModes.forms:
+                Preferences.updateKeyValue('formColor', tuple(map(lambda x: str(x), normRGB)))
 
     def handleSizeButton(self):
         '''
