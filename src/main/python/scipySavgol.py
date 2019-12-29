@@ -1,9 +1,8 @@
-from __future__ import division, print_function, absolute_import
-
 import numpy as np
 from scipy.linalg import lstsq
 from math import factorial
 from scipy.ndimage import convolve1d
+
 
 def axis_slice(a, start=None, stop=None, step=None, axis=-1):
     """Take a slice along axis 'axis' from 'a'.

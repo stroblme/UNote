@@ -10,9 +10,6 @@
 # ----------------------------------------------------------
 # Import region
 # ----------------------------------------------------------
-import time
-start_time = time.time()
-
 from fbs_runtime.application_context.PySide2 import ApplicationContext
 
 import argparse  # parsing cmdline arguments
@@ -24,12 +21,9 @@ from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QMainWindow, QWidget
 from PySide2.QtCore import QTimer, Qt, QRect, QObject, Signal
 
-print("--- %s seconds ---" % (time.time() - start_time))
-
 SCRIPTDIR = os.path.dirname(os.path.realpath(__file__))
 
 from core import GraphicsViewHandler
-print("--- %s seconds ---" % (time.time() - start_time))
 from unote_receivers import Receivers
 from preferences import Preferences
 from toolbox import ToolBoxWidget
