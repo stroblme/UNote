@@ -15,7 +15,7 @@ from queue import Queue
 from indexed import IndexedOrderedDict
 from enum import Enum
 
-from PySide2.QtWidgets import QFrame, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGesture, QGraphicsLineItem, QGraphicsEllipseItem
+from PySide2.QtWidgets import QFrame, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGraphicsLineItem, QGraphicsEllipseItem
 from PySide2.QtCore import Qt, QRectF, QEvent, QThread, Signal, Slot, QObject, QPoint
 from PySide2.QtGui import QPixmap, QBrush, QColor, QImage, QTouchEvent, QPainter
 # from PySide2.QtWebEngineWidgets import QWebEngineView
