@@ -1295,6 +1295,10 @@ class GraphicsViewHandler(QGraphicsView):
             viewportX = rect.x()
             viewportY = rect.y()
             item.tabletEvent(event, self.absZoomFactor, viewportX, viewportY)
+
+            if event.type() == QEvent.Type.TabletRelease:
+                self.updateRenderedPages()
+
         return super(GraphicsViewHandler, self).tabletEvent(event)
 
     def mapToItem(self, pos, item):
