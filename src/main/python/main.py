@@ -153,7 +153,7 @@ class UNote(App):
         self.PreferenceWindow.move(self.MainWindow.width()/2 - 500, self.MainWindow.height()/2 - 250)
         self.ui.floatingToolBox.move(self.MainWindow.width() - self.TOOLBOXWIDTH, self.TOOLBOXHEIGHT)
 
-        self.ui.graphicsView.updateSuggested()
+        self.receiversInst.applyWorkspaceDefaults()
 
     def autoSaveReceiver(self):
         if Preferences.data['comboBoxAutosave'] != 'never' and Preferences.data['comboBoxAutosave'] != '':
