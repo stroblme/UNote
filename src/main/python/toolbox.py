@@ -356,15 +356,15 @@ class ToolBoxWidget(QWidget):
             self.buttons['colorButton'].move(self.row2Left)
 
         elif self.editMode == editModes.marker:
-            self.setEnableOnAllButtonsButThose(['markerButton', 'sizeButton', 'colorButton'])
-            self.setVisibleOnAllButtonsButThose(['markerButton', 'sizeButton', 'colorButton'])
+            self.setEnableOnAllButtonsButThose(['markerButton', 'sizeButton', 'colorButton', 'undoButton', 'redoButton'])
+            self.setVisibleOnAllButtonsButThose(['markerButton', 'sizeButton', 'colorButton', 'undoButton', 'redoButton'])
 
             self.buttons['sizeButton'].move(self.row1Right)
             self.buttons['colorButton'].move(self.row2Right)
 
         elif self.editMode == editModes.freehand:
-            self.setEnableOnAllButtonsButThose(['freehandButton', 'sizeButton', 'colorButton'])
-            self.setVisibleOnAllButtonsButThose(['freehandButton', 'sizeButton', 'colorButton'])
+            self.setEnableOnAllButtonsButThose(['freehandButton', 'sizeButton', 'colorButton', 'undoButton', 'redoButton'])
+            self.setVisibleOnAllButtonsButThose(['freehandButton', 'sizeButton', 'colorButton', 'undoButton', 'redoButton'])
 
             self.buttons['sizeButton'].move(self.row1Right)
             self.buttons['colorButton'].move(self.row2Right)
@@ -373,8 +373,8 @@ class ToolBoxWidget(QWidget):
             self.setEnableOnAllButtonsButThose(['eraserButton'])
 
         elif self.editMode == editModes.forms:
-            self.setEnableOnAllButtonsButThose(['formsButton', 'sizeButton', 'colorButton'])
-            self.setVisibleOnAllButtonsButThose(['formsButton', 'sizeButton', 'colorButton'])
+            self.setEnableOnAllButtonsButThose(['formsButton', 'sizeButton', 'colorButton', 'undoButton', 'redoButton'])
+            self.setVisibleOnAllButtonsButThose(['formsButton', 'sizeButton', 'colorButton', 'undoButton', 'redoButton'])
 
             self.buttons['sizeButton'].move(self.row1Right)
             self.buttons['colorButton'].move(self.row2Right)
