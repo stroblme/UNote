@@ -103,6 +103,13 @@ class pdfEngine():
 
         return page
 
+    def deletePage(self, pageNumber):
+        try:
+            self.doc.deletePage(pageNumber)
+            return True
+        except IndexError:
+            return False
+
     def getPageSize(self, pageNumber = None):
         if pageNumber:
             page = self.doc[pageNumber]

@@ -102,6 +102,9 @@ class Receivers(QObject):
     def pageInsertHere(self):
         self.ui.graphicsView.pageInsertHere()
 
+    def pageDeleteActive(self):
+        self.ui.graphicsView.pageDeleteActive()
+
     def pageGoto(self):
         pageNumber, ok = self.guiHelper.openInputDialog('Goto Page', 'Page Number (<' + str(len(self.ui.graphicsView.pages)) + '): ')
 
@@ -132,9 +135,6 @@ class Receivers(QObject):
 
     def zoomToFit(self):
         self.ui.graphicsView.zoomToFit()
-
-    def pageDeleteActive(self):
-        self.ui.graphicsView.pageDeleteActive()
 
     def toggleTextMode(self):
         self.ui.graphicsView.toggleTextMode()

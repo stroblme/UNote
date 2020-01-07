@@ -1339,8 +1339,37 @@ class GraphicsViewHandler(QGraphicsView):
             self.verticalScrollBar().setValue(prevScroll)
             self.update()
 
-            break
+            return
 
+    def pageDeleteActive(self):
+        # Get all visible pages
+        try:
+            renderedItems = self.scene.items(self.mapToScene(self.viewport().geometry()))
+        except Exception as e:
+            return
+
+        # Iterate all visible items (shouldn't be that much normally)
+        for renderedItem in reversed(renderedItems):
+            # Check if we have a pdf view here (visible could be anything)
+            if type(renderedItem) != QPdfView:
+                continue
+
+            # Delete after current page
+            if self.pdf.deletePage(renderedItem.pageNumber+1):
+                fileName = self.saveCurrentPdf()
+                self.pdf.closePdf()
+                os.replace(fileName, self.pdf.filename)
+
+                prevScroll = self.verticalScrollBar().value()
+                self.loadPdfToCurrentView(self.pdf.filename, renderedItem.pageNumber+1)
+                self.updateRenderedPages()
+                self.verticalScrollBar().setMaximum(self.verticalScrollBar().maximumHeight())
+                self.verticalScrollBar().setValue(prevScroll)
+                self.update()
+
+                return True
+            else:
+                return False
 
     def pageGoto(self, pageNumber):
         if self.pages and pageNumber in range(len(self.pages)):
@@ -1385,9 +1414,6 @@ class GraphicsViewHandler(QGraphicsView):
         self.scale(ratio, ratio)
 
         self.updateRenderedPages()
-
-    def pageDeleteActive(self):
-        pass
 
     @Slot(int, int, int, bool, str)
     def toolBoxTextInputEvent(self, x, y, pageNumber, result, content):
