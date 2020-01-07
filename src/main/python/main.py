@@ -215,9 +215,6 @@ class UNote(App):
 
         self.ui.actionZoomToFit.triggered.connect(lambda: self.receiversInst.zoomToFit())
 
-        # Delete Active PDF Page
-        self.ui.actionPageInsertHere.triggered.connect(lambda: self.receiversInst.pageDeleteActive())
-
         # Toolbox Edit modes available
         self.ui.floatingToolBox.editModeChange.connect(self.ui.graphicsView.editModeChangeRequest)
 

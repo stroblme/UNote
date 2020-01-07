@@ -1355,13 +1355,13 @@ class GraphicsViewHandler(QGraphicsView):
                 continue
 
             # Delete after current page
-            if self.pdf.deletePage(renderedItem.pageNumber+1):
+            if self.pdf.deletePage(renderedItem.pageNumber):
                 fileName = self.saveCurrentPdf()
                 self.pdf.closePdf()
                 os.replace(fileName, self.pdf.filename)
 
                 prevScroll = self.verticalScrollBar().value()
-                self.loadPdfToCurrentView(self.pdf.filename, renderedItem.pageNumber+1)
+                self.loadPdfToCurrentView(self.pdf.filename, renderedItem.pageNumber)
                 self.updateRenderedPages()
                 self.verticalScrollBar().setMaximum(self.verticalScrollBar().maximumHeight())
                 self.verticalScrollBar().setValue(prevScroll)
