@@ -7,10 +7,8 @@
 # ---------------------------------------------------------------
 import sys
 
-from PySide2.QtWidgets import QFileDialog, QWidget, QInputDialog
+from PySide2.QtWidgets import QFileDialog, QWidget, QInputDialog, QMessageBox, QApplication
 from PySide2.QtCore import QFile, QTextStream, Qt
-
-from PySide2.QtWidgets import QApplication
 
 # sys.path.append('./style')
 sys.path.append('./style/BreezeStyleSheets')
@@ -22,6 +20,15 @@ class GuiHelper(QWidget):
 
     def __init__(self):
         super().__init__()
+
+    def confirmDialog(self, title, text):
+        qmb = QMessageBox(self) 
+        reply = qmb.question(self, title, text, QMessageBox.Yes | QMessageBox.No)
+
+        if reply == QMessageBox.Yes:
+            return True
+        else:
+            return False
 
     def openInputDialog(self, title, text):
         qid = QInputDialog(self)

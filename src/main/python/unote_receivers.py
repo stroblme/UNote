@@ -103,7 +103,8 @@ class Receivers(QObject):
         self.ui.graphicsView.pageInsertHere()
 
     def pageDeleteActive(self):
-        self.ui.graphicsView.pageDeleteActive()
+        if self.guiHelper.confirmDialog("Warning", "Are you sure you want to delete the current page?"):
+            self.ui.graphicsView.pageDeleteActive()
 
     def pageGoto(self):
         pageNumber, ok = self.guiHelper.openInputDialog('Goto Page', 'Page Number (<' + str(len(self.ui.graphicsView.pages)) + '): ')
@@ -118,14 +119,15 @@ class Receivers(QObject):
         t.singleShot(10, self.delayedWorkspaceDefaults)
 
     def delayedWorkspaceDefaults(self):
-        self.ui.graphicsView.zoomToFit()
+        if self.ui.graphicsView.pdf.filename:
+            self.ui.graphicsView.zoomToFit()
 
-        pW, pH = self.ui.graphicsView.getPageSize()
+            pW, pH = self.ui.graphicsView.getPageSize()
 
-        curY = self.ui.floatingToolBox.y()
-        # curW = self.ui.floatingToolBox.width()
+            curY = self.ui.floatingToolBox.y()
+            # curW = self.ui.floatingToolBox.width()
 
-        self.ui.floatingToolBox.move(pW * self.ui.graphicsView.absZoomFactor, curY)
+            self.ui.floatingToolBox.move(pW * self.ui.graphicsView.absZoomFactor, curY)
 
     def zoomIn(self):
         self.ui.graphicsView.zoomIn()
