@@ -147,7 +147,7 @@ class PreferencesGUI(App):
         '''
         Preferences.updateKeyValue("radioButtonDarkTheme", str(self.ui.radioButtonDarkTheme.isChecked()))
         Preferences.updateKeyValue("radioButtonPenOnly", str(self.ui.radioButtonPenOnly.isChecked()))
-        Preferences.updateKeyValue("spinBoxAutosave", int(self.ui.spinBoxAutosave.currentText()))
+        Preferences.updateKeyValue("spinBoxAutosave", int(self.ui.spinBoxAutosave.value()))
 
 
     def saveSettings(self):
