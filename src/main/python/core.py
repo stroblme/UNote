@@ -15,7 +15,7 @@ from enum import Enum
 
 from PySide2.QtWidgets import QFrame, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGraphicsLineItem, QGraphicsEllipseItem
 from PySide2.QtCore import Qt, QRectF, QEvent, QThread, Signal, Slot, QObject, QPoint
-from PySide2.QtGui import QPixmap, QBrush, QColor, QImage, QTouchEvent, QPainter
+from PySide2.QtGui import QPixmap, QBrush, QColor, QImage, QTouchEvent, QPainter, QGuiApplication
 # from PySide2.QtWebEngineWidgets import QWebEngineView
 
 import fitz
@@ -301,6 +301,21 @@ class QPdfView(QGraphicsPixmapItem):
             self.insertMarkdown(QPoint(x, y), content)
             self.resetEditMode()
             self.eh.deleteLastIndicatorPoint.emit()
+
+    #-----------------------------------------------------------------------
+    # Images
+    #-----------------------------------------------------------------------
+
+    def insertImage(self, qPos, pixmap):
+        start = self.qPointToFPoint(qPos)
+        stop = fitz.Point(start.x + pixmap.width(), start.y + pixmap.height())
+        rect = fitz.Rect(start.x, start.y, stop.x, stop.y)
+
+        self.page.insertImage(rect, pixmap=pixmap)
+
+    #-----------------------------------------------------------------------
+    # Annot Editing
+    #----------------------------------------------------------------------- 
 
     def deleteAnnot(self, annot):
         '''
@@ -789,7 +804,7 @@ class QPdfView(QGraphicsPixmapItem):
                 # Stop moving the object
                 self.stopMoveObject(self.toPdfCoordinates(event.pos()))
 
-            #If there was no delta shift in start and end pos, the user don't want to move the annot
+            #If there was no delta shift in start and end pos, the user don't want to move an annot
             if self.startPos == self.endPos:
                 # Check if there is an object under the curser
                 relCorrdinates = self.toPdfCoordinates(event.pos())
@@ -801,6 +816,23 @@ class QPdfView(QGraphicsPixmapItem):
                     # Start requesting edit text box
                     editMode = editModes.editTextBox
                     self.eh.requestTextInput.emit(relCorrdinates.x(), relCorrdinates.y(), self.pageNumber, curContent)
+                # There was no annot, so the user might want to insert something
+                else:
+                    clipboard = QGuiApplication.clipboard()
+                    mimeData = clipboard.mimeData();
+
+                    if mimeData.hasImage():
+                        QImage = clipboard.image()
+                        self.insertImage(event.pos(), clipboard.pixmap())
+                    elif mimeData.hasHtml():
+                        self.insertMarkdown(mimeData.html())
+                    elif mimeData.hasText():
+                        self.insertText(mimeData.text())
+
+    def qPixmapTofPixmap(self, qPixmap):
+        mode = "RGBA" if qPixmap.hasAlphaChannel else "RGB"
+
+        fPixmap = fitz.Pixmap(fitz.CS_RGB, qPixmap.width(), qPixmap.height(), )
 
     def visualizeCorners(self, annot):
         rect = annot.rect
