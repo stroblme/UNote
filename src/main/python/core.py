@@ -15,7 +15,7 @@ from enum import Enum
 
 from PySide2.QtWidgets import QFrame, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGraphicsLineItem, QGraphicsEllipseItem
 from PySide2.QtCore import Qt, QRectF, QEvent, QThread, Signal, Slot, QObject, QPoint
-from PySide2.QtGui import QPixmap, QBrush, QColor, QImage, QTouchEvent, QPainter, QGuiApplication
+from PySide2.QtGui import QPixmap, QBrush, QColor, QImage, QTouchEvent, QPainter, QGuiApplication, QPen
 # from PySide2.QtWebEngineWidgets import QWebEngineView
 
 import fitz
@@ -60,6 +60,7 @@ class QPdfView(QGraphicsPixmapItem):
     ongoingEdit = False
     blockEdit = False
     drawPoints = Queue()
+    tempPoints = list()
     formPoints = []
     drawIndicators = []
 
@@ -72,6 +73,13 @@ class QPdfView(QGraphicsPixmapItem):
 
         self.savgol = Savgol()
         self.formEstimator = FormEstimator()
+
+    def paint(self, painter, option, widget):
+        if len(self.tempPoints) > 1:
+            painter.setPen(QPen(QColor(100,0,0), 3))
+            painter.drawPoints(self.tempPoints)
+
+        return super().paint(painter, option, widget)
 
     def setPixMap(self, qImg, pageNumber):
         self.pageNumber = pageNumber
@@ -529,7 +537,8 @@ class QPdfView(QGraphicsPixmapItem):
         '''
         Called updates the currently ongoing marking to match the latest, provided position
         '''
-
+        self.tempPoints.append(qpos)
+        self.update()
         curPos = self.qPointToFloatParirs(qpos, pressure)
 
         # if len(self.drawPoints) > 1 and self.qPointDistance(self.drawPoints[-1], curPos) > 30:
@@ -544,6 +553,7 @@ class QPdfView(QGraphicsPixmapItem):
         # self.kalman.initKalman(self.qPointToFloatParirs(self.startPos))
 
         # self.drawPoints = self.kalman.applyKalman(self.drawPoints)
+        self.tempPoints = list()
         segment = list(self.drawPoints.queue)
 
         with self.drawPoints.mutex:
