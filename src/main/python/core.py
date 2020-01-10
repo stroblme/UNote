@@ -55,14 +55,7 @@ class EventHelper(QObject):
 
 
 class QPdfView(QGraphicsPixmapItem):
-    startPos = 0
-    endPos = 0
-    ongoingEdit = False
-    blockEdit = False
-    drawPoints = Queue()
-    tempPoints = list()
-    formPoints = []
-    drawIndicators = []
+
 
     def __init__(self):
         QGraphicsPixmapItem.__init__(self)
@@ -74,12 +67,25 @@ class QPdfView(QGraphicsPixmapItem):
         self.savgol = Savgol()
         self.formEstimator = FormEstimator()
 
-    def paint(self, painter, option, widget):
-        if len(self.tempPoints) > 1:
-            painter.setPen(QPen(QColor(100,0,0), 3))
-            painter.drawPoints(self.tempPoints)
+        self.drawPoints = Queue()
+        self.tempPoints = Queue()
 
-        return super().paint(painter, option, widget)
+        self.startPos = 0
+        self.endPos = 0
+        self.ongoingEdit = False
+        self.blockEdit = False
+
+        self.formPoints = []
+        self.drawIndicators = []
+
+    def paint(self, painter, option, widget):
+        res = super().paint(painter, option, widget)
+
+        if self.tempPoints.qsize() > 0:
+            painter.setPen(QPen(QColor(0,0,0), 1))
+            painter.drawPolyline(list(self.tempPoints.queue))
+
+        return res
 
     def setPixMap(self, qImg, pageNumber):
         self.pageNumber = pageNumber
@@ -93,6 +99,7 @@ class QPdfView(QGraphicsPixmapItem):
         self.pixImg.convertFromImage(self.qImg)
 
         self.setPixmap(self.pixImg)
+
 
     def setAsOrigin(self):
         self.xOrigin = self.x()
@@ -537,8 +544,9 @@ class QPdfView(QGraphicsPixmapItem):
         '''
         Called updates the currently ongoing marking to match the latest, provided position
         '''
-        self.tempPoints.append(qpos)
+        self.tempPoints.put(qpos)
         self.update()
+
         curPos = self.qPointToFloatParirs(qpos, pressure)
 
         # if len(self.drawPoints) > 1 and self.qPointDistance(self.drawPoints[-1], curPos) > 30:
@@ -553,7 +561,6 @@ class QPdfView(QGraphicsPixmapItem):
         # self.kalman.initKalman(self.qPointToFloatParirs(self.startPos))
 
         # self.drawPoints = self.kalman.applyKalman(self.drawPoints)
-        self.tempPoints = list()
         segment = list(self.drawPoints.queue)
 
         with self.drawPoints.mutex:
@@ -885,6 +892,8 @@ class QPdfView(QGraphicsPixmapItem):
             if event.type() == QEvent.TabletMove and self.ongoingEdit:
                 if editMode == editModes.freehand:
                     self.updateDrawPoints(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
+
+
                 elif editMode == editModes.eraser:
                     self.updateEraserPoints(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
                 elif editMode == editModes.forms:
@@ -903,6 +912,7 @@ class QPdfView(QGraphicsPixmapItem):
                     self.stopMarkText(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
                 elif editMode == editModes.freehand:
                     self.stopDraw(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
+                    self.tempPoints = Queue()
                 elif editMode == editModes.eraser:
                     self.stopEraser(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
                 elif editMode == editModes.forms:
