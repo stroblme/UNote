@@ -315,7 +315,7 @@ class QPdfView(QGraphicsPixmapItem):
 
     #-----------------------------------------------------------------------
     # Annot Editing
-    #----------------------------------------------------------------------- 
+    #-----------------------------------------------------------------------
 
     def deleteAnnot(self, annot):
         '''
@@ -823,7 +823,7 @@ class QPdfView(QGraphicsPixmapItem):
 
                     if mimeData.hasImage():
                         QImage = clipboard.image()
-                        self.insertImage(event.pos(), clipboard.pixmap())
+                        # self.insertImage(event.pos(), clipboard.pixmap())
                     elif mimeData.hasHtml():
                         self.insertMarkdown(mimeData.html())
                     elif mimeData.hasText():
