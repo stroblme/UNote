@@ -82,7 +82,8 @@ class QPdfView(QGraphicsPixmapItem):
         res = super().paint(painter, option, widget)
 
         if self.tempPoints.qsize() > 0:
-            painter.setPen(QPen(QColor(0,0,0), 1))
+            test = tuple(map(lambda x: float(x)*255, Preferences.data['freehandColor']))
+            painter.setPen(QPen(QColor(*test), 1))
             painter.drawPolyline(list(self.tempPoints.queue))
 
         return res
@@ -544,8 +545,6 @@ class QPdfView(QGraphicsPixmapItem):
         '''
         Called updates the currently ongoing marking to match the latest, provided position
         '''
-        self.tempPoints.put(qpos)
-        self.update()
 
         curPos = self.qPointToFloatParirs(qpos, pressure)
 
@@ -892,8 +891,8 @@ class QPdfView(QGraphicsPixmapItem):
             if event.type() == QEvent.TabletMove and self.ongoingEdit:
                 if editMode == editModes.freehand:
                     self.updateDrawPoints(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
-
-
+                    self.tempPoints.put(self.toWidgetCoordinates(event.pos(), zoom, xOff, yOff))
+                    self.update()
                 elif editMode == editModes.eraser:
                     self.updateEraserPoints(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
                 elif editMode == editModes.forms:
@@ -951,6 +950,14 @@ class QPdfView(QGraphicsPixmapItem):
         sPos = QPoint(qPos.x() + xDif, qPos.y() + yDif)
 
         return sPos
+
+    def toWidgetCoordinates(self, qPos, zoom, xOff, yOff):
+        # pPos = self.mapFromParent(qPos)
+        qPos = qPos / zoom
+
+        qPos.setX(abs(qPos.x()) - self.xOrigin)
+        qPos.setY(abs(qPos.y()) - self.yOrigin)
+        return qPos
 
     def fromSceneCoordinates(self, qPos, zoom, xOff, yOff):
         # pPos = self.mapFromParent(qPos)
