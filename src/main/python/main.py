@@ -112,7 +112,7 @@ class UNote(App):
         # Initialize graphicviewhandler. This is a core component of unote
         self.ui.graphicsView = GraphicsViewHandler(self.ui.centralwidget)
         # Simply use the whole window
-        self.ui.gridLayout.addWidget(self.ui.graphicsView, 0, 0, 1, 1)
+        self.ui.gridLayout.addWidget(self.ui.graphicsView, 0, 0)
 
         # Initialize a floating toolboxwidget. This is used for storing tools and editing texts
         self.ui.floatingToolBox = ToolBoxWidget(self.MainWindow)
@@ -212,8 +212,11 @@ class UNote(App):
         # Zoom Out
         self.ui.actionZoomOut.triggered.connect(lambda: self.receiversInst.zoomOut())
 
-
+        # Zoom To Fit
         self.ui.actionZoomToFit.triggered.connect(lambda: self.receiversInst.zoomToFit())
+
+        # Split View
+        self.ui.actionPageSplitView.triggered.connect(lambda: self.receiversInst.splitView())
 
         # Toolbox Edit modes available
         self.ui.floatingToolBox.editModeChange.connect(self.ui.graphicsView.editModeChangeRequest)

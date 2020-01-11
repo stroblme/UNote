@@ -80,6 +80,8 @@
     <addaction name="actionPageGoto"/>
     <addaction name="separator"/>
     <addaction name="menuZoom"/>
+    <addaction name="separator"/>
+    <addaction name="actionPageSplitView"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -245,6 +247,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+-</string>
+   </property>
+  </action>
+  <action name="actionPageSplitView">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Split View</string>
    </property>
   </action>
  </widget>

@@ -1050,6 +1050,10 @@ class GraphicsViewHandler(QGraphicsView):
 
         self.pdf.openPdf(pdfFilePath)
 
+        self.renderPdfToCurrentView(startPage)
+        print("--- Loaded PDF within %s seconds ---" % (time.time() - start_time))
+
+    def renderPdfToCurrentView(self, startPage=0):
         self.scene = QGraphicsScene()
         self.setScene(self.scene)
 
@@ -1075,7 +1079,6 @@ class GraphicsViewHandler(QGraphicsView):
             else:
                 posX, posY = self.loadBlankImageToCurrentView(pIt, posX, posY, width, height)
 
-        print("--- Loaded PDF within %s seconds ---" % (time.time() - start_time))
 
     def loadBlankImageToCurrentView(self, pageNumber, posX, posY, width, height):
         '''

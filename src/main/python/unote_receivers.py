@@ -13,6 +13,8 @@ from PySide2.QtCore import Signal, QObject, Slot, QTimer
 from preferences import Preferences
 from guiHelper import GuiHelper
 
+from core import GraphicsViewHandler
+
 
 class Receivers(QObject):
     '''
@@ -137,6 +139,17 @@ class Receivers(QObject):
 
     def zoomToFit(self):
         self.ui.graphicsView.zoomToFit()
+
+    def splitView(self):
+        self.ui.splitView = GraphicsViewHandler(self.ui.centralwidget)
+        self.ui.splitView.pdf = self.ui.graphicsView.pdf
+        self.ui.splitView.renderPdfToCurrentView()
+
+        t = QTimer()
+
+        t.singleShot(10, self.ui.splitView.zoomToFit)
+
+        self.ui.gridLayout.addWidget(self.ui.splitView, 1, 0)
 
     def toggleTextMode(self):
         self.ui.graphicsView.toggleTextMode()
