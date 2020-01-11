@@ -151,6 +151,13 @@ class Receivers(QObject):
 
         self.ui.gridLayout.addWidget(self.ui.splitView, 1, 0)
 
+        self.ui.floatingToolBox.editModeChange.connect(self.ui.splitView.editModeChangeRequest)
+        self.ui.floatingToolBox.suggestUpdate.connect(self.ui.splitView.updateSuggested)
+
+        # Toolboxspecific events
+        self.ui.floatingToolBox.textInputFinished.connect(self.ui.splitView.toolBoxTextInputEvent)
+        self.ui.splitView.requestTextInput.connect(self.ui.floatingToolBox.handleTextInputRequest)
+
     def toggleTextMode(self):
         self.ui.graphicsView.toggleTextMode()
 

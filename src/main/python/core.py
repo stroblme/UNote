@@ -1436,6 +1436,21 @@ class GraphicsViewHandler(QGraphicsView):
             else:
                 return False
 
+    def getCurrentPageNumber(self):
+        # Get all visible pages
+        try:
+            renderedItems = self.scene.items(self.mapToScene(self.viewport().geometry()))
+        except Exception as e:
+            return
+
+        # Iterate all visible items (shouldn't be that much normally)
+        for renderedItem in reversed(renderedItems):
+            # Check if we have a pdf view here (visible could be anything)
+            if type(renderedItem) != QPdfView:
+                continue
+
+            return renderedItem.pageNumber
+
     def pageGoto(self, pageNumber):
         if self.pages and pageNumber in range(len(self.pages)):
             if pageNumber >= 1:
