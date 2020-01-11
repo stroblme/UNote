@@ -955,8 +955,8 @@ class QPdfView(QGraphicsPixmapItem):
         # pPos = self.mapFromParent(qPos)
         qPos = qPos / zoom
 
-        qPos.setX(abs(qPos.x()) - self.xOrigin)
-        qPos.setY(abs(qPos.y()) - self.yOrigin)
+        qPos.setX(abs(qPos.x())+xOff - self.x())
+        qPos.setY(abs(qPos.y())+yOff - self.y())
         return qPos
 
     def fromSceneCoordinates(self, qPos, zoom, xOff, yOff):
