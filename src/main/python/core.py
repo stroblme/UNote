@@ -837,13 +837,13 @@ class QPdfView(QGraphicsPixmapItem):
                     clipboard = QGuiApplication.clipboard()
                     mimeData = clipboard.mimeData();
 
-                    if mimeData.hasImage():
-                        QImage = clipboard.image()
-                        # self.insertImage(event.pos(), clipboard.pixmap())
-                    elif mimeData.hasHtml():
-                        self.insertMarkdown(mimeData.html())
-                    elif mimeData.hasText():
-                        self.insertText(mimeData.text())
+                    # if mimeData.hasImage():
+                    #     QImage = clipboard.image()
+                    #     # self.insertImage(event.pos(), clipboard.pixmap())
+                    # elif mimeData.hasHtml():
+                    #     self.insertMarkdown(mimeData.html())
+                    # elif mimeData.hasText():
+                    #     self.insertText(mimeData.text())
 
     def qPixmapTofPixmap(self, qPixmap):
         mode = "RGBA" if qPixmap.hasAlphaChannel else "RGB"
