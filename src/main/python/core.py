@@ -82,7 +82,10 @@ class QPdfView(QGraphicsPixmapItem):
         res = super().paint(painter, option, widget)
 
         if self.tempPoints.qsize() > 0:
-            color = tuple(map(lambda x: float(x)*255, Preferences.data['freehandColor']))
+            if toBool(Preferences.data['radioButtonDarkTheme']):
+                color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['freehandColor']))
+            else:
+                color = tuple(map(lambda x: float(x)*255, Preferences.data['freehandColor']))
             painter.setPen(QPen(QColor(*color), 1))
             painter.drawPolyline(list(self.tempPoints.queue))
 
