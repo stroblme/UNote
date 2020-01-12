@@ -7,22 +7,23 @@
 # ---------------------------------------------------------------
 import sys
 
-from PySide2.QtWidgets import QFileDialog, QWidget, QInputDialog, QMessageBox, QApplication
+from PySide2.QtWidgets import QFileDialog, QWidget, QInputDialog, QMessageBox, QApplication, QFrame
 from PySide2.QtCore import QFile, QTextStream, Qt
 
 # sys.path.append('./style')
 sys.path.append('./style/BreezeStyleSheets')
 import style.BreezeStyleSheets.breeze_resources
 
+class QHLine(QFrame):
+    def __init__(self):
+        super(QHLine, self).__init__()
+        self.setFrameShape(QFrame.HLine)
+        # self.setFrameShadow(QFrame.Sunken)
 
 class GuiHelper(QWidget):
 
-
-    def __init__(self):
-        super().__init__()
-
     def confirmDialog(self, title, text):
-        qmb = QMessageBox(self) 
+        qmb = QMessageBox(self)
         reply = qmb.question(self, title, text, QMessageBox.Yes | QMessageBox.No)
 
         if reply == QMessageBox.Yes:

@@ -11,9 +11,10 @@ import webbrowser
 from PySide2.QtCore import Signal, QObject, Slot, QTimer
 
 from preferences import Preferences
-from guiHelper import GuiHelper
+from guiHelper import GuiHelper, QHLine
 
 from core import GraphicsViewHandler
+
 
 
 class Receivers(QObject):
@@ -145,11 +146,11 @@ class Receivers(QObject):
         self.ui.splitView.pdf = self.ui.graphicsView.pdf
         self.ui.splitView.renderPdfToCurrentView()
 
-        t = QTimer()
+        self.ui.seperator = QHLine()
 
-        t.singleShot(10, self.ui.splitView.zoomToFit)
+        self.ui.gridLayout.addWidget(self.ui.seperator, 1, 0)
 
-        self.ui.gridLayout.addWidget(self.ui.splitView, 1, 0)
+        self.ui.gridLayout.addWidget(self.ui.splitView, 2, 0)
 
         self.ui.floatingToolBox.editModeChange.connect(self.ui.splitView.editModeChangeRequest)
         self.ui.floatingToolBox.suggestUpdate.connect(self.ui.splitView.updateSuggested)
@@ -157,6 +158,9 @@ class Receivers(QObject):
         # Toolboxspecific events
         self.ui.floatingToolBox.textInputFinished.connect(self.ui.splitView.toolBoxTextInputEvent)
         self.ui.splitView.requestTextInput.connect(self.ui.floatingToolBox.handleTextInputRequest)
+
+        t = QTimer()
+        t.singleShot(10, self.ui.splitView.zoomToFit)
 
     def toggleTextMode(self):
         self.ui.graphicsView.toggleTextMode()
