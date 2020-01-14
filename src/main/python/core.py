@@ -86,7 +86,13 @@ class QPdfView(QGraphicsPixmapItem):
                 color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['freehandColor']))
             else:
                 color = tuple(map(lambda x: float(x)*255, Preferences.data['freehandColor']))
-            painter.setPen(QPen(QColor(*color), 1))
+
+            try:
+                penSize = pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/pdf_annots.freeHandScale)
+            except ValueError:
+                penSize = pdf_annots.defaultPenSize
+
+            painter.setPen(QPen(QColor(*color), penSize))
             painter.drawPolyline(list(self.tempPoints.queue))
 
         return res
@@ -577,17 +583,27 @@ class QPdfView(QGraphicsPixmapItem):
         pointList = []
         pointList.append(self.savgol.applySavgol(segment))
 
-        annot = self.addInkAnnot(pointList)
+        # pressure = []
+
+        # for point in points:
+        #     pressure.append(point[2])
+
+        annot = self.addInkAnnot(pointList, None)
 
         History.addToHistory(self.deleteInkAnnot, annot, self.addInkAnnot, pointList)
 
-    def addInkAnnot(self, pointList):
+    def addInkAnnot(self, pointList, pressureList = None):
+        # if pressureList:
+        #     it = 0
+        #     for it in range(len(pointList[0])):
+        #         if pressureList[it] > 0.04:
+        #             pointList[0][it][1]
+
         try:
             annot = self.page.addInkAnnot(pointList)
         except RuntimeError as identifier:
             print(str(identifier))
             return
-
 
         try:
             penSize = pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/pdf_annots.freeHandScale)
@@ -893,7 +909,7 @@ class QPdfView(QGraphicsPixmapItem):
         if toBool(Preferences.data['radioButtonPenOnly']):
             if event.type() == QEvent.TabletMove and self.ongoingEdit:
                 if editMode == editModes.freehand:
-                    self.updateDrawPoints(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
+                    self.updateDrawPoints(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff), event.pressure())
                     self.tempPoints.put(self.toWidgetCoordinates(event.pos(), zoom, xOff, yOff))
                     self.update()
                 elif editMode == editModes.eraser:
