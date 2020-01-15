@@ -255,7 +255,13 @@ class QPdfView(QGraphicsPixmapItem):
         lineAnnot.setInfo(lineAnnotInfo)
 
         lineAnnot.setBorder(borderLine)
-        lineAnnot.setColors({"stroke":tuple(map(lambda x: float(x), Preferences.data['formColor']))})
+
+        try:
+            lineColor = tuple(map(lambda x: float(x), Preferences.data['formColor']))
+        except ValueError as identifier:
+            lineColor = pdf_annots.norm_rgb.main
+
+        lineAnnot.setColors({"stroke":lineColor})
         lineAnnot.update()
 
         return lineAnnot
