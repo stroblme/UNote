@@ -349,9 +349,15 @@ class QPdfView(QGraphicsPixmapItem):
         # Check if there is a corresponding line annot
         corrAnnot = self.getCorrespondingAnnot(annot)
         if corrAnnot:
-            self.page.deleteAnnot(corrAnnot)
+            try:
+                self.page.deleteAnnot(corrAnnot)
+            except ValueError as identifier:
+                print(str(identifier))
 
-        self.page.deleteAnnot(annot)
+        try:
+            self.page.deleteAnnot(annot)
+        except ValueError as identifier:
+            print(str(identifier))
 
     def getCorrespondingAnnot(self, annot):
         try:
@@ -602,6 +608,9 @@ class QPdfView(QGraphicsPixmapItem):
         try:
             annot = self.page.addInkAnnot(pointList)
         except RuntimeError as identifier:
+            print(str(identifier))
+            return
+        except ValueError:
             print(str(identifier))
             return
 
