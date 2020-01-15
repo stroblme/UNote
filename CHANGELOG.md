@@ -6,7 +6,7 @@
 - [ ] Implement unlimited space drawing and annotating
 - [ ] Set up testing environment
 - [ ] Implement custom settings for shortcuts, annots etc
-- [ ] Implement custom colors for annots and drawings
+- [x] Implement custom colors for annots and drawings
 - [ ] Drag&Drop PDF load
 - [ ] Custom file opening and saving dialog
 - [ ] Implement Page extraction
@@ -14,14 +14,16 @@
 - [ ] Implement picture insert
 - [ ] Implement pdf drag&drop load
 - [ ] Smooth scrolling using QTimeLine
+- [ ] UI enhancements of preference window
+- [ ] Autosave capability
 - [ ] Implement bookmarks view panel
 - [ ] Add tooltips
 - [ ] Implement Forms fill functionality
 - [ ] Get more abstraction by splitting up core script
-- [ ] Live drawing (currently ui is updated when movement finished)
+- [x] Live drawing (currently ui is updated when movement finished)
 - [ ] Smoother scrolling
 - [ ] Search functionality
-- [ ] Custom colors for drawing
+- [x] Custom colors for drawing
 - [x] Text Size for Text Boxes
 - [ ] Automatic text size from pdf text
 - [ ] Change start position of text box line
@@ -29,7 +31,7 @@
 - [ ] Focus main window after file handling
 - [ ] Store preferred Toolbox position
 - [ ] Implement easy toggling of annotation modes
-- [ ] Smoother drawing
+- [x] Smoother drawing
 - [ ] Form estimation (machine vision)
 - [x] Implement Goto Page.. functionality
 
@@ -56,7 +58,7 @@
 - [o] Implement object resizing
 - [x] Create new PDF
 - [ ] Improve text box endpoint position
-- [ ] Fix Annotation colors for inverted mode
+- [-] Fix Annotation colors for inverted mode
 - [x] PDF overwriting
 - [ ] PDF loading indicator
 - [o] Implement markdown formatted annotations
