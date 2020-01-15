@@ -481,7 +481,12 @@ class QPdfView(QGraphicsPixmapItem):
     def addHighlightAnnot(self, rect):
         annot = self.page.addHighlightAnnot(rect)
 
-        annot.setColors({"stroke":tuple(map(lambda x: float(x), Preferences.data['markerColor']))})         # make the lines blue
+        try:
+            markerColor = tuple(map(lambda x: float(x), Preferences.data['markerColor']))
+        except ValueError as identifier:
+            markerColor = pdf_annots.norm_rgb.main
+
+        annot.setColors({"stroke":markerColor})         # make the lines blue
         annot.update()
 
         return annot
@@ -625,8 +630,13 @@ class QPdfView(QGraphicsPixmapItem):
         except ValueError:
             penSize = pdf_annots.defaultPenSize
 
+        try:
+            freehandColor = tuple(map(lambda x: float(x), Preferences.data['freehandColor']))
+        except ValueError as identifier:
+            freehandColor = pdf_annots.norm_rgb.main
+
         annot.setBorder({"width":penSize})# line thickness, some dashing
-        annot.setColors({"stroke":tuple(map(lambda x: float(x), Preferences.data['freehandColor']))})         # make the lines blue
+        annot.setColors({"stroke":freehandColor})         # make the lines blue
         annot.update()
 
         return annot
