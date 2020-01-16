@@ -259,7 +259,7 @@ class QPdfView(QGraphicsPixmapItem):
         try:
             lineColor = tuple(map(lambda x: float(x), Preferences.data['formColor']))
         except ValueError as identifier:
-            lineColor = pdf_annots.norm_rgb.main
+            lineColor = norm_rgb.main
 
         lineAnnot.setColors({"stroke":lineColor})
         lineAnnot.update()
@@ -397,7 +397,12 @@ class QPdfView(QGraphicsPixmapItem):
     def stopMoveObject(self, qpos):
         self.ongoingEdit = False
         self.endPos = qpos
-        self.moveAnnotByDelta(self.startPos, self.endPos, self.currAnnot)
+
+        # Catch in case curr annot is not defined yet
+        try:
+            self.moveAnnotByDelta(self.startPos, self.endPos, self.currAnnot)
+        except AttributeError as identifier:
+            print(str(identifier))
 
     def moveAnnotByDelta(self, startQPos, endQPos, annot):
         '''
@@ -484,7 +489,7 @@ class QPdfView(QGraphicsPixmapItem):
         try:
             markerColor = tuple(map(lambda x: float(x), Preferences.data['markerColor']))
         except ValueError as identifier:
-            markerColor = pdf_annots.norm_rgb.main
+            markerColor = norm_rgb.main
 
         annot.setColors({"stroke":markerColor})         # make the lines blue
         annot.update()
@@ -633,7 +638,7 @@ class QPdfView(QGraphicsPixmapItem):
         try:
             freehandColor = tuple(map(lambda x: float(x), Preferences.data['freehandColor']))
         except ValueError as identifier:
-            freehandColor = pdf_annots.norm_rgb.main
+            freehandColor = norm_rgb.main
 
         annot.setBorder({"width":penSize})# line thickness, some dashing
         annot.setColors({"stroke":freehandColor})         # make the lines blue
