@@ -8,6 +8,7 @@
 import os
 import webbrowser
 
+
 from PySide2.QtCore import Signal, QObject, Slot, QTimer
 
 from preferences import Preferences
@@ -23,6 +24,7 @@ class Receivers(QObject):
     '''
 
     SigSendMessageToJS = Signal(str)
+    titleUpdate = Signal(str)
 
     def __init__(self, ui):
         super().__init__()
@@ -76,6 +78,9 @@ class Receivers(QObject):
 
         self.applyWorkspaceDefaults()
 
+        self.updateWindowTitle(pdfFileName)
+
+
     def loadPdf(self, pdfFileName = None):
         '''
         Loads a pdf to the current view
@@ -90,6 +95,8 @@ class Receivers(QObject):
 
         self.applyWorkspaceDefaults()
 
+        self.updateWindowTitle(pdfFileName)
+
     def savePdf(self):
         self.ui.graphicsView.saveCurrentPdf()
 
@@ -101,6 +108,11 @@ class Receivers(QObject):
             return
 
         self.ui.graphicsView.saveCurrentPdfAs(pdfFileName)
+
+        self.updateWindowTitle(pdfFileName)
+
+    def updateWindowTitle(self, var):
+        self.titleUpdate.emit(var)
 
     def pageInsertHere(self):
         self.ui.graphicsView.pageInsertHere()
