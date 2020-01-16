@@ -149,9 +149,15 @@ class Savgol(object):
         else:
             xPoints, yPoints = tuplesToArrays(observedPoints)
 
-            xPoints.extend([xPoints[0] - 1])
+            try:
+                xPoints.extend([xPoints[0] - 1])
 
-            yPoints.extend([yPoints[0] - 1])
+                yPoints.extend([yPoints[0] - 1])
+            except IndexError as identifier:
+                print(identifier)
+
+                # Don't make lange rum, return the points
+                return observedPoints
 
             points = arraysToTuples(xPoints, yPoints)
 
