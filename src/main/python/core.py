@@ -934,37 +934,37 @@ class QPdfView(QGraphicsPixmapItem):
 
         QGraphicsPixmapItem.mouseMoveEvent(self, event)
 
-    def tabletEvent(self, event, zoom, xOff, yOff):
+    def tabletEvent(self, event, zoom, xOff, yOff, highResPos=None):
         self.blockEdit = False
         if toBool(Preferences.data['radioButtonPenOnly']):
             if event.type() == QEvent.TabletMove and self.ongoingEdit:
                 if editMode == editModes.freehand:
-                    self.updateDrawPoints(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff), event.pressure())
-                    self.tempPoints.put(self.toWidgetCoordinates(event.pos(), zoom, xOff, yOff))
+                    self.updateDrawPoints(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff), event.pressure())
+                    self.tempPoints.put(self.toWidgetCoordinates(highResPos, zoom, xOff, yOff))
                     self.update()
                 elif editMode == editModes.eraser:
-                    self.updateEraserPoints(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
+                    self.updateEraserPoints(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
                 elif editMode == editModes.forms:
-                    self.updateFormPoints(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
+                    self.updateFormPoints(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
             elif event.type() == QEvent.TabletPress:
                 if editMode == editModes.marker:
-                    self.startMarkText(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
+                    self.startMarkText(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
                 elif editMode == editModes.freehand:
-                    self.startDraw(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
+                    self.startDraw(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
                 elif editMode == editModes.eraser:
-                    self.startEraser(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
+                    self.startEraser(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
                 elif editMode == editModes.forms:
-                    self.startForms(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
+                    self.startForms(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
             elif event.type() == QEvent.TabletRelease:
                 if editMode == editModes.marker:
-                    self.stopMarkText(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
+                    self.stopMarkText(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
                 elif editMode == editModes.freehand:
-                    self.stopDraw(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
+                    self.stopDraw(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
                     self.tempPoints = Queue()
                 elif editMode == editModes.eraser:
-                    self.stopEraser(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
+                    self.stopEraser(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
                 elif editMode == editModes.forms:
-                    self.stopForms(self.fromSceneCoordinates(event.pos(), zoom, xOff, yOff))
+                    self.stopForms(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
 
             elif event.type() == QEvent.TabletEnterProximity:
                 print('enter prox')
@@ -1008,6 +1008,13 @@ class QPdfView(QGraphicsPixmapItem):
         qPos.setY(abs(qPos.y())+yOff - self.y())
         return qPos
 
+    def singleFromSceneCoordinates(self, qPos, zoom, xOff, yOff):
+        # pPos = self.mapFromParent(qPos)
+        qPos = qPos / zoom
+
+        qPos = (abs(qPos)+xOff - self.xOrigin)
+        return qPos
+
     def fromSceneCoordinates(self, qPos, zoom, xOff, yOff):
         # pPos = self.mapFromParent(qPos)
         qPos = qPos / zoom
@@ -1018,6 +1025,11 @@ class QPdfView(QGraphicsPixmapItem):
 
     def toQPos(self, fPos):
         qPos = QPoint(fPos.x, fPos.y)
+
+        return qPos
+
+    def toQPos(self, x, y):
+        qPos = QPoint(x, y)
 
         return qPos
 
@@ -1398,6 +1410,8 @@ class GraphicsViewHandler(QGraphicsView):
     def tabletEvent(self, event):
         item = self.itemAt(event.pos())
         if type(item) == QPdfView:
+            highResQPos = QPoint(event.hiResGlobalX(), event.hiResGlobalY())
+            highResQPos = self.mapFromGlobal(highResQPos)
             # get the rectable of the current viewport
             rect = self.mapToScene(self.viewport().geometry()).boundingRect()
             # Store those properties for easy access
@@ -1405,7 +1419,7 @@ class GraphicsViewHandler(QGraphicsView):
             viewportWidth = rect.width()
             viewportX = rect.x()
             viewportY = rect.y()
-            item.tabletEvent(event, self.absZoomFactor, viewportX, viewportY)
+            item.tabletEvent(event, self.absZoomFactor, viewportX, viewportY, highResQPos)
 
             if event.type() == QEvent.Type.TabletRelease:
                 self.updateRenderedPages()
