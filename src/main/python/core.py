@@ -934,19 +934,19 @@ class QPdfView(QGraphicsPixmapItem):
 
         QGraphicsPixmapItem.mouseMoveEvent(self, event)
 
-    def tabletEvent(self, event, zoom, xOff, yOff, highResPos=None):
+    def tabletEvent(self, eventType, pressure, highResPos, zoom, xOff, yOff):
         self.blockEdit = False
         if toBool(Preferences.data['radioButtonPenOnly']):
-            if event.type() == QEvent.TabletMove and self.ongoingEdit:
+            if eventType == QEvent.TabletMove and self.ongoingEdit:
                 if editMode == editModes.freehand:
-                    self.updateDrawPoints(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff), event.pressure())
+                    self.updateDrawPoints(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff), pressure)
                     self.tempPoints.put(self.toWidgetCoordinates(highResPos, zoom, xOff, yOff))
                     self.update()
                 elif editMode == editModes.eraser:
                     self.updateEraserPoints(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
                 elif editMode == editModes.forms:
                     self.updateFormPoints(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
-            elif event.type() == QEvent.TabletPress:
+            elif eventType == QEvent.TabletPress:
                 if editMode == editModes.marker:
                     self.startMarkText(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
                 elif editMode == editModes.freehand:
@@ -955,7 +955,7 @@ class QPdfView(QGraphicsPixmapItem):
                     self.startEraser(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
                 elif editMode == editModes.forms:
                     self.startForms(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
-            elif event.type() == QEvent.TabletRelease:
+            elif eventType == QEvent.TabletRelease:
                 if editMode == editModes.marker:
                     self.stopMarkText(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
                 elif editMode == editModes.freehand:
@@ -966,9 +966,9 @@ class QPdfView(QGraphicsPixmapItem):
                 elif editMode == editModes.forms:
                     self.stopForms(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
 
-            elif event.type() == QEvent.TabletEnterProximity:
+            elif eventType == QEvent.TabletEnterProximity:
                 print('enter prox')
-            elif event.type() == QEvent.TabletLeaveProximity:
+            elif eventType == QEvent.TabletLeaveProximity:
                 print('leave prox')
 
             # event.accept()
@@ -1410,21 +1410,25 @@ class GraphicsViewHandler(QGraphicsView):
     def tabletEvent(self, event):
         item = self.itemAt(event.pos())
         if type(item) == QPdfView:
-            highResQPos = QPoint(event.hiResGlobalX(), event.hiResGlobalY())
-            highResQPos = self.mapFromGlobal(highResQPos)
             # get the rectable of the current viewport
             rect = self.mapToScene(self.viewport().geometry()).boundingRect()
             # Store those properties for easy access
-            viewportHeight = rect.height()
-            viewportWidth = rect.width()
-            viewportX = rect.x()
-            viewportY = rect.y()
-            item.tabletEvent(event, self.absZoomFactor, viewportX, viewportY, highResQPos)
+            item.tabletEvent(event.type(), event.pressure(), self.mapFromGlobalHighRes(event.pos(), event.globalPos(), event.hiResGlobalX(), event.hiResGlobalY()), self.absZoomFactor, rect.x(), rect.y())
 
             if event.type() == QEvent.Type.TabletRelease:
                 self.updateRenderedPages()
 
         return super(GraphicsViewHandler, self).tabletEvent(event)
+
+    def mapFromGlobalHighRes(self, localPos, globalPos, globalHighResPosX, globalHighResPosY):
+        # get high res global pos (floatPoint)
+        highResGlobalQPos = QPointF(event.hiResGlobalX(), event.hiResGlobalY())
+
+        # the high res local pos is simply the difference between the global and the local pos.
+        # e.g:                  100 + (200.12345         - 200)         = 100.12345
+        highResLocalQPos = localPos + (highResGlobalQPos - globalPos)
+
+        return highResLocalQPos
 
     def mapToItem(self, pos, item):
         rect = self.mapToScene(self.viewport().geometry()).boundingRect()
