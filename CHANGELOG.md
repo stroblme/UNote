@@ -32,6 +32,7 @@
 - [ ] Store preferred Toolbox position
 - [ ] Implement easy toggling of annotation modes
 - [x] Smoother drawing
+- [x] High res drawing
 - [ ] Form estimation (machine vision)
 - [x] Implement Goto Page.. functionality
 - [x] Filename in title

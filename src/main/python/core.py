@@ -14,7 +14,7 @@ from indexed import IndexedOrderedDict
 from enum import Enum
 
 from PySide2.QtWidgets import QFrame, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGraphicsLineItem, QGraphicsEllipseItem
-from PySide2.QtCore import Qt, QRectF, QEvent, QThread, Signal, Slot, QObject, QPoint
+from PySide2.QtCore import Qt, QRectF, QEvent, QThread, Signal, Slot, QObject, QPoint, QPointF
 from PySide2.QtGui import QPixmap, QBrush, QColor, QImage, QTouchEvent, QPainter, QGuiApplication, QPen
 # from PySide2.QtWebEngineWidgets import QWebEngineView
 
@@ -1422,8 +1422,9 @@ class GraphicsViewHandler(QGraphicsView):
 
     def mapFromGlobalHighRes(self, localPos, globalPos, globalHighResPosX, globalHighResPosY):
         # get high res global pos (floatPoint)
-        highResGlobalQPos = QPointF(event.hiResGlobalX(), event.hiResGlobalY())
-
+        highResGlobalQPos = QPointF(globalHighResPosX, globalHighResPosY)
+        localPos = QPointF(localPos)
+        globalPos = QPointF(globalPos)
         # the high res local pos is simply the difference between the global and the local pos.
         # e.g:                  100 + (200.12345         - 200)         = 100.12345
         highResLocalQPos = localPos + (highResGlobalQPos - globalPos)
