@@ -34,6 +34,7 @@
 - [x] Smoother drawing
 - [ ] Form estimation (machine vision)
 - [x] Implement Goto Page.. functionality
+- [x] Filename in title
 
 ## Features for v2.x
 
