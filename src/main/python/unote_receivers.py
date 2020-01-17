@@ -154,25 +154,29 @@ class Receivers(QObject):
         self.ui.graphicsView.zoomToFit()
 
     def splitView(self):
-        self.ui.splitView = GraphicsViewHandler(self.ui.centralwidget)
-        self.ui.splitView.pdf = self.ui.graphicsView.pdf
-        self.ui.splitView.renderPdfToCurrentView()
+        if self.ui.actionPageSplitView.isChecked():
+            self.ui.splitView = GraphicsViewHandler(self.ui.centralwidget)
+            self.ui.splitView.pdf = self.ui.graphicsView.pdf
+            self.ui.splitView.renderPdfToCurrentView()
 
-        self.ui.seperator = QHLine()
+            self.ui.seperator = QHLine()
 
-        self.ui.gridLayout.addWidget(self.ui.seperator, 1, 0)
+            # self.ui.gridLayout.addWidget(self.ui.seperator, 1, 0)
+            self.ui.gridLayout.addWidget(self.ui.splitView, 1, 0)
 
-        self.ui.gridLayout.addWidget(self.ui.splitView, 2, 0)
+            self.ui.floatingToolBox.editModeChange.connect(self.ui.splitView.editModeChangeRequest)
+            self.ui.floatingToolBox.suggestUpdate.connect(self.ui.splitView.updateSuggested)
 
-        self.ui.floatingToolBox.editModeChange.connect(self.ui.splitView.editModeChangeRequest)
-        self.ui.floatingToolBox.suggestUpdate.connect(self.ui.splitView.updateSuggested)
+            # Toolboxspecific events
+            self.ui.floatingToolBox.textInputFinished.connect(self.ui.splitView.toolBoxTextInputEvent)
+            self.ui.splitView.requestTextInput.connect(self.ui.floatingToolBox.handleTextInputRequest)
 
-        # Toolboxspecific events
-        self.ui.floatingToolBox.textInputFinished.connect(self.ui.splitView.toolBoxTextInputEvent)
-        self.ui.splitView.requestTextInput.connect(self.ui.floatingToolBox.handleTextInputRequest)
-
-        t = QTimer()
-        t.singleShot(10, self.ui.splitView.zoomToFit)
+            t = QTimer()
+            t.singleShot(10, self.ui.splitView.zoomToFit)
+        else:
+            self.ui.gridLayout.itemAtPosition(1,0).widget().setEnabled(False)
+            self.ui.gridLayout.itemAtPosition(1,0).widget().setVisible(False)
+            self.ui.gridLayout.removeWidget(self.ui.gridLayout.itemAtPosition(1,0).widget())
 
     def toggleTextMode(self):
         self.ui.graphicsView.toggleTextMode()
