@@ -32,6 +32,7 @@ class Receivers(QObject):
         self.ui = ui
         self.guiHelper = GuiHelper()
 
+        self.ui.splitView = None
         # self.backgroundEffect = QGraphicsDropShadowEffect(self)
         # self.backgroundEffect.setColor(QColor(0,0,0))
         # self.backgroundEffect.setEnabled(False)
@@ -41,7 +42,8 @@ class Receivers(QObject):
         # self.ui.centralwidget.setGraphicsEffect(self.backgroundEffect)
 
 
-
+    def __del__(self):
+        self.ui.graphicsView.saveCurrentPdf()
 
     def setLogHelperInst(self, logHelper):
         '''
@@ -147,57 +149,60 @@ class Receivers(QObject):
     def zoomIn(self):
         self.ui.graphicsView.zoomIn()
 
+        if self.ui.splitView:
+            self.ui.splitView.zoomIn()
+
     def zoomOut(self):
         self.ui.graphicsView.zoomOut()
+
+        if self.ui.splitView:
+            self.ui.splitView.zoomOut()
 
     def zoomToFit(self):
         self.ui.graphicsView.zoomToFit()
 
+        if self.ui.splitView:
+            self.ui.splitView.zoomToFit()
+
     def splitView(self):
         if self.ui.actionPageSplitView.isChecked():
-            self.ui.splitView = GraphicsViewHandler(self.ui.centralwidget)
-            self.ui.splitView.pdf = self.ui.graphicsView.pdf
-            self.ui.splitView.renderPdfToCurrentView()
+            if self.ui.splitView:
+                self.ui.gridLayout.itemAtPosition(1,0).widget().setEnabled(True)
+                self.ui.gridLayout.itemAtPosition(1,0).widget().setVisible(True)
 
-            self.ui.seperator = QHLine()
+                t = QTimer()
+                t.singleShot(10, self.ui.splitView.zoomToFit)
+                t.singleShot(15, self.syncPages)
 
-            # self.ui.gridLayout.addWidget(self.ui.seperator, 1, 0)
-            self.ui.gridLayout.addWidget(self.ui.splitView, 1, 0)
+            else:
+                self.ui.splitView = GraphicsViewHandler(self.ui.centralwidget)
+                self.ui.splitView.pdf = self.ui.graphicsView.pdf
+                self.ui.splitView.renderPdfToCurrentView()
 
-            self.ui.floatingToolBox.editModeChange.connect(self.ui.splitView.editModeChangeRequest)
-            self.ui.floatingToolBox.suggestUpdate.connect(self.ui.splitView.updateSuggested)
+                self.ui.seperator = QHLine()
 
-            # Toolboxspecific events
-            self.ui.floatingToolBox.textInputFinished.connect(self.ui.splitView.toolBoxTextInputEvent)
-            self.ui.splitView.requestTextInput.connect(self.ui.floatingToolBox.handleTextInputRequest)
+                # self.ui.gridLayout.addWidget(self.ui.seperator, 1, 0)
+                self.ui.gridLayout.addWidget(self.ui.splitView, 1, 0)
 
-            t = QTimer()
-            t.singleShot(10, self.ui.splitView.zoomToFit)
+                self.ui.floatingToolBox.editModeChange.connect(self.ui.splitView.editModeChangeRequest)
+                self.ui.floatingToolBox.suggestUpdate.connect(self.ui.splitView.updateSuggested)
+
+                # Toolboxspecific events
+                self.ui.floatingToolBox.textInputFinished.connect(self.ui.splitView.toolBoxTextInputEvent)
+                self.ui.splitView.requestTextInput.connect(self.ui.floatingToolBox.handleTextInputRequest)
+
+                t = QTimer()
+                t.singleShot(10, self.ui.splitView.zoomToFit)
+                t.singleShot(15, self.syncPages)
         else:
             self.ui.gridLayout.itemAtPosition(1,0).widget().setEnabled(False)
             self.ui.gridLayout.itemAtPosition(1,0).widget().setVisible(False)
-            self.ui.gridLayout.removeWidget(self.ui.gridLayout.itemAtPosition(1,0).widget())
+            # self.ui.gridLayout.removeWidget(self.ui.gridLayout.itemAtPosition(1,0).widget())
 
-    def toggleTextMode(self):
-        self.ui.graphicsView.toggleTextMode()
+    def syncPages(self):
+        curNum = self.ui.graphicsView.getCurrentPageNumber()
 
-        # self.ui.actionText_Mode.setChecked(not bool(self.ui.actionText_Mode.isChecked()))
-
-    def toggleMarkMode(self):
-        self.ui.graphicsView.toggleMarkMode()
-
-        # self.ui.actionMark_Mode.setChecked(not bool(self.ui.actionMark_Mode.isChecked()))
-
-
-    @Slot(str)
-    def JSSendMessage(self, msg):
-        '''
-        This method is called each time the webviewer receives a user input.
-        msg is a valid json object, containing the following data
-        name, id, value
-        '''
-
-
+        self.ui.splitView.pageGoto(curNum+1)
 
     def JSReceiveMessage(self, msg):
         '''

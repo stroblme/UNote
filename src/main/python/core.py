@@ -1075,8 +1075,7 @@ class GraphicsViewHandler(QGraphicsView):
         # self.grabGesture(Qt.TapAndHoldGesture)
         # self.grabGesture(Qt.TapGesture)
 
-    def __del__(self):
-        self.saveCurrentPdf()
+
 
     def createNewPdf(self, fileName):
         '''
