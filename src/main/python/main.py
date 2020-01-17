@@ -271,7 +271,7 @@ def argumentHelper():
     # Create ArgumentParser instance
     argparser = argparse.ArgumentParser(description=helpText)
 
-    argparser.add_argument('-o', '--open',
+    argparser.add_argument('open', metavar='o',
                         help='Open existing pdf from path')
     argparser.add_argument('-n', '--new',
                         help='Create new pdf at path')
@@ -309,6 +309,7 @@ def main():
         args = argumentHelper()
     except ValueError as e:
         sys.exit("Unable to parse arguments:\n" + str(e))
+
 
     UNoteGUI = UNote(args)
     UNoteGUI.run(args)
