@@ -1069,11 +1069,11 @@ class GraphicsViewHandler(QGraphicsView):
         self.setDragMode(self.ScrollHandDrag)
         # self.setFrameShape(QGraphicsView.NoFrame)
         # # self.resize(parent.size())
-        # self.grabGesture(Qt.PanGesture)
-        # self.grabGesture(Qt.PinchGesture)
-        # self.grabGesture(Qt.SwipeGesture)
-        # self.grabGesture(Qt.TapAndHoldGesture)
-        # self.grabGesture(Qt.TapGesture)
+        self.grabGesture(Qt.PanGesture)
+        self.grabGesture(Qt.PinchGesture)
+        self.grabGesture(Qt.SwipeGesture)
+        self.grabGesture(Qt.TapAndHoldGesture)
+        self.grabGesture(Qt.TapGesture)
 
 
 
