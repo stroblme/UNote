@@ -33,14 +33,6 @@ class Receivers(QObject):
         self.guiHelper = GuiHelper()
 
         self.ui.splitView = None
-        # self.backgroundEffect = QGraphicsDropShadowEffect(self)
-        # self.backgroundEffect.setColor(QColor(0,0,0))
-        # self.backgroundEffect.setEnabled(False)
-
-
-        # self.ui.centralwidget.setGraphicsEffect(self.backgroundEffect)
-        # self.ui.centralwidget.setGraphicsEffect(self.backgroundEffect)
-
 
     def __del__(self):
         self.ui.graphicsView.saveCurrentPdf()

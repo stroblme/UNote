@@ -151,7 +151,7 @@ class QPdfView(QGraphicsPixmapItem):
         self.ongoingEdit = False
         self.endPos = qpos
 
-        self.eh.requestTextInput.emit(self.endPos.x(), self.endPos.y(), self.pageNumber, "")
+        # self.eh.requestTextInput.emit(self.endPos.x(), self.endPos.y(), self.pageNumber, "")
 
     def insertMarkdown(self, qpos, content):
         self.preview = QWebEngineView()
