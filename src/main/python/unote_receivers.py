@@ -97,6 +97,7 @@ class Receivers(QObject):
 
         self.updateWindowTitle(pdfFileName)
 
+
     def savePdf(self):
         self.ui.graphicsView.saveCurrentPdf()
 
@@ -158,11 +159,8 @@ class Receivers(QObject):
         self.ui.splitView.pdf = self.ui.graphicsView.pdf
         self.ui.splitView.renderPdfToCurrentView()
 
-        self.ui.seperator = QHLine()
+        self.ui.snippetContainer.setChildWidget(self.ui.splitView)
 
-        self.ui.gridLayout.addWidget(self.ui.seperator, 1, 0)
-
-        self.ui.gridLayout.addWidget(self.ui.splitView, 2, 0)
 
         self.ui.floatingToolBox.editModeChange.connect(self.ui.splitView.editModeChangeRequest)
         self.ui.floatingToolBox.suggestUpdate.connect(self.ui.splitView.updateSuggested)

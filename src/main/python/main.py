@@ -29,6 +29,7 @@ from unote_receivers import Receivers
 from preferences import Preferences
 from toolbox import ToolBoxWidget
 from preferences_gui import PreferencesGUI
+from widgetContainer import TContainer
 
 from unote_qt_export import Ui_MainWindow
 
@@ -124,6 +125,10 @@ class UNote(App):
         self.ui.floatingToolBox.setGeometry(QRect(self.MainWindow.width() - self.TOOLBOXWIDTH,self.TOOLBOXHEIGHT, self.TOOLBOXWIDTH, self.TOOLBOXHEIGHT))
         self.ui.floatingToolBox.show()
         # self.ui.floatingToolBox.setStyleSheet("background-color:black")
+
+        from PySide2.QtCore import QPoint
+
+        self.ui.snippetContainer = TContainer(self.MainWindow, QPoint(100,100))
 
         self.MainWindow.resizeSignal.connect(self.onAppResize)
 

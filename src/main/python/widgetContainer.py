@@ -37,7 +37,7 @@ class TContainer(QWidget):
     outFocus = Signal(bool)
     newGeometry = Signal(QRect)
 
-    def __init__(self, parent, p, cWidget):
+    def __init__(self, parent, p):
         super().__init__(parent=parent)
 
         self.menu = QMenu(parent=self, title='menu')
@@ -50,7 +50,6 @@ class TContainer(QWidget):
         self.move(p)
 
         self.vLayout = QVBoxLayout(self)
-        self.setChildWidget(cWidget)
 
         self.m_infocus = True
         self.m_showMenu = False
@@ -264,18 +263,18 @@ class TContainer(QWidget):
         self.newGeometry.emit(self.geometry())
 
 
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
+# class MainWindow(QMainWindow):
+#     def __init__(self):
+#         super().__init__()
 
-        self.showMaximized()
-        lab1 = QLabel("Label1")
-        lab2 = QLabel("Label2")
-        con1 = TContainer(self, QPoint(10,10), lab1)
-        con2 = TContainer(self, QPoint(20,50), lab2)
+#         self.showMaximized()
+#         lab1 = QLabel("Label1")
+#         lab2 = QLabel("Label2")
+#         con1 = TContainer(self, QPoint(10,10), lab1)
+#         con2 = TContainer(self, QPoint(20,50), lab2)
 
 
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    ex = MainWindow()
-    sys.exit(app.exec_())
+# if __name__ == '__main__':
+#     app = QApplication(sys.argv)
+#     ex = MainWindow()
+#     sys.exit(app.exec_())
