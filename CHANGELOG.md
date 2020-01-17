@@ -63,7 +63,7 @@
 - [ ] Improve text box endpoint position
 - [-] Fix Annotation colors for inverted mode
 - [x] PDF overwriting
-- [ ] PDF loading indicator
+- [-] PDF loading indicator
 - [o] Implement markdown formatted annotations
 - [x] Implement eraser
 - [x] Implement Sizes for drawing and marker
@@ -73,6 +73,7 @@
 - [ ] Threading for pdf loading
 - [ ] Threading for pdf saving
 - [ ] Threading for pdf rendering
+- [x] async queueing draw points
 - [x] Implement clear all indicator points
 - [x] Implement page insertion
 - [x] Improve pdf saving
