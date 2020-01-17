@@ -36,6 +36,7 @@
 - [ ] Form estimation (machine vision)
 - [x] Implement Goto Page.. functionality
 - [x] Filename in title
+- [ ] Implement split view with overlay widget
 
 ## Features for v2.x
 

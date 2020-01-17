@@ -19,7 +19,7 @@
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/main/python/main.py",
-            "args": ["-o","test.pdf"],
+            "args": ["test.pdf"],
             "cwd": "${workspaceFolder}/src/main/python",
             "console": "integratedTerminal"
             // "preLaunchTask": {
@@ -32,7 +32,7 @@
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/main/python/main.py",
-            "args": ["-n","new.pdf"],
+            "args": ["new.pdf"],
             "cwd": "${workspaceFolder}/src/main/python",
             "console": "integratedTerminal"
             // "preLaunchTask": {

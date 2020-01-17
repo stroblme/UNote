@@ -83,11 +83,12 @@ class UNote(App):
 
         self.ui.floatingToolBox.restoreDefaults()
 
-        if args.open:
-            self.receiversInst.loadPdf(os.path.abspath(args.open))
+        if args != '':
+            if os.path.isfile(args):
+                self.receiversInst.loadPdf(os.path.abspath(args))
 
-        elif args.new:
-            self.receiversInst.newPdf(os.path.abspath(args.new))
+            elif args:
+                self.receiversInst.newPdf(os.path.abspath(args))
 
 
 
@@ -137,7 +138,7 @@ class UNote(App):
             # Reset the title
             self.MainWindow.setWindowTitle("UNote")
 
-    def run(self, args):
+    def run(self):
         '''
         Starts the UNote
         '''
@@ -304,15 +305,18 @@ def main():
 
     # -----------------------------------------------------
     # ---------------Argument processing------------------
-    args = None
+    # args = None
+    # try:
+    #     args = argumentHelper()
+    # except ValueError as e:
+    #     sys.exit("Unable to parse arguments:\n" + str(e))
     try:
-        args = argumentHelper()
-    except ValueError as e:
-        sys.exit("Unable to parse arguments:\n" + str(e))
-
+        args = sys.argv[1]
+    except IndexError as identifier:
+        args = ''
 
     UNoteGUI = UNote(args)
-    UNoteGUI.run(args)
+    UNoteGUI.run()
 
 
 # Standard python script entry handling
