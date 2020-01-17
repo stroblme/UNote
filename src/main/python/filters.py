@@ -1,5 +1,5 @@
 # import numpy as np
-from scipySavgol import savgol_filter
+# from scipySavgol import savgol_filter
 # from scipy.linalg import lstsq
 # from scipy import dot
 from math import sqrt
@@ -165,10 +165,11 @@ class Savgol(object):
 
         xPoints, yPoints = tuplesToArrays(observedPoints)
 
-        xPointsS = savgol_filter(xPoints, WINDOW_LENGTH, POLYNOM_GRADE)
-        yPointsS = savgol_filter(yPoints, WINDOW_LENGTH, POLYNOM_GRADE)
+        # xPointsS = savgol_filter(xPoints, WINDOW_LENGTH, POLYNOM_GRADE)
+        # yPointsS = savgol_filter(yPoints, WINDOW_LENGTH, POLYNOM_GRADE)
 
-        points = arraysToTuples(xPointsS, yPointsS)
+        points = arraysToTuples(xPoints, yPoints)
+        # points = arraysToTuples(xPointsS, yPointsS)
 
 
         return points
