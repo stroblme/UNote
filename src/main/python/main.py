@@ -181,7 +181,6 @@ class UNote(App):
         self.preferencesGui.storeSettings()
 
 
-
     def connectReceivers(self):
         '''
         Connects all the buttons to the right receivers
