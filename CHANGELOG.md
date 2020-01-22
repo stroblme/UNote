@@ -1,5 +1,11 @@
 # Changelog/ Roadmap
 
+### Description:
+
+- [ ] Open Issue/ Feature
+- [x] Solved Issue/ Feature
+- [o] Open but suspended. See comment after ';'
+
 ## Features for v3.x
 
 - [ ] Implement database structure
@@ -90,7 +96,7 @@
 - [ ] Bug, that a page is displayed twice, after inserting annot; sometimes reproducable
 - [ ] Indiator points sometimes not displayed correctly
 - [ ] Text not displayed correctly when too much
-- [ ] Corporate design for freehand drawings
+- [o] Corporate design for freehand drawings; not relevant
 - [x] much noice while freehand drawing
 - [x] In light theme, the button state keeps persistent after deactivation
 - [x] Text box can be positioned outside pdf area
