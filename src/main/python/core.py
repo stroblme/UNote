@@ -82,7 +82,7 @@ class QPdfView(QGraphicsPixmapItem):
         res = super().paint(painter, option, widget)
 
         if self.tempPoints.qsize() > 0:
-            if toBool(Preferences.data['radioButtonDarkTheme']):
+            if self.ui.comboBoxThemeSelect.currentIndex() == 0:
                 color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['freehandColor']))
             else:
                 color = tuple(map(lambda x: float(x)*255, Preferences.data['freehandColor']))

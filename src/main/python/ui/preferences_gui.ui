@@ -170,14 +170,37 @@
              </widget>
             </item>
             <item>
-             <widget class="QRadioButton" name="radioButtonDarkTheme">
-              <property name="text">
-               <string>Dark Theme</string>
-              </property>
-              <property name="checked">
-               <bool>false</bool>
-              </property>
-             </widget>
+             <layout class="QHBoxLayout" name="horizontalLayout_7">
+              <item>
+               <widget class="QRadioButton" name="radioButtonAffectsPDF">
+                <property name="text">
+                 <string>Affects PDF</string>
+                </property>
+                <property name="checked">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="comboBoxThemeSelect">
+                <item>
+                 <property name="text">
+                  <string>Dark Theme</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Light Theme</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Ambient Theme</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </widget>

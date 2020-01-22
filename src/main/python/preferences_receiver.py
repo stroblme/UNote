@@ -5,7 +5,7 @@
 #
 # Author: Melvin Strobl
 # ---------------------------------------------------------------
-from PySide2.QtCore import QObject, Signal, QTimer
+from PySide2.QtCore import QObject, Signal, Slot, QTimer
 
 from guiHelper import GuiHelper
 from preferences import Preferences
@@ -35,17 +35,18 @@ class Receivers(QObject):
         self.ui.windowInst.hide()
         self.confirmSignal.emit(False)
 
-    def setTheme(self):
+    @Slot(int)
+    def setTheme(self, index):
         '''
         Apply the selected theme
         '''
 
-        if self.ui.radioButtonDarkTheme.isChecked():
+        if self.ui.comboBoxThemeSelect.currentIndex() == 0:
             self.guiHelper.toggle_stylesheet(":/dark.qss")
-        else:
+        elif self.ui.comboBoxThemeSelect.currentIndex() == 1:
             self.guiHelper.toggle_stylesheet(":/light.qss")
 
-        Preferences.updateKeyValue("radioButtonDarkTheme", self.ui.radioButtonDarkTheme.isChecked())
+        Preferences.updateKeyValue("comboBoxThemeSelect", self.ui.comboBoxThemeSelect.currentIndex())
 
     def setAutoSave(self):
         if self.ui.comboBoxAutosave.currentIndex() != 0:

@@ -89,6 +89,7 @@
 - [x] Improve pdf saving
 - [x] Zooming capability via menu
 - [x] Creating executable
+- [ ] Improve defaults
 
 ### Issues in 1.x
 
