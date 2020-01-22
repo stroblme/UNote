@@ -37,6 +37,9 @@
 - [x] Implement Goto Page.. functionality
 - [x] Filename in title
 - [ ] Implement split view with overlay widget
+- [ ] Update to latest muPDF
+- [ ] Improve saving mechanism
+- [ ] Add Autosave option
 
 ## Features for v2.x
 
