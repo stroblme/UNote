@@ -109,12 +109,38 @@
             <item>
              <widget class="QLabel" name="labelAutosave">
               <property name="text">
-               <string>Autosave (minutes)</string>
+               <string>Autosave</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QSpinBox" name="spinBoxAutosave"/>
+             <widget class="QComboBox" name="comboBoxAutosave">
+              <item>
+               <property name="text">
+                <string>never</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>5 min</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>10 min</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>15 min</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>30 min</string>
+               </property>
+              </item>
+             </widget>
             </item>
            </layout>
           </widget>

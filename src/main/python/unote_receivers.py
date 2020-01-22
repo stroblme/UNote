@@ -34,6 +34,8 @@ class Receivers(QObject):
 
         self.ui.splitView = None
 
+
+
     def __del__(self):
         self.ui.graphicsView.saveCurrentPdf()
 
@@ -104,6 +106,8 @@ class Receivers(QObject):
         self.ui.graphicsView.saveCurrentPdfAs(pdfFileName)
 
         self.updateWindowTitle(pdfFileName)
+
+    
 
     def updateWindowTitle(self, var):
         self.titleUpdate.emit(var)
