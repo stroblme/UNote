@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Creator: CorelDRAW 2018 (64-Bit Not for commercial use) -->
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="48px" height="48px" version="1.1" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+viewBox="0 0 48 48"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <font id="FontID1" horiz-adv-x="667" font-variant="normal" class="str2" style="fill-rule:nonzero" font-weight="400">
+	<font-face 
+		font-family="Arial">
+		<font-face-src>
+			<font-face-name name="Arial"/>
+		</font-face-src>
+	</font-face>
+   <missing-glyph><path d="M0 0z"/></missing-glyph>
+   <glyph unicode="N" horiz-adv-x="722" d="M76.0071 0l0 716.068 97.3421 0 375.702 -562.054 0 562.054 91.0094 0 0 -716.068 -97.3434 0 -375.701 562.053 0 -562.053 -91.0094 0z"/>
+  </font>
+  <font id="FontID0" horiz-adv-x="679" font-variant="normal" class="str0" style="fill-rule:nonzero" font-weight="200">
+	<font-face 
+		font-family="Microsoft YaHei UI Light">
+		<font-face-src>
+			<font-face-name name="Microsoft YaHei UI Light"/>
+		</font-face-src>
+	</font-face>
+   <missing-glyph><path d="M0 0z"/></missing-glyph>
+   <glyph unicode="U" horiz-adv-x="699" d="M612.963 302.148c0,-210.153 -89.8279,-315.147 -269.651,-315.147 -170.823,0 -256.317,101.16 -256.317,303.481l0 465.473 51.9966 0 0 -457.973c0,-175.323 71.4958,-262.985 214.653,-262.985 138.158,0 207.321,85.1615 207.321,255.652l0 465.306 51.9975 0 0 -453.807z"/>
+  </font>
+  <style type="text/css">
+   <![CDATA[
+    @font-face { font-family:"Arial";font-variant:normal;font-weight:normal;src:url("#FontID1") format(svg)}
+    @font-face { font-family:"Microsoft YaHei UI Light";font-variant:normal;font-weight:200;src:url("#FontID0") format(svg)}
+    .str0 {stroke-width:7.69;stroke-miterlimit:2.61313}
+    .str2 {stroke-width:8.81;stroke-miterlimit:2.61313}
+    .str4 {stroke:black;stroke-width:0.47;stroke-miterlimit:2.61313}
+    .str1 {stroke:#0B3841;stroke-width:0.47;stroke-miterlimit:2.61313}
+    .str3 {stroke:#0E7D91;stroke-width:0.37;stroke-miterlimit:2.61313}
+    .fil2 {fill:none}
+    .fil0 {fill:#0E7D91}
+    .fil1 {fill:#0B3841}
+    .fnt1 {font-weight:normal;font-size:42.55px;font-family:'Arial'}
+    .fnt0 {font-weight:200;font-size:60.96px;font-family:'Microsoft YaHei UI Light'}
+   ]]>
+  </style>
+ </defs>
+ <g id="Layer_x0020_1">
+  <metadata id="CorelCorpID_0Corel-Layer"/>
+  <g transform="matrix(1.46198 0 0 1 -42.2782 22.6598)">
+   <text x="24" y="24"  class="fil0 str1 fnt0">U</text>
+  </g>
+  <g transform="matrix(1.36716 0 0 1 -29.6396 7.3594)">
+   <text x="24" y="24"  class="fil1 str3 fnt1">N</text>
+  </g>
+  <line class="fil2 str4" x1="10.55" y1="34.55" x2="37.45" y2= "34.55" />
+  <line class="fil2 str4" x1="11.81" y1="37.22" x2="36.19" y2= "37.22" />
+  <line class="fil2 str4" x1="14.39" y1="39.56" x2="33.61" y2= "39.56" />
+ </g>
+</svg>
