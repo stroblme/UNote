@@ -5,7 +5,7 @@
 #
 # Author: Melvin Strobl
 # ---------------------------------------------------------------
-from PySide2.QtCore import QObject, Signal
+from PySide2.QtCore import QObject, Signal, Slot, QTimer
 
 from guiHelper import GuiHelper
 from preferences import Preferences
@@ -16,31 +16,45 @@ class Receivers(QObject):
     '''
     confirmSignal = Signal(bool)
 
-    def __init__(self, uiInst):
+    def __init__(self, ui):
         super().__init__()
 
         self.guiHelper = GuiHelper()
 
-        self.uiInst = uiInst
+        self.ui = ui
+
+        self.autoSaveTimer = QTimer()
 
     def confirmReceiver(self):
 
-        self.uiInst.windowInst.hide()
+        self.ui.windowInst.hide()
         self.confirmSignal.emit(True)
 
     def rejectReceiver(self):
 
-        self.uiInst.windowInst.hide()
+        self.ui.windowInst.hide()
         self.confirmSignal.emit(False)
 
-    def setTheme(self):
+    @Slot(int)
+    def setTheme(self, index):
         '''
         Apply the selected theme
         '''
 
-        if self.uiInst.radioButtonDarkTheme.isChecked():
+        if self.ui.comboBoxThemeSelect.currentIndex() == 0:
             self.guiHelper.toggle_stylesheet(":/dark.qss")
-        else:
+        elif self.ui.comboBoxThemeSelect.currentIndex() == 1:
             self.guiHelper.toggle_stylesheet(":/light.qss")
 
-        Preferences.updateKeyValue("radioButtonDarkTheme", self.uiInst.radioButtonDarkTheme.isChecked())
+        Preferences.updateKeyValue("comboBoxThemeSelect", self.ui.comboBoxThemeSelect.currentIndex())
+
+    def setAutoSave(self):
+        if self.ui.comboBoxAutosave.currentIndex() != 0:
+            interval = 1000 * 5 * self.ui.comboBoxAutosave.currentIndex()   # ui displays 5 minute intervals
+
+            Preferences.updateKeyValue('autosaveSetting', interval)
+
+            self.autoSaveTimer.timeout.connect(self.ui.graphicsView.savePdf)
+            self.autoSaveTimer.start(interval)
+        else:
+            self.autoSaveTimer.stop()

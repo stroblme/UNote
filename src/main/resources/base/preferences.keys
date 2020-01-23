@@ -1,8 +1,9 @@
-radioButtonDarkTheme
+radioButtonAffectsPDF
+comboBoxThemeSelect
 radioButtonPenOnly
 state
 geometry
-spinBoxAutosave
+autosaveSetting
 textSize
 markerSize
 markerColor

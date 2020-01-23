@@ -169,14 +169,7 @@ class UNote(App):
 
         self.receiversInst.applyWorkspaceDefaults()
 
-    def autoSaveReceiver(self):
-        if Preferences.data['comboBoxAutosave'] != 'never' and Preferences.data['comboBoxAutosave'] != '':
-            self.autoSaveTimer = QTimer()
-            interval = 600 * int(Preferences.data['comboBoxAutosave'])
-            print(interval)
-            self.autoSaveTimer.singleShot(interval, self.autoSaveReceiver())
 
-            # self.ui.graphicsView.savePdf()
 
     def onQApplicationQuit(self):
         '''
@@ -186,7 +179,6 @@ class UNote(App):
         Preferences.updateKeyValue('state', self.MainWindow.saveState())
 
         self.preferencesGui.storeSettings()
-
 
 
     def connectReceivers(self):

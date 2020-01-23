@@ -1,9 +1,15 @@
 # Changelog/ Roadmap
 
+### Description:
+
+- [ ] Open Issue/ Feature
+- [x] Solved Issue/ Feature
+- [o] Open but suspended. See comment after ';'
+
 ## Features for v3.x
 
 - [ ] Implement database structure
-- [ ] Implement unlimited space drawing and annotating
+- [ ] Implement unlimited space drawing and annotating for new pdfs
 - [ ] Set up testing environment
 - [ ] Implement custom settings for shortcuts, annots etc
 - [x] Implement custom colors for annots and drawings
@@ -13,8 +19,9 @@
 - [ ] Implement Page moving
 - [ ] Implement picture insert
 - [ ] Implement pdf drag&drop load
-- [ ] Smooth scrolling using QTimeLine
-- [ ] UI enhancements of preference window
+- [ ] Implement print support https://doc.qt.io/qtforpython/PySide2/QtPrintSupport/QPrinter.html
+- [ ] Smooth scrolling using QTimeLine https://doc.qt.io/qt-5/qtimeline.html
+- [x] UI enhancements of preference window
 - [ ] Autosave capability
 - [ ] Implement bookmarks view panel
 - [ ] Add tooltips
@@ -22,12 +29,13 @@
 - [ ] Get more abstraction by splitting up core script
 - [x] Live drawing (currently ui is updated when movement finished)
 - [ ] Smoother scrolling
+- [ ] Implement gestures for touch compatibility https://forum.qt.io/topic/81351/really-tight-pinch-zoom-scroll-on-qgraphicsview/3
+- [ ] Physics for scrolling https://github.com/fau-fablab/flickcharm-python
 - [ ] Search functionality
 - [x] Custom colors for drawing
 - [x] Text Size for Text Boxes
 - [ ] Automatic text size from pdf text
 - [ ] Change start position of text box line
-- [ ] Auto-save in intervalls
 - [ ] Focus main window after file handling
 - [ ] Store preferred Toolbox position
 - [ ] Implement easy toggling of annotation modes
@@ -39,7 +47,9 @@
 - [ ] Implement split view with overlay widget
 - [ ] Update to latest muPDF
 - [ ] Improve saving mechanism
-- [ ] Add Autosave option
+- [ ] Implement object resizing
+- [ ] Implement object moving
+- [ ] Implement markdown formatted annotations
 
 ## Features for v2.x
 
@@ -61,26 +71,25 @@
 - [x] Save as dialog
 - [x] Implement Undo and Redo functionality
 - [ ] Reduce Text Size with increasing annotation length
-- [o] Implement object resizing
 - [x] Create new PDF
 - [ ] Improve text box endpoint position
-- [-] Fix Annotation colors for inverted mode
+- [o] Fix Annotation colors for inverted mode; not relevant
 - [x] PDF overwriting
-- [-] PDF loading indicator
-- [o] Implement markdown formatted annotations
+- [o] PDF loading indicator; not relevant
 - [x] Implement eraser
 - [x] Implement Sizes for drawing and marker
 - [x] Implement line drawing
-- [ ] Implement gestures for touch compatibility
 - [x] Improve highlighting by reducing noise on y axis (Kalman?); simply converted to simple rect
 - [ ] Threading for pdf loading
 - [ ] Threading for pdf saving
-- [ ] Threading for pdf rendering
+- [o] Threading for pdf rendering; not relevant
 - [x] async queueing draw points
 - [x] Implement clear all indicator points
 - [x] Implement page insertion
 - [x] Improve pdf saving
 - [x] Zooming capability via menu
+- [x] Creating executable
+- [ ] Improve defaults
 
 ### Issues in 1.x
 
@@ -88,12 +97,12 @@
 - [ ] Bug, that a page is displayed twice, after inserting annot; sometimes reproducable
 - [ ] Indiator points sometimes not displayed correctly
 - [ ] Text not displayed correctly when too much
-- [ ] Corporate design for freehand drawings
+- [o] Corporate design for freehand drawings; not relevant
 - [x] much noice while freehand drawing
 - [x] In light theme, the button state keeps persistent after deactivation
 - [x] Text box can be positioned outside pdf area
 - [x] Indicator Points not disappear after cancelling edit
-- [ ] Still got issues that pen is suddenly not recogniced anymore. Fixed after restart
+- [x] Still got issues that pen is suddenly not recogniced anymore. Fixed after restart; fixed on with new framework
 
 ## Features for v1.x - Completed
 

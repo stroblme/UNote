@@ -114,7 +114,9 @@ class PreferencesGUI(App):
         '''
         Connects all the buttons to the right receivers
         '''
-        self.ui.radioButtonDarkTheme.toggled.connect(lambda: self.receiversInst.setTheme())
+        # self.ui.radioButtonAffectsPDF.toggled.connect(lambda: self.receiversInst.setTheme())
+        self.ui.comboBoxThemeSelect.currentIndexChanged.connect(self.receiversInst.setTheme)
+
         self.ui.pushButtonOk.clicked.connect(lambda:self.receiversInst.confirmReceiver())
         self.ui.pushButtonCancel.clicked.connect(lambda:self.receiversInst.rejectReceiver())
 
@@ -171,15 +173,20 @@ class PreferencesGUI(App):
         except ValueError as identifier:
             self.ui.spinBoxAutosave.setValue(10)
 
+    def ensureValidData(self):
+        # Apply all default preferences if necessary
+
+        if Preferences.data['comboBoxThemeSelect'] == "":
+            Preferences.updateKeyValue('comboBoxThemeSelect', 0) 
+        if Preferences.data['radioButtonAffectsPDF'] == "":
+            Preferences.updateKeyValue('radioButtonAffectsPDF', str(True)) 
+
+        if Preferences.data["autosaveSetting"] == "":
+            Preferences.updateKeyValue('comboBoxSerialInteractionMethod', 0) 
 
     def applySettings(self):
         '''
         Apply the settings from the local dict to the gui instance
         '''
-        if toBool(Preferences.data["radioButtonDarkTheme"]) == True:
-            self.guiHelper.toggle_stylesheet(":/dark.qss")
-            self.backgroundEffect.setColor(QColor(100,100,100))
 
-        else:
-            self.guiHelper.toggle_stylesheet(":/light.qss")
-            self.backgroundEffect.setColor(QColor(0,0,0))
+        self.receiversInst.setTheme(self.ui.comboBoxThemeSelect.currentIndex())

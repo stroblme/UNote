@@ -94,10 +94,13 @@
        </item>
        <item>
         <layout class="QFormLayout" name="formLayout">
+         <property name="fieldGrowthPolicy">
+          <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+         </property>
          <item row="0" column="1">
           <widget class="QGroupBox" name="horizontalGroupBox">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -109,12 +112,49 @@
             <item>
              <widget class="QLabel" name="labelAutosave">
               <property name="text">
-               <string>Autosave (minutes)</string>
+               <string>Save</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QSpinBox" name="spinBoxAutosave"/>
+             <layout class="QHBoxLayout" name="horizontalLayout_5">
+              <item>
+               <widget class="QRadioButton" name="radioButton">
+                <property name="text">
+                 <string>Save On Exit</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="comboBoxAutosave">
+                <item>
+                 <property name="text">
+                  <string>Don't Autosave</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>5 min Autosave</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>10 min Autosave</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>15 min Autosave</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>20 min Autosave</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </widget>
@@ -130,14 +170,37 @@
              </widget>
             </item>
             <item>
-             <widget class="QRadioButton" name="radioButtonDarkTheme">
-              <property name="text">
-               <string>Dark Theme</string>
-              </property>
-              <property name="checked">
-               <bool>false</bool>
-              </property>
-             </widget>
+             <layout class="QHBoxLayout" name="horizontalLayout_7">
+              <item>
+               <widget class="QRadioButton" name="radioButtonAffectsPDF">
+                <property name="text">
+                 <string>Affects PDF</string>
+                </property>
+                <property name="checked">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="comboBoxThemeSelect">
+                <item>
+                 <property name="text">
+                  <string>Dark Theme</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Light Theme</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Ambient Theme</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </widget>
@@ -145,7 +208,7 @@
          <item row="2" column="1">
           <widget class="QGroupBox" name="horizontalGroupBox2">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -154,19 +217,42 @@
             <item>
              <widget class="QLabel" name="labelPenDraw">
               <property name="text">
-               <string>Pen Draw Only</string>
+               <string>Drawing</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QRadioButton" name="radioButtonPenOnly">
-              <property name="text">
-               <string>Pen Draw Only</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
+             <layout class="QHBoxLayout" name="horizontalLayout_6">
+              <item>
+               <widget class="QRadioButton" name="radioButtonPenOnly">
+                <property name="text">
+                 <string>Pen Draw Only</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="comboBox">
+                <item>
+                 <property name="text">
+                  <string>Direct Drawing</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Smoother Drawing</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Super Smooth Drawing</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </widget>
