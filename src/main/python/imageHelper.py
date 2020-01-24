@@ -19,8 +19,9 @@ class imageHelper(QWidget):
         return pixImgItem
 
     def applyTheme(self, qimage):
-        if toBool(Preferences.data["radioButtonDarkTheme"]) == True:
-            qimage.invertPixels()
-            return qimage
-        else:
-            return qimage
+        if toBool(Preferences.data["radioButtonAffectsPDF"]) == True:
+            if int(Preferences.data["comboBoxThemeSelect"]) == 0:
+                qimage.invertPixels()
+
+
+        return qimage
