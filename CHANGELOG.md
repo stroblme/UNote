@@ -50,6 +50,7 @@
 - [ ] Implement object resizing
 - [ ] Implement object moving
 - [ ] Implement markdown formatted annotations
+- [ ] Reduced toolbar based on device mode
 
 ## Features for v2.x
 

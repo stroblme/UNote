@@ -13,7 +13,7 @@ from editHelper import editModes
 from preferences import Preferences
 from historyHandler import History
 
-from style.styledef import rgb, norm_rgb
+from style.styledef import rgb, norm_rgb, pdf_annots
 
 OUTEROFFSETTOP = 25
 OUTEROFFSETBOTTOM = 14
@@ -245,6 +245,7 @@ class ToolBoxWidget(QWidget):
         self.slider.setEnabled(False)
         self.slider.valueChanged.connect(self.handleSliderValueChange)
         self.slider.sliderReleased.connect(self.handleSliderValueChanged)
+        self.slider.sliderMoved.connect(self.handleSliderDrag)
 
         self.setButtonState()
 
@@ -294,7 +295,17 @@ class ToolBoxWidget(QWidget):
         # shapePainter.setPen(QPen(QColor(14,125,145),  5, Qt.SolidLine))
         # shapePainter.drawLine(topMiddle, bottomMiddle)
 
-        shapePainter.setPen(QPen(QColor(14,125,145),  2, Qt.SolidLine))
+        if self.editMode == editModes.freehand:
+            color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['freehandColor']))
+            size = pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/pdf_annots.freeHandScale)
+        elif self.editMode == editModes.marker:
+            color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['markerColor']))
+            size = pdf_annots.defaultPenSize * (int(Preferences.data['markerSize'])/pdf_annots.freeHandScale)
+        else:
+            color = (255,255,255)
+            size = 2
+
+        shapePainter.setPen(QPen(QColor(*color),  size*3, Qt.SolidLine))
         arcRect = QRect(bottomMiddle.x() - 5, bottomMiddle.y()-6, 13, 13)
         shapePainter.drawArc(arcRect, 0, CIRCLE)
 
@@ -691,6 +702,14 @@ class ToolBoxWidget(QWidget):
 
             self.slider.setEnabled(False)
             self.slider.setValue(100)
+
+    def handleSliderDrag(self, value):
+        '''
+        Called when the user moves the slider
+        '''
+
+        self.storeSliderValue()
+        self.repaint()
 
     def handleSliderValueChange(self, value):
         '''
