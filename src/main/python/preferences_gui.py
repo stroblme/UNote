@@ -66,8 +66,6 @@ class PreferencesGUI(App):
 
         self.loadSettings()
 
-        self.applySettings()
-
     def __exit__(self, exc_type, exc_value, traceback):
         del self.settings
 
@@ -128,13 +126,13 @@ class PreferencesGUI(App):
         '''
         Connects all the buttons to the right receivers
         '''
-        self.ui.radioButtonAffectsPDF.currentIndexChanged.connect(self.receiversInst.setRadioButtonAffectsPDF)
+        self.ui.radioButtonAffectsPDF.clicked.connect(self.receiversInst.setRadioButtonAffectsPDF)
         self.ui.comboBoxThemeSelect.currentIndexChanged.connect(self.receiversInst.setComboBoxThemeSelect)
 
-        self.ui.radioButtonPenDrawOnly.currentIndexChanged.connect(self.receiversInst.setRadioButtonPenDrawOnly)
+        self.ui.radioButtonPenDrawOnly.clicked.connect(self.receiversInst.setRadioButtonPenDrawOnly)
         self.ui.comboBoxDrawingMode.currentIndexChanged.connect(self.receiversInst.setComboBoxDrawingMode)
 
-        self.ui.radioButtonSaveOnExit.currentIndexChanged.connect(self.receiversInst.setRadioButtonSaveOnExit)
+        self.ui.radioButtonSaveOnExit.clicked.connect(self.receiversInst.setRadioButtonSaveOnExit)
         self.ui.comboBoxAutosaveMode.currentIndexChanged.connect(self.receiversInst.setComboBoxAutosaveMode)
 
         self.ui.pushButtonOk.clicked.connect(lambda:self.receiversInst.confirmReceiver())
@@ -193,6 +191,7 @@ class PreferencesGUI(App):
         
         self.ui.radioButtonAffectsPDF.setChecked(toBool(Preferences.data["radioButtonAffectsPDF"]))
         self.ui.comboBoxThemeSelect.setCurrentIndex(int(Preferences.data["comboBoxThemeSelect"]))
+        self.receiversInst.setComboBoxThemeSelect(int(Preferences.data["comboBoxThemeSelect"]))
 
         self.ui.radioButtonPenDrawOnly.setChecked(toBool(Preferences.data["radioButtonPenDrawOnly"]))
         self.ui.comboBoxDrawingMode.setCurrentIndex(int(Preferences.data["comboBoxDrawingMode"]))

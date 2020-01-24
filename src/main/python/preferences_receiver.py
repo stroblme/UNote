@@ -36,7 +36,7 @@ class Receivers(QObject):
         self.confirmSignal.emit(False)
 
     def setRadioButtonAffectsPDF(self):
-        Preferences.updateKeyValue("radioButtonAffectsPDF", str(self.uiInst.radioButtonAffectsPDF.isChecked()))
+        Preferences.updateKeyValue("radioButtonAffectsPDF", str(self.ui.radioButtonAffectsPDF.isChecked()))
         
     @Slot(int)
     def setComboBoxThemeSelect(self, index):
@@ -44,25 +44,25 @@ class Receivers(QObject):
         Apply the selected theme
         '''
 
-        if self.uiInst.comboBoxThemeSelect.currentIndex() == 0:
+        if self.ui.comboBoxThemeSelect.currentIndex() == 0:
             self.guiHelper.toggle_stylesheet(":/dark.qss")
-        elif self.uiInst.comboBoxThemeSelect.currentIndex() == 1:
+        else:
             self.guiHelper.toggle_stylesheet(":/light.qss")
 
-        Preferences.updateKeyValue("comboBoxThemeSelect", self.uiInst.comboBoxThemeSelect.currentIndex())
+        Preferences.updateKeyValue("comboBoxThemeSelect", self.ui.comboBoxThemeSelect.currentIndex())
 
 
     def setRadioButtonPenDrawOnly(self):
-        Preferences.updateKeyValue("radioButtonPenDrawOnly", str(self.uiInst.radioButtonPenDrawOnly.isChecked()))
+        Preferences.updateKeyValue("radioButtonPenDrawOnly", str(self.ui.radioButtonPenDrawOnly.isChecked()))
 
     @Slot(int)
     def setComboBoxDrawingMode(self, index):
-        Preferences.updateKeyValue("comboBoxDrawingMode", self.uiInst.comboBoxDrawingMode.currentIndex())
+        Preferences.updateKeyValue("comboBoxDrawingMode", self.ui.comboBoxDrawingMode.currentIndex())
 
 
     def setRadioButtonSaveOnExit(self):
-        Preferences.updateKeyValue("radioButtonSaveOnExit", str(self.uiInst.radioButtonSaveOnExit.isChecked()))
+        Preferences.updateKeyValue("radioButtonSaveOnExit", str(self.ui.radioButtonSaveOnExit.isChecked()))
 
     @Slot(int)
     def setComboBoxAutosaveMode(self, index):
-        Preferences.updateKeyValue("comboBoxAutosaveMode", self.uiInst.comboBoxAutosaveMode.currentIndex())
+        Preferences.updateKeyValue("comboBoxAutosaveMode", self.ui.comboBoxAutosaveMode.currentIndex())
