@@ -811,7 +811,7 @@ class QPdfView(QGraphicsPixmapItem):
                 self.eh.addIndicatorPoint.emit(scenePoint.x(), scenePoint.y())
                 self.startNewMarkdownBox(self.toPdfCoordinates(event.pos()))
 
-            if not toBool(Preferences.data['radioButtonPenOnly']):
+            if not toBool(Preferences.data['radioButtonPenDrawOnly']):
                 if editMode == editModes.marker:
                     self.startMarkText(self.toPdfCoordinates(event.pos()))
                 elif editMode == editModes.freehand:
@@ -852,7 +852,7 @@ class QPdfView(QGraphicsPixmapItem):
 
                 self.stopNewMarkdownBox(self.toPdfCoordinates(event.pos()))
 
-            if not toBool(Preferences.data['radioButtonPenOnly']):
+            if not toBool(Preferences.data['radioButtonPenDrawOnly']):
                 if editMode == editModes.marker:
                     self.stopMarkText(self.toPdfCoordinates(event.pos()))
                 elif editMode == editModes.freehand:
@@ -901,10 +901,10 @@ class QPdfView(QGraphicsPixmapItem):
 
     def visualizeCorners(self, annot):
         rect = annot.rect
-        tl = self.toSceneCoordinates(self.toQPos(rect.tl))
-        tr = self.toSceneCoordinates(self.toQPos(rect.tr))
-        bl = self.toSceneCoordinates(self.toQPos(rect.bl))
-        br = self.toSceneCoordinates(self.toQPos(rect.br))
+        tl = self.toSceneCoordinates(self.fPosToQPos(rect.tl))
+        tr = self.toSceneCoordinates(self.fPosToQPos(rect.tr))
+        bl = self.toSceneCoordinates(self.fPosToQPos(rect.bl))
+        br = self.toSceneCoordinates(self.fPosToQPos(rect.br))
 
 
         self.eh.addIndicatorPoint.emit(tl.x()-6, tl.y()-6)
@@ -924,7 +924,7 @@ class QPdfView(QGraphicsPixmapItem):
         '''
         self.blockEdit = False
 
-        if self.ongoingEdit and not toBool(Preferences.data['radioButtonPenOnly']):
+        if self.ongoingEdit and not toBool(Preferences.data['radioButtonPenDrawOnly']):
             if editMode == editModes.freehand:
                 self.updateDrawPoints(self.toPdfCoordinates(event.pos()))
             elif editMode == editModes.eraser:
@@ -936,7 +936,7 @@ class QPdfView(QGraphicsPixmapItem):
 
     def tabletEvent(self, eventType, pressure, highResPos, zoom, xOff, yOff):
         self.blockEdit = False
-        if toBool(Preferences.data['radioButtonPenOnly']):
+        if toBool(Preferences.data['radioButtonPenDrawOnly']):
             if eventType == QEvent.TabletMove and self.ongoingEdit:
                 if editMode == editModes.freehand:
                     self.updateDrawPoints(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff), pressure)
@@ -1023,12 +1023,12 @@ class QPdfView(QGraphicsPixmapItem):
         qPos.setY(abs(qPos.y())+yOff - self.yOrigin)
         return qPos
 
-    def toQPos(self, fPos):
+    def fPosToQPos(self, fPos):
         qPos = QPoint(fPos.x, fPos.y)
 
         return qPos
 
-    def toQPos(self, x, y):
+    def posToQPos(self, x, y):
         qPos = QPoint(x, y)
 
         return qPos
