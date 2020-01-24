@@ -40,9 +40,9 @@ class App(QObject):
     ICONPATH = appctxt.get_resource('icon.png')
     CURVERSION = "2020.01"
 
-    DONATEURL = "https://www.paypal.me/vinstrobl/coffee"
-    UPDATEURL = "http://www.foxbyrd.com/wp-content/uploads/2018/02/file-4.jpg"
-    ABOUTURL = "http://www.foxbyrd.com/wp-content/uploads/2018/02/file-4.jpg"
+    DONATEURL   = "https://www.paypal.me/vinstrobl/coffee"
+    UPDATEURL   = "http://unote.stroblme.tech/archives/UNote.zip"
+    ABOUTURL    = "https://unote.stroblme.tech/"
 
     TOOLBOXWIDTH = 200
     TOOLBOXHEIGHT = 200
