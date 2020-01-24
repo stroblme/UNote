@@ -138,6 +138,8 @@ class PreferencesGUI(App):
         self.ui.pushButtonOk.clicked.connect(lambda:self.receiversInst.confirmReceiver())
         self.ui.pushButtonCancel.clicked.connect(lambda:self.receiversInst.rejectReceiver())
 
+        self.receiversInst.confirmSignal.connect(self.onClose)
+
     def loadKeys(self):
         '''
         Load the preferences keys
@@ -172,6 +174,12 @@ class PreferencesGUI(App):
         Preferences.updateKeyValue("radioButtonSaveOnExit", int(self.ui.radioButtonSaveOnExit.isChecked()))
         Preferences.updateKeyValue("comboBoxAutosaveMode", int(self.ui.comboBoxAutosaveMode.currentIndex()))
 
+    @Slot(bool)
+    def onClose(self, store):
+        if store:
+            self.saveSettings()
+        else:
+            self.discardSettings()
 
     def saveSettings(self):
         self.storeLooseEntries()

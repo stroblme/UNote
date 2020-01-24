@@ -16,6 +16,8 @@ from guiHelper import GuiHelper, QHLine
 
 from core import GraphicsViewHandler
 
+from util import toBool
+
 
 
 class Receivers(QObject):
@@ -37,7 +39,8 @@ class Receivers(QObject):
 
 
     def __del__(self):
-        self.ui.graphicsView.saveCurrentPdf()
+        if toBool(Preferences.data['radioButtonSaveOnExit']):
+            self.ui.graphicsView.saveCurrentPdf()
 
     def setLogHelperInst(self, logHelper):
         '''
@@ -107,7 +110,7 @@ class Receivers(QObject):
 
         self.updateWindowTitle(pdfFileName)
 
-    
+
 
     def updateWindowTitle(self, var):
         self.titleUpdate.emit(var)
