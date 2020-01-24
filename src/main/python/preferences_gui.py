@@ -94,7 +94,7 @@ class PreferencesGUI(App):
 
         self.ui.comboBoxThemeSelect.addItem("Dark Theme")
         self.ui.comboBoxThemeSelect.addItem("Light Theme")
-        self.ui.comboBoxThemeSelect.addItem("Ambient Theme")
+        # self.ui.comboBoxThemeSelect.addItem("Ambient Theme")
 
         self.ui.comboBoxDrawingMode.addItem("Direct Drawing")
         self.ui.comboBoxDrawingMode.addItem("Smoother Drawing")
@@ -188,7 +188,7 @@ class PreferencesGUI(App):
             Preferences.updateKeyValue(key, self.settings.value(key, defaultValue=None, type=str))
 
         self.ensureValidData()
-        
+
         self.ui.radioButtonAffectsPDF.setChecked(toBool(Preferences.data["radioButtonAffectsPDF"]))
         self.ui.comboBoxThemeSelect.setCurrentIndex(int(Preferences.data["comboBoxThemeSelect"]))
         self.receiversInst.setComboBoxThemeSelect(int(Preferences.data["comboBoxThemeSelect"]))
@@ -204,19 +204,19 @@ class PreferencesGUI(App):
         # Apply all default preferences if necessary
 
         if Preferences.data['radioButtonAffectsPDF'] == "":
-            Preferences.updateKeyValue('radioButtonAffectsPDF', str(True)) 
+            Preferences.updateKeyValue('radioButtonAffectsPDF', str(True))
         if Preferences.data['comboBoxThemeSelect'] == "":
-            Preferences.updateKeyValue('comboBoxThemeSelect', 0) 
+            Preferences.updateKeyValue('comboBoxThemeSelect', 0)
 
         if Preferences.data['radioButtonPenDrawOnly'] == "":
-            Preferences.updateKeyValue('radioButtonPenDrawOnly', str(True)) 
+            Preferences.updateKeyValue('radioButtonPenDrawOnly', str(True))
         if Preferences.data['comboBoxDrawingMode'] == "":
-            Preferences.updateKeyValue('comboBoxDrawingMode', 0) 
+            Preferences.updateKeyValue('comboBoxDrawingMode', 0)
 
         if Preferences.data['radioButtonSaveOnExit'] == "":
-            Preferences.updateKeyValue('radioButtonSaveOnExit', str(True)) 
+            Preferences.updateKeyValue('radioButtonSaveOnExit', str(True))
         if Preferences.data['comboBoxAutosaveMode'] == "":
-            Preferences.updateKeyValue('comboBoxAutosaveMode', 0) 
+            Preferences.updateKeyValue('comboBoxAutosaveMode', 0)
 
     # def applySettings(self):
     #     '''
