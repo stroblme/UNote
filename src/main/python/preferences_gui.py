@@ -88,6 +88,20 @@ class PreferencesGUI(App):
 
         self.ui.centralwidget.setGraphicsEffect(self.backgroundEffect)
 
+        self.ui.comboBoxAutosaveMode.addItem("Don't Autosave")
+        self.ui.comboBoxAutosaveMode.addItem("5 min Autosave")
+        self.ui.comboBoxAutosaveMode.addItem("10 min Autosave")
+        self.ui.comboBoxAutosaveMode.addItem("15 min Autosave")
+        self.ui.comboBoxAutosaveMode.addItem("20 min Autosave")
+
+        self.ui.comboBoxThemeSelect.addItem("Dark Theme")
+        self.ui.comboBoxThemeSelect.addItem("Light Theme")
+        self.ui.comboBoxThemeSelect.addItem("Ambient Theme")
+
+        self.ui.comboBoxDrawingMode.addItem("Direct Drawing")
+        self.ui.comboBoxDrawingMode.addItem("Smoother Drawing")
+        self.ui.comboBoxDrawingMode.addItem("Super Smooth Drawing")
+
 
     def run(self):
         '''
@@ -114,8 +128,14 @@ class PreferencesGUI(App):
         '''
         Connects all the buttons to the right receivers
         '''
-        # self.ui.radioButtonAffectsPDF.toggled.connect(lambda: self.receiversInst.setTheme())
-        self.ui.comboBoxThemeSelect.currentIndexChanged.connect(self.receiversInst.setTheme)
+        self.ui.radioButtonAffectsPDF.currentIndexChanged.connect(self.receiversInst.setRadioButtonAffectsPDF)
+        self.ui.comboBoxThemeSelect.currentIndexChanged.connect(self.receiversInst.setComboBoxThemeSelect)
+
+        self.ui.radioButtonPenDrawOnly.currentIndexChanged.connect(self.receiversInst.setRadioButtonPenDrawOnly)
+        self.ui.comboBoxDrawingMode.currentIndexChanged.connect(self.receiversInst.setComboBoxDrawingMode)
+
+        self.ui.radioButtonSaveOnExit.currentIndexChanged.connect(self.receiversInst.setRadioButtonSaveOnExit)
+        self.ui.comboBoxAutosaveMode.currentIndexChanged.connect(self.receiversInst.setComboBoxAutosaveMode)
 
         self.ui.pushButtonOk.clicked.connect(lambda:self.receiversInst.confirmReceiver())
         self.ui.pushButtonCancel.clicked.connect(lambda:self.receiversInst.rejectReceiver())
@@ -147,9 +167,12 @@ class PreferencesGUI(App):
         '''
         Saves all entries, which have been entered without explicit confirmation
         '''
-        Preferences.updateKeyValue("radioButtonDarkTheme", str(self.ui.radioButtonDarkTheme.isChecked()))
-        Preferences.updateKeyValue("radioButtonPenOnly", str(self.ui.radioButtonPenOnly.isChecked()))
-        Preferences.updateKeyValue("spinBoxAutosave", int(self.ui.spinBoxAutosave.value()))
+        Preferences.updateKeyValue("radioButtonAffectsPDF", str(self.ui.radioButtonAffectsPDF.isChecked()))
+        Preferences.updateKeyValue("comboBoxThemeSelect", str(self.ui.comboBoxThemeSelect.currentIndex()))
+        Preferences.updateKeyValue("radioButtonPenDrawOnly", str(self.ui.radioButtonPenDrawOnly.isChecked()))
+        Preferences.updateKeyValue("comboBoxDrawingMode", str(self.ui.comboBoxDrawingMode.currentIndex()))
+        Preferences.updateKeyValue("radioButtonSaveOnExit", int(self.ui.radioButtonSaveOnExit.isChecked()))
+        Preferences.updateKeyValue("comboBoxAutosaveMode", int(self.ui.comboBoxAutosaveMode.currentIndex()))
 
 
     def saveSettings(self):
@@ -166,27 +189,39 @@ class PreferencesGUI(App):
         for key in self.keys:
             Preferences.updateKeyValue(key, self.settings.value(key, defaultValue=None, type=str))
 
-        self.ui.radioButtonDarkTheme.setChecked(toBool(Preferences.data["radioButtonDarkTheme"]))
-        self.ui.radioButtonPenOnly.setChecked(toBool(Preferences.data["radioButtonPenOnly"]))
-        try:
-            self.ui.spinBoxAutosave.setValue(int(Preferences.data["spinBoxAutosave"]))
-        except ValueError as identifier:
-            self.ui.spinBoxAutosave.setValue(10)
+        self.ensureValidData()
+        
+        self.ui.radioButtonAffectsPDF.setChecked(toBool(Preferences.data["radioButtonAffectsPDF"]))
+        self.ui.comboBoxThemeSelect.setCurrentIndex(int(Preferences.data["comboBoxThemeSelect"]))
+
+        self.ui.radioButtonPenDrawOnly.setChecked(toBool(Preferences.data["radioButtonPenDrawOnly"]))
+        self.ui.comboBoxDrawingMode.setCurrentIndex(int(Preferences.data["comboBoxDrawingMode"]))
+
+        self.ui.radioButtonSaveOnExit.setChecked(toBool(Preferences.data["radioButtonSaveOnExit"]))
+        self.ui.comboBoxAutosaveMode.setCurrentIndex(int(Preferences.data["comboBoxAutosaveMode"]))
+
 
     def ensureValidData(self):
         # Apply all default preferences if necessary
 
-        if Preferences.data['comboBoxThemeSelect'] == "":
-            Preferences.updateKeyValue('comboBoxThemeSelect', 0) 
         if Preferences.data['radioButtonAffectsPDF'] == "":
             Preferences.updateKeyValue('radioButtonAffectsPDF', str(True)) 
+        if Preferences.data['comboBoxThemeSelect'] == "":
+            Preferences.updateKeyValue('comboBoxThemeSelect', 0) 
 
-        if Preferences.data["autosaveSetting"] == "":
-            Preferences.updateKeyValue('comboBoxSerialInteractionMethod', 0) 
+        if Preferences.data['radioButtonPenDrawOnly'] == "":
+            Preferences.updateKeyValue('radioButtonPenDrawOnly', str(True)) 
+        if Preferences.data['comboBoxDrawingMode'] == "":
+            Preferences.updateKeyValue('comboBoxDrawingMode', 0) 
 
-    def applySettings(self):
-        '''
-        Apply the settings from the local dict to the gui instance
-        '''
+        if Preferences.data['radioButtonSaveOnExit'] == "":
+            Preferences.updateKeyValue('radioButtonSaveOnExit', str(True)) 
+        if Preferences.data['comboBoxAutosaveMode'] == "":
+            Preferences.updateKeyValue('comboBoxAutosaveMode', 0) 
 
-        self.receiversInst.setTheme(self.ui.comboBoxThemeSelect.currentIndex())
+    # def applySettings(self):
+    #     '''
+    #     Apply the settings from the local dict to the gui instance
+    #     '''
+
+    #     self.receiversInst.setTheme(self.ui.comboBoxThemeSelect.currentIndex())

@@ -1,9 +1,11 @@
 radioButtonAffectsPDF
 comboBoxThemeSelect
-radioButtonPenOnly
+radioButtonPenDrawOnly
+comboBoxDrawingMode
+radioButtonSaveOnExit
+comboBoxAutosaveMode
 state
 geometry
-autosaveSetting
 textSize
 markerSize
 markerColor

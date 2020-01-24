@@ -119,40 +119,14 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_5">
               <item>
-               <widget class="QRadioButton" name="radioButton">
+               <widget class="QRadioButton" name="radioButtonSaveOnExit">
                 <property name="text">
                  <string>Save On Exit</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QComboBox" name="comboBoxAutosave">
-                <item>
-                 <property name="text">
-                  <string>Don't Autosave</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>5 min Autosave</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>10 min Autosave</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>15 min Autosave</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>20 min Autosave</string>
-                 </property>
-                </item>
-               </widget>
+               <widget class="QComboBox" name="comboBoxAutosaveMode"/>
               </item>
              </layout>
             </item>
@@ -182,23 +156,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QComboBox" name="comboBoxThemeSelect">
-                <item>
-                 <property name="text">
-                  <string>Dark Theme</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Light Theme</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Ambient Theme</string>
-                 </property>
-                </item>
-               </widget>
+               <widget class="QComboBox" name="comboBoxThemeSelect"/>
               </item>
              </layout>
             </item>
@@ -224,7 +182,7 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_6">
               <item>
-               <widget class="QRadioButton" name="radioButtonPenOnly">
+               <widget class="QRadioButton" name="radioButtonPenDrawOnly">
                 <property name="text">
                  <string>Pen Draw Only</string>
                 </property>
@@ -234,23 +192,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QComboBox" name="comboBox">
-                <item>
-                 <property name="text">
-                  <string>Direct Drawing</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Smoother Drawing</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Super Smooth Drawing</string>
-                 </property>
-                </item>
-               </widget>
+               <widget class="QComboBox" name="comboBoxDrawingMode"/>
               </item>
              </layout>
             </item>

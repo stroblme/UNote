@@ -68,13 +68,11 @@ class Ui_PreferencesDialog(object):
 
         self.formLayout = QFormLayout()
         self.formLayout.setObjectName(u"formLayout")
+        self.formLayout.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
         self.horizontalGroupBox = QGroupBox(self.layoutWidget)
         self.horizontalGroupBox.setObjectName(u"horizontalGroupBox")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Minimum)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.horizontalGroupBox.sizePolicy().hasHeightForWidth())
-        self.horizontalGroupBox.setSizePolicy(sizePolicy1)
+        sizePolicy.setHeightForWidth(self.horizontalGroupBox.sizePolicy().hasHeightForWidth())
+        self.horizontalGroupBox.setSizePolicy(sizePolicy)
         self.horizontalLayout_2 = QHBoxLayout(self.horizontalGroupBox)
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.labelAutosave = QLabel(self.horizontalGroupBox)
@@ -82,10 +80,20 @@ class Ui_PreferencesDialog(object):
 
         self.horizontalLayout_2.addWidget(self.labelAutosave)
 
-        self.spinBoxAutosave = QSpinBox(self.horizontalGroupBox)
-        self.spinBoxAutosave.setObjectName(u"spinBoxAutosave")
+        self.horizontalLayout_5 = QHBoxLayout()
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.radioButtonSaveOnExit = QRadioButton(self.horizontalGroupBox)
+        self.radioButtonSaveOnExit.setObjectName(u"radioButtonSaveOnExit")
 
-        self.horizontalLayout_2.addWidget(self.spinBoxAutosave)
+        self.horizontalLayout_5.addWidget(self.radioButtonSaveOnExit)
+
+        self.comboBoxAutosaveMode = QComboBox(self.horizontalGroupBox)
+        self.comboBoxAutosaveMode.setObjectName(u"comboBoxAutosaveMode")
+
+        self.horizontalLayout_5.addWidget(self.comboBoxAutosaveMode)
+
+
+        self.horizontalLayout_2.addLayout(self.horizontalLayout_5)
 
 
         self.formLayout.setWidget(0, QFormLayout.FieldRole, self.horizontalGroupBox)
@@ -99,19 +107,29 @@ class Ui_PreferencesDialog(object):
 
         self.horizontalLayout_3.addWidget(self.labelTheme)
 
-        self.radioButtonDarkTheme = QRadioButton(self.horizontalGroupBox1)
-        self.radioButtonDarkTheme.setObjectName(u"radioButtonDarkTheme")
-        self.radioButtonDarkTheme.setChecked(False)
+        self.horizontalLayout_7 = QHBoxLayout()
+        self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
+        self.radioButtonAffectsPDF = QRadioButton(self.horizontalGroupBox1)
+        self.radioButtonAffectsPDF.setObjectName(u"radioButtonAffectsPDF")
+        self.radioButtonAffectsPDF.setChecked(False)
 
-        self.horizontalLayout_3.addWidget(self.radioButtonDarkTheme)
+        self.horizontalLayout_7.addWidget(self.radioButtonAffectsPDF)
+
+        self.comboBoxThemeSelect = QComboBox(self.horizontalGroupBox1)
+        self.comboBoxThemeSelect.setObjectName(u"comboBoxThemeSelect")
+
+        self.horizontalLayout_7.addWidget(self.comboBoxThemeSelect)
+
+
+        self.horizontalLayout_3.addLayout(self.horizontalLayout_7)
 
 
         self.formLayout.setWidget(1, QFormLayout.FieldRole, self.horizontalGroupBox1)
 
         self.horizontalGroupBox2 = QGroupBox(self.layoutWidget)
         self.horizontalGroupBox2.setObjectName(u"horizontalGroupBox2")
-        sizePolicy1.setHeightForWidth(self.horizontalGroupBox2.sizePolicy().hasHeightForWidth())
-        self.horizontalGroupBox2.setSizePolicy(sizePolicy1)
+        sizePolicy.setHeightForWidth(self.horizontalGroupBox2.sizePolicy().hasHeightForWidth())
+        self.horizontalGroupBox2.setSizePolicy(sizePolicy)
         self.horizontalLayout_4 = QHBoxLayout(self.horizontalGroupBox2)
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
         self.labelPenDraw = QLabel(self.horizontalGroupBox2)
@@ -119,11 +137,21 @@ class Ui_PreferencesDialog(object):
 
         self.horizontalLayout_4.addWidget(self.labelPenDraw)
 
-        self.radioButtonPenOnly = QRadioButton(self.horizontalGroupBox2)
-        self.radioButtonPenOnly.setObjectName(u"radioButtonPenOnly")
-        self.radioButtonPenOnly.setChecked(True)
+        self.horizontalLayout_6 = QHBoxLayout()
+        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
+        self.radioButtonPenDrawOnly = QRadioButton(self.horizontalGroupBox2)
+        self.radioButtonPenDrawOnly.setObjectName(u"radioButtonPenDrawOnly")
+        self.radioButtonPenDrawOnly.setChecked(True)
 
-        self.horizontalLayout_4.addWidget(self.radioButtonPenOnly)
+        self.horizontalLayout_6.addWidget(self.radioButtonPenDrawOnly)
+
+        self.comboBoxDrawingMode = QComboBox(self.horizontalGroupBox2)
+        self.comboBoxDrawingMode.setObjectName(u"comboBoxDrawingMode")
+
+        self.horizontalLayout_6.addWidget(self.comboBoxDrawingMode)
+
+
+        self.horizontalLayout_4.addLayout(self.horizontalLayout_6)
 
 
         self.formLayout.setWidget(2, QFormLayout.FieldRole, self.horizontalGroupBox2)
@@ -146,10 +174,11 @@ class Ui_PreferencesDialog(object):
         self.pushButtonOk.setText(QCoreApplication.translate("PreferencesDialog", u"Ok", None))
         self.pushButtonCancel.setText(QCoreApplication.translate("PreferencesDialog", u"Cancel", None))
         self.horizontalGroupBox.setTitle("")
-        self.labelAutosave.setText(QCoreApplication.translate("PreferencesDialog", u"Autosave (minutes)", None))
+        self.labelAutosave.setText(QCoreApplication.translate("PreferencesDialog", u"Save", None))
+        self.radioButtonSaveOnExit.setText(QCoreApplication.translate("PreferencesDialog", u"Save On Exit", None))
         self.labelTheme.setText(QCoreApplication.translate("PreferencesDialog", u"Theme", None))
-        self.radioButtonDarkTheme.setText(QCoreApplication.translate("PreferencesDialog", u"Dark Theme", None))
-        self.labelPenDraw.setText(QCoreApplication.translate("PreferencesDialog", u"Pen Draw Only", None))
-        self.radioButtonPenOnly.setText(QCoreApplication.translate("PreferencesDialog", u"Pen Draw Only", None))
+        self.radioButtonAffectsPDF.setText(QCoreApplication.translate("PreferencesDialog", u"Affects PDF", None))
+        self.labelPenDraw.setText(QCoreApplication.translate("PreferencesDialog", u"Drawing", None))
+        self.radioButtonPenDrawOnly.setText(QCoreApplication.translate("PreferencesDialog", u"Pen Draw Only", None))
     # retranslateUi
 

@@ -35,26 +35,34 @@ class Receivers(QObject):
         self.ui.windowInst.hide()
         self.confirmSignal.emit(False)
 
+    def setRadioButtonAffectsPDF(self):
+        Preferences.updateKeyValue("radioButtonAffectsPDF", str(self.uiInst.radioButtonAffectsPDF.isChecked()))
+        
     @Slot(int)
-    def setTheme(self, index):
+    def setComboBoxThemeSelect(self, index):
         '''
         Apply the selected theme
         '''
 
-        if self.ui.comboBoxThemeSelect.currentIndex() == 0:
+        if self.uiInst.comboBoxThemeSelect.currentIndex() == 0:
             self.guiHelper.toggle_stylesheet(":/dark.qss")
-        elif self.ui.comboBoxThemeSelect.currentIndex() == 1:
+        elif self.uiInst.comboBoxThemeSelect.currentIndex() == 1:
             self.guiHelper.toggle_stylesheet(":/light.qss")
 
-        Preferences.updateKeyValue("comboBoxThemeSelect", self.ui.comboBoxThemeSelect.currentIndex())
+        Preferences.updateKeyValue("comboBoxThemeSelect", self.uiInst.comboBoxThemeSelect.currentIndex())
 
-    def setAutoSave(self):
-        if self.ui.comboBoxAutosave.currentIndex() != 0:
-            interval = 1000 * 5 * self.ui.comboBoxAutosave.currentIndex()   # ui displays 5 minute intervals
 
-            Preferences.updateKeyValue('autosaveSetting', interval)
+    def setRadioButtonPenDrawOnly(self):
+        Preferences.updateKeyValue("radioButtonPenDrawOnly", str(self.uiInst.radioButtonPenDrawOnly.isChecked()))
 
-            self.autoSaveTimer.timeout.connect(self.ui.graphicsView.savePdf)
-            self.autoSaveTimer.start(interval)
-        else:
-            self.autoSaveTimer.stop()
+    @Slot(int)
+    def setComboBoxDrawingMode(self, index):
+        Preferences.updateKeyValue("comboBoxDrawingMode", self.uiInst.comboBoxDrawingMode.currentIndex())
+
+
+    def setRadioButtonSaveOnExit(self):
+        Preferences.updateKeyValue("radioButtonSaveOnExit", str(self.uiInst.radioButtonSaveOnExit.isChecked()))
+
+    @Slot(int)
+    def setComboBoxAutosaveMode(self, index):
+        Preferences.updateKeyValue("comboBoxAutosaveMode", self.uiInst.comboBoxAutosaveMode.currentIndex())
