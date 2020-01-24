@@ -690,6 +690,9 @@ class ToolBoxWidget(QWidget):
             self.slider.setEnabled(False)
             self.slider.setValue(100)
 
+        self.repaint()
+        
+
     def handleColorButton(self):
         '''
         Handles color button presses
@@ -702,6 +705,9 @@ class ToolBoxWidget(QWidget):
 
             self.slider.setEnabled(False)
             self.slider.setValue(100)
+
+        self.repaint()
+        
 
     def handleSliderDrag(self, value):
         '''
