@@ -16,7 +16,7 @@ class imageHelper(QWidget):
         pixImg.convertFromImage(qimg)
         qPdfView.setPixmap(pixImg)
 
-        return pixImgItem
+        return pixImg
 
     def applyTheme(self, qimage):
         if toBool(Preferences.data["radioButtonAffectsPDF"]) == True:
