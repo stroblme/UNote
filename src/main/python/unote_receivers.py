@@ -194,7 +194,7 @@ class Receivers(QObject):
                 t = QTimer()
                 t.singleShot(10, self.ui.splitView.zoomToFit)
                 t.singleShot(15, self.syncPages)
-                t.singleShot(20, self.ui.graphicsView.updateRenderedPages())
+                t.singleShot(20, self.ui.graphicsView.updateRenderedPages)
         else:
             self.ui.gridLayout.itemAtPosition(1,0).widget().setEnabled(False)
             self.ui.gridLayout.itemAtPosition(1,0).widget().setVisible(False)
