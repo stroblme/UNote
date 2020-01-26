@@ -302,8 +302,8 @@ class ToolBoxWidget(QWidget):
             color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['markerColor']))
             size = pdf_annots.defaultPenSize * (int(Preferences.data['markerSize'])/pdf_annots.freeHandScale)
         else:
-            color = (255,255,255)
-            size = 2
+            color = rgb.main
+            size = 0.1
 
         shapePainter.setPen(QPen(QColor(*color),  size*3, Qt.SolidLine))
         arcRect = QRect(bottomMiddle.x() - 5, bottomMiddle.y()-6, 13, 13)
@@ -400,6 +400,9 @@ class ToolBoxWidget(QWidget):
             self.setCheckedOnAllButtonsButThose([])
 
             self.slider.setVisible(True)
+
+        self.repaint()
+
 
     def setEnableOnAllButtonsButThose(self, names, value=False):
         for buttonName, buttonInst in self.buttons.items():
@@ -691,7 +694,7 @@ class ToolBoxWidget(QWidget):
             self.slider.setValue(100)
 
         self.repaint()
-        
+
 
     def handleColorButton(self):
         '''
@@ -707,7 +710,7 @@ class ToolBoxWidget(QWidget):
             self.slider.setValue(100)
 
         self.repaint()
-        
+
 
     def handleSliderDrag(self, value):
         '''
