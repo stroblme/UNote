@@ -44,3 +44,4 @@ class pdf_annots():
     defaultBoxWidth = 130
     freeHandScale = 90
     markerScale = 90
+    formScale = 120

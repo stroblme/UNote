@@ -14,6 +14,8 @@ from preferences import Preferences
 from historyHandler import History
 
 from style.styledef import rgb, norm_rgb, pdf_annots
+from util import toBool
+
 
 OUTEROFFSETTOP = 25
 OUTEROFFSETBOTTOM = 14
@@ -262,7 +264,7 @@ class ToolBoxWidget(QWidget):
         # restore defaults for better ux
         Preferences.updateKeyValue('freehandColor', tuple(map(lambda x: str(x), black)))
         Preferences.updateKeyValue('markerColor', tuple(map(lambda x: str(x), yellow)))
-
+        Preferences.updateKeyValue('formColor', tuple(map(lambda x: str(x), black)))
 
     def paintEvent(self, event):
         '''
@@ -296,11 +298,26 @@ class ToolBoxWidget(QWidget):
         # shapePainter.drawLine(topMiddle, bottomMiddle)
 
         if self.editMode == editModes.freehand:
-            color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['freehandColor']))
+            if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
+                color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['freehandColor']))
+            else:
+                color = tuple(map(lambda x: float(x)*255, Preferences.data['freehandColor']))
+
             size = pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/pdf_annots.freeHandScale)
         elif self.editMode == editModes.marker:
-            color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['markerColor']))
+            if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
+                color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['markerColor']))
+            else:
+                color = tuple(map(lambda x: float(x)*255, Preferences.data['markerColor']))
+
             size = pdf_annots.defaultPenSize * (int(Preferences.data['markerSize'])/pdf_annots.freeHandScale)
+        # elif self.editMode == editModes.forms:
+        #     if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
+        #         color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['formColor']))
+        #     else:
+        #         color = tuple(map(lambda x: float(x)*255, Preferences.data['formColor']))
+
+        #     size = pdf_annots.defaultPenSize * (int(Preferences.data['formSize'])/pdf_annots.freeHandScale)
         else:
             color = rgb.main
             size = 0.1
