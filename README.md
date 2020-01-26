@@ -1,8 +1,10 @@
 # UNote
 
-**Latest release: v1.3**
+**Latest release: v1.8**
 
-Fills the lack of an open-source PDF Editor with the capability to draw and add notes not only to the PDF pages but to a virtually unlimited space.
+Fills the lack of an open-source PDF Editor with the capability to draw and add notes not only to the PDF pages but, in future, to a virtually unlimited space.
+
+The executable can be downloaded from [here](unote.stroblme.tech/).
 
 ## Features
 
@@ -13,7 +15,6 @@ Fills the lack of an open-source PDF Editor with the capability to draw and add 
     - Erasing
 - PDF Tools
     - Insert/ Delete Pages
-    - Rearrange Pages
     - Create PDFs
 - Additional Features
     - Active Pen Support
@@ -21,11 +22,10 @@ Fills the lack of an open-source PDF Editor with the capability to draw and add 
     - Various Options For Annotation Tools
     - Dark/ Light Mode
     - Fast PDF Loading
+    - Split View
 
 
 See [CHANGELOG.md](https://gitlab.com/stroblme/unote/blob/master/CHANGELOG.md) for a complete list of latest features in the current release
-
-Installer files will be updated once, a major version (vX.0) is achieved.
 
 ## Shortcuts
 
@@ -35,49 +35,47 @@ Installer files will be updated once, a major version (vX.0) is achieved.
 - Ctrl-E: Eraser
 - Ctrl-S: Save
 - Ctrl-P: Open Preferences
-- Ctrl-Q: Save and Quit application
+- Ctrl-Q: Quit application
 - Esc: Cancel
 - Ctrl-Return: Confirm
 
-## Requirements
+## Main Requirements
 
 - Python3.6
-- PyQt5
-- Pillow
+- PySide2
 - PyMuPDF
-- fbs
-- indexed.py
-- numpy
-- scipy
 
 # Getting started
 
-1. Create a python environment
+1. Set up a python venv
 
-'''
+Create a venv
+
+```
 py -m venv venv
-'''
+```
 
-Tested in 3.6 but anything newer should work too.
+Activate it
 
-2. Activate the environment
-
-'''
+```
 ./venv/Scripts/activate
-'''
+```
 
-3. Install the dependencies
+2. Install the dependencies
+
+Use pip to do so
 
 ```
 pip install -r requirements.txt
 ```
 
-4. Run
+3. Run
 
 Open vscode and run one of the predefined launch tasks.
-'''
+
+```
 code .
-'''
+```
 
 
 ## Building
