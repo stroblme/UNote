@@ -4,7 +4,7 @@
 
 Fills the lack of an open-source PDF Editor with the capability to draw and add notes not only to the PDF pages but, in future, to a virtually unlimited space.
 
-The executable can be downloaded from [here](unote.stroblme.tech/).
+The executable can be downloaded from [here](https://unote.stroblme.tech/).
 
 ## Features
 

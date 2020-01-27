@@ -51,6 +51,7 @@
 - [ ] Implement object moving
 - [ ] Implement markdown formatted annotations
 - [ ] Reduced toolbar based on device mode
+- [ ] Use the circle at the toolbar to retrieve properties of an already existing line
 
 ## Features for v2.x
 
@@ -104,6 +105,8 @@
 - [x] Text box can be positioned outside pdf area
 - [x] Indicator Points not disappear after cancelling edit
 - [x] Still got issues that pen is suddenly not recogniced anymore. Fixed after restart; fixed on with new framework
+- [ ] Changing "affects PDF" setting only issues after restart of app
+- [ ] toolbar buttom border fix
 
 ## Features for v1.x - Completed
 
