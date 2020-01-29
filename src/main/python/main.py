@@ -129,7 +129,7 @@ class UNote(App):
 
         from PySide2.QtCore import QPoint
 
-        self.ui.snippetContainer = TContainer(self.MainWindow, QPoint(100,100))
+        # self.ui.snippetContainer = TContainer(self.MainWindow, QPoint(100,100))
 
         self.MainWindow.resizeSignal.connect(self.onAppResize)
 
