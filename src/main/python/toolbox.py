@@ -384,15 +384,15 @@ class ToolBoxWidget(QWidget):
             self.buttons['colorButton'].move(self.row2Left)
 
         elif self.editMode == editModes.marker:
-            self.setEnableOnAllButtonsButThose(['markerButton', 'sizeButton', 'colorButton', 'undoButton', 'redoButton'])
-            self.setVisibleOnAllButtonsButThose(['markerButton', 'sizeButton', 'colorButton', 'undoButton', 'redoButton'])
+            self.setEnableOnAllButtonsButThose(['markerButton', 'sizeButton', 'colorButton', 'eraserButton', 'undoButton', 'redoButton'])
+            self.setVisibleOnAllButtonsButThose(['markerButton', 'sizeButton', 'colorButton', 'eraserButton', 'undoButton', 'redoButton'])
 
             self.buttons['sizeButton'].move(self.row1Right)
             self.buttons['colorButton'].move(self.row2Right)
 
         elif self.editMode == editModes.freehand:
-            self.setEnableOnAllButtonsButThose(['freehandButton', 'sizeButton', 'colorButton', 'undoButton', 'redoButton'])
-            self.setVisibleOnAllButtonsButThose(['freehandButton', 'sizeButton', 'colorButton', 'undoButton', 'redoButton'])
+            self.setEnableOnAllButtonsButThose(['freehandButton', 'sizeButton', 'colorButton', 'eraserButton', 'undoButton', 'redoButton'])
+            self.setVisibleOnAllButtonsButThose(['freehandButton', 'sizeButton', 'colorButton', 'eraserButton', 'undoButton', 'redoButton'])
 
             self.buttons['sizeButton'].move(self.row1Right)
             self.buttons['colorButton'].move(self.row2Right)
@@ -401,8 +401,8 @@ class ToolBoxWidget(QWidget):
             self.setEnableOnAllButtonsButThose(['eraserButton'])
 
         elif self.editMode == editModes.forms:
-            self.setEnableOnAllButtonsButThose(['formsButton', 'sizeButton', 'colorButton', 'undoButton', 'redoButton'])
-            self.setVisibleOnAllButtonsButThose(['formsButton', 'sizeButton', 'colorButton', 'undoButton', 'redoButton'])
+            self.setEnableOnAllButtonsButThose(['formsButton', 'sizeButton', 'colorButton', 'eraserButton', 'undoButton', 'redoButton'])
+            self.setVisibleOnAllButtonsButThose(['formsButton', 'sizeButton', 'colorButton', 'eraserButton', 'undoButton', 'redoButton'])
 
             self.buttons['sizeButton'].move(self.row1Right)
             self.buttons['colorButton'].move(self.row2Right)
