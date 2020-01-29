@@ -1338,7 +1338,7 @@ class GraphicsViewHandler(QGraphicsView):
 
         elif event.type() == QEvent.TouchUpdate:
             touchPointCount = len(event.touchPoints())
-            tight = 90
+            tight = 40
             # print(touchPointCount)
             if touchPointCount == 1:
                 l1 = event.touchPoints()[0].startPos() - event.touchPoints()[0].pos()
@@ -1349,24 +1349,30 @@ class GraphicsViewHandler(QGraphicsView):
 
                 l1 = event.touchPoints()[0].startPos() - event.touchPoints()[1].startPos()
                 l2 = event.touchPoints()[0].pos() - event.touchPoints()[1].pos()
+                l3 = event.touchPoints()[0].lastPos() - event.touchPoints()[0].pos()
 
                 distance = l1.manhattanLength() - l2.manhattanLength()
 
                 # print(distance)
-
-                zoomFactor = distance / 2000
-                # Zoom
-                if distance > 0 and self.absZoomFactor > 0.4:
-                    relZoomFactor = 1-zoomFactor
-                elif distance < 0 and self.absZoomFactor < 40:
-                    relZoomFactor = 1/1-zoomFactor
+                if abs(distance) < tight:
+                    deltaX = int(l3.x())
+                    deltaY = int(l3.y())
+                    self.horizontalScrollBar().setValue(self.horizontalScrollBar().value() + deltaX)
+                    self.verticalScrollBar().setValue(self.verticalScrollBar().value() + deltaY)
                 else:
-                    relZoomFactor = 1
+                    zoomFactor = distance / 8000
+                    # Zoom
+                    if distance > 0 and self.absZoomFactor > 0.4:
+                        relZoomFactor = 1-zoomFactor
+                    elif distance < 0 and self.absZoomFactor < 40:
+                        relZoomFactor = 1/1-zoomFactor
+                    else:
+                        relZoomFactor = 1
 
-                self.absZoomFactor = self.absZoomFactor * relZoomFactor
-                self.scale(relZoomFactor, relZoomFactor)
+                    self.absZoomFactor = self.absZoomFactor * relZoomFactor
+                    self.scale(relZoomFactor, relZoomFactor)
 
-                self.updateRenderedPages()
+                    self.updateRenderedPages()
                 # if distance < tight:
                 #     print(tight)
                 # else:
