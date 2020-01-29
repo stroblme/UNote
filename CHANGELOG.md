@@ -1,10 +1,11 @@
-# Changelog/ Roadmap
+# Changelog
 
 ### Description:
 
 - [ ] Open Issue/ Feature
 - [x] Solved Issue/ Feature
 - [o] Open but suspended. See comment after ';'
+***
 
 ## Features for v3.x
 
@@ -53,6 +54,7 @@
 - [ ] Implement markdown formatted annotations
 - [ ] Reduced toolbar based on device mode
 - [ ] Use the circle at the toolbar to retrieve properties of an already existing line
+- [ ] Improve ui of small dialogs
 
 ## Features for v2.x
 
