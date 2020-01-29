@@ -51,6 +51,7 @@ class ToolBoxWidget(QWidget):
     currentY = -1
 
     editMode = editModes.none
+    prevEditMode = editModes.none
 
     editModeChange = Signal(str)
 
@@ -384,6 +385,8 @@ class ToolBoxWidget(QWidget):
             self.buttons['colorButton'].move(self.row2Left)
 
         elif self.editMode == editModes.marker:
+            self.prevEditMode = editModes.marker
+
             self.setEnableOnAllButtonsButThose(['markerButton', 'sizeButton', 'colorButton', 'eraserButton', 'undoButton', 'redoButton'])
             self.setVisibleOnAllButtonsButThose(['markerButton', 'sizeButton', 'colorButton', 'eraserButton', 'undoButton', 'redoButton'])
 
@@ -391,6 +394,8 @@ class ToolBoxWidget(QWidget):
             self.buttons['colorButton'].move(self.row2Right)
 
         elif self.editMode == editModes.freehand:
+            self.prevEditMode = editModes.freehand
+
             self.setEnableOnAllButtonsButThose(['freehandButton', 'sizeButton', 'colorButton', 'eraserButton', 'undoButton', 'redoButton'])
             self.setVisibleOnAllButtonsButThose(['freehandButton', 'sizeButton', 'colorButton', 'eraserButton', 'undoButton', 'redoButton'])
 
@@ -401,6 +406,8 @@ class ToolBoxWidget(QWidget):
             self.setEnableOnAllButtonsButThose(['eraserButton'])
 
         elif self.editMode == editModes.forms:
+            self.prevEditMode = editModes.forms
+
             self.setEnableOnAllButtonsButThose(['formsButton', 'sizeButton', 'colorButton', 'eraserButton', 'undoButton', 'redoButton'])
             self.setVisibleOnAllButtonsButThose(['formsButton', 'sizeButton', 'colorButton', 'eraserButton', 'undoButton', 'redoButton'])
 
@@ -542,7 +549,8 @@ class ToolBoxWidget(QWidget):
         if self.eraserButton.isChecked():
             self.editMode = editModes.eraser
         else:
-            self.editMode = editModes.none
+            self.editMode = self.prevEditMode
+            self.prevEditMode = editModes.none
 
         self.editModeChange.emit(self.editMode)
         self.setButtonState()

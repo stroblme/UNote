@@ -40,7 +40,7 @@
 - [x] Text Size for Text Boxes
 - [ ] Automatic text size from pdf text
 - [ ] Change start position of text box line
-- [ ] Focus main window after file handling
+- [x] Focus main window after file handling
 - [ ] Store preferred Toolbox position
 - [ ] Implement easy toggling of annotation modes
 - [x] Smoother drawing
