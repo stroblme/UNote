@@ -241,8 +241,6 @@ class ToolBoxWidget(QWidget):
         self.slider.setMinimum(50)
         self.slider.setMaximum(150)
         self.slider.setValue(100)
-        self.slider.setTickPosition(QSlider.TicksBelow)
-        self.slider.setTickInterval(10)
         self.slider.move(self.bottomMiddle)
         self.slider.setFixedSize(sliderSize)
         self.slider.setEnabled(False)
@@ -742,6 +740,8 @@ class ToolBoxWidget(QWidget):
         Called when the user moves the slider
         '''
 
+        self.slider.setValue(10*round(value/10))
+
         self.storeSliderValue()
         self.repaint()
 
@@ -749,7 +749,9 @@ class ToolBoxWidget(QWidget):
         '''
         Triggered when user changes the slider value
         '''
-        pass
+
+        self.slider.setValue(10*round(value/10))
+
 
     def handleSliderValueChanged(self):
         '''
