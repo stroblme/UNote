@@ -1332,18 +1332,33 @@ class GraphicsViewHandler(QGraphicsView):
         return self.pdf.getPageSize(0)
 
     def viewportEvent(self, event):
-        if event.type() == QEvent.TouchBegin or event.type() == QEvent.TouchUpdate:
-            touchPointCount = len(event.touchPoints())
-            if touchPointCount == 1:
-                print('Single Touch')
-            elif touchPointCount == 2:
-
-                print('Two Finger touch')
-
-                distance = event.touchPoints()[0].startPos() - event.touchPoints()[0].lastPos()
-
-
+        if event.type() == QEvent.TouchBegin:
             event.accept()
+
+        elif event.type() == QEvent.TouchUpdate:
+            touchPointCount = len(event.touchPoints())
+            tight = 90
+            print(touchPointCount)
+            if touchPointCount == 1:
+                l1 = event.touchPoints()[0].startPos() - event.touchPoints()[0].pos()
+                distance = l1.manhattanLength()
+
+            elif touchPointCount == 2:
+                # print('Two Finger touch')
+
+                l1 = event.touchPoints()[0].startPos() - event.touchPoints()[1].startPos()
+                l2 = event.touchPoints()[0].pos() - event.touchPoints()[1].pos()
+
+                distance = l1.manhattanLength() - l2.manhattanLength()
+
+            print(distance)
+
+                # if distance < tight:
+                #     print(tight)
+                # else:
+                #     print(wide)
+
+            # event.accept()
 
         return super().viewportEvent(event)
 
@@ -1412,17 +1427,6 @@ class GraphicsViewHandler(QGraphicsView):
         self.updateRenderedPages()
 
         super(GraphicsViewHandler, self).keyReleaseEvent(event)
-
-    def event(self, event):
-        # print(type(event))
-        if event.type() == QEvent.TouchBegin or event.type() == QEvent.TouchUpdate:
-            self.touchEvent(event)
-
-        return super(GraphicsViewHandler, self).event(event)
-
-
-    def touchEvent(self, event):
-        print(event)
 
     def tabletEvent(self, event):
         item = self.itemAt(event.pos())
