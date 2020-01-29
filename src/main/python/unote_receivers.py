@@ -96,6 +96,7 @@ class Receivers(QObject):
 
         self.updateWindowTitle(pdfFileName)
 
+
     def savePdf(self):
         self.ui.graphicsView.saveCurrentPdf()
 
@@ -162,6 +163,44 @@ class Receivers(QObject):
 
         if self.ui.splitView:
             self.ui.splitView.zoomToFit()
+
+    def snippedContainer(self):
+        self.ui.splitView = GraphicsViewHandler(self.ui.centralwidget)
+        self.ui.splitView.pdf = self.ui.graphicsView.pdf
+        self.ui.splitView.renderPdfToCurrentView()
+
+        self.ui.snippetContainer.setChildWidget(self.ui.splitView)
+
+
+        self.ui.floatingToolBox.editModeChange.connect(self.ui.splitView.editModeChangeRequest)
+        self.ui.floatingToolBox.suggestUpdate.connect(self.ui.splitView.updateSuggested)
+
+        # Toolboxspecific events
+        self.ui.floatingToolBox.textInputFinished.connect(self.ui.splitView.toolBoxTextInputEvent)
+        self.ui.splitView.requestTextInput.connect(self.ui.floatingToolBox.handleTextInputRequest)
+
+        t = QTimer()
+        t.singleShot(10, self.ui.splitView.zoomToFit)
+
+    def toggleTextMode(self):
+        self.ui.graphicsView.toggleTextMode()
+
+        # self.ui.actionText_Mode.setChecked(not bool(self.ui.actionText_Mode.isChecked()))
+
+    def toggleMarkMode(self):
+        self.ui.graphicsView.toggleMarkMode()
+
+        # self.ui.actionMark_Mode.setChecked(not bool(self.ui.actionMark_Mode.isChecked()))
+
+
+    @Slot(str)
+    def JSSendMessage(self, msg):
+        '''
+        This method is called each time the webviewer receives a user input.
+        msg is a valid json object, containing the following data
+        name, id, value
+        '''
+
 
     def splitView(self):
         if self.ui.actionPageSplitView.isChecked():
