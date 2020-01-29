@@ -182,17 +182,6 @@ class Receivers(QObject):
         t = QTimer()
         t.singleShot(10, self.ui.splitView.zoomToFit)
 
-    def toggleTextMode(self):
-        self.ui.graphicsView.toggleTextMode()
-
-        # self.ui.actionText_Mode.setChecked(not bool(self.ui.actionText_Mode.isChecked()))
-
-    def toggleMarkMode(self):
-        self.ui.graphicsView.toggleMarkMode()
-
-        # self.ui.actionMark_Mode.setChecked(not bool(self.ui.actionMark_Mode.isChecked()))
-
-
     @Slot(str)
     def JSSendMessage(self, msg):
         '''
