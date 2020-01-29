@@ -65,12 +65,18 @@
            <property name="text">
             <string>Ok</string>
            </property>
+           <property name="shortcut">
+            <string>Return</string>
+           </property>
           </widget>
          </item>
          <item>
           <widget class="QPushButton" name="pushButtonCancel">
            <property name="text">
             <string>Cancel</string>
+           </property>
+           <property name="shortcut">
+            <string>Esc</string>
            </property>
           </widget>
          </item>
