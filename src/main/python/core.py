@@ -78,6 +78,7 @@ class QPdfView(QGraphicsPixmapItem):
         self.formPoints = []
         self.drawIndicators = []
 
+
     def paint(self, painter, option, widget):
         res = super().paint(painter, option, widget)
 
@@ -1064,16 +1065,16 @@ class GraphicsViewHandler(QGraphicsView):
         self.setTabletTracking(True)
         self.setFrameShape(QFrame.StyledPanel)
         self.setObjectName("graphicsView")
-        # self.setRenderHint(QPainter.Anti)
+        self.setRenderHint(QPainter.Antialiasing)
         self.setAttribute(Qt.WA_AcceptTouchEvents)
-        self.setDragMode(self.ScrollHandDrag)
+        # self.setDragMode(self.ScrollHandDrag)
         # self.setFrameShape(QGraphicsView.NoFrame)
         # # self.resize(parent.size())
-        self.grabGesture(Qt.PanGesture)
-        self.grabGesture(Qt.PinchGesture)
-        self.grabGesture(Qt.SwipeGesture)
-        self.grabGesture(Qt.TapAndHoldGesture)
-        self.grabGesture(Qt.TapGesture)
+        # self.grabGesture(Qt.PanGesture)
+        # self.grabGesture(Qt.PinchGesture)
+        # self.grabGesture(Qt.SwipeGesture)
+        # self.grabGesture(Qt.TapAndHoldGesture)
+        # self.grabGesture(Qt.TapGesture)
 
 
 
@@ -1328,6 +1329,18 @@ class GraphicsViewHandler(QGraphicsView):
     def getPageSize(self, page = 0):
         return self.pdf.getPageSize(0)
 
+    # def viewportEvent(self, event):
+    #     if event.type() == QEvent.TouchBegin or event.type() == QEvent.TouchUpdate:
+    #         touchPointCount = event.touchPoints().count()
+    #         if touchPointCount == 1:
+    #             print('Single Touch')
+    #         elif touchPointCount == 2:
+    #             print('Two Finger touch')
+
+    #     print(event.type())
+
+    #     return super().viewportEvent(event)
+
     def wheelEvent(self, event):
         '''
         Overrides the default event
@@ -1394,17 +1407,17 @@ class GraphicsViewHandler(QGraphicsView):
 
         super(GraphicsViewHandler, self).keyReleaseEvent(event)
 
-    # def event(self, event):
-    #     # print(type(event))
-    #     if type(event) == QTouchEvent:
-    #         self.touchEvent(event)
+    def event(self, event):
+        # print(type(event))
+        if event.type() == QEvent.TouchBegin or event.type() == QEvent.TouchUpdate:
+            self.touchEvent(event)
+
+        print(event.type())
+        return super(GraphicsViewHandler, self).event(event)
 
 
-    #     return super(GraphicsViewHandler, self).event(event)
-
-
-    # def touchEvent(self, event):
-    #     print('touch')
+    def touchEvent(self, event):
+        print(event)
 
     def tabletEvent(self, event):
         item = self.itemAt(event.pos())

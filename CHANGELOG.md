@@ -9,6 +9,7 @@
 ## Features for v3.x
 
 - [ ] Implement database structure
+- [ ] Update functionality for unedited pdf pages
 - [ ] Implement unlimited space drawing and annotating for new pdfs
 - [ ] Set up testing environment
 - [ ] Implement custom settings for shortcuts, annots etc
