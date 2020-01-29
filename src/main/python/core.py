@@ -1056,15 +1056,12 @@ class GraphicsViewHandler(QGraphicsView):
         '''
         QGraphicsView.__init__(self, parent)
 
-        self.parent = parent
-        self.scaleFactor = 1.0
-
         self.pdf = pdfEngine()
         self.imageHelper = imageHelper()
 
         self.setMouseTracking(True)
         self.setTabletTracking(True)
-        self.setFrameShape(QFrame.StyledPanel)
+        # self.setFrameShape(QFrame.StyledPanel)
         self.setObjectName("graphicsView")
         self.setRenderHint(QPainter.Antialiasing)
         self.setAttribute(Qt.WA_AcceptTouchEvents)
@@ -1072,11 +1069,7 @@ class GraphicsViewHandler(QGraphicsView):
         # self.setDragMode(self.ScrollHandDrag)
         # self.setFrameShape(QGraphicsView.NoFrame)
         # # self.resize(parent.size())
-        # self.grabGesture(Qt.PanGesture)
-        # self.grabGesture(Qt.PinchGesture)
-        # self.grabGesture(Qt.SwipeGesture)
-        # self.grabGesture(Qt.TapAndHoldGesture)
-        # self.grabGesture(Qt.TapGesture)
+
 
 
 
