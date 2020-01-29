@@ -32,6 +32,8 @@
 - [x] Live drawing (currently ui is updated when movement finished)
 - [ ] Smoother scrolling
 - [ ] Implement gestures for touch compatibility https://forum.qt.io/topic/81351/really-tight-pinch-zoom-scroll-on-qgraphicsview/3
+- [x] Touch zooming
+- [x] Touch paning
 - [ ] Physics for scrolling https://github.com/fau-fablab/flickcharm-python
 - [ ] Search functionality
 - [x] Custom colors for drawing
