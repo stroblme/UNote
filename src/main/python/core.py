@@ -1067,6 +1067,7 @@ class GraphicsViewHandler(QGraphicsView):
         self.setObjectName("graphicsView")
         self.setRenderHint(QPainter.Antialiasing)
         self.setAttribute(Qt.WA_AcceptTouchEvents)
+        self.viewport().setAttribute(Qt.WA_AcceptTouchEvents)
         # self.setDragMode(self.ScrollHandDrag)
         # self.setFrameShape(QGraphicsView.NoFrame)
         # # self.resize(parent.size())
@@ -1075,6 +1076,7 @@ class GraphicsViewHandler(QGraphicsView):
         # self.grabGesture(Qt.SwipeGesture)
         # self.grabGesture(Qt.TapAndHoldGesture)
         # self.grabGesture(Qt.TapGesture)
+
 
 
 
@@ -1329,17 +1331,21 @@ class GraphicsViewHandler(QGraphicsView):
     def getPageSize(self, page = 0):
         return self.pdf.getPageSize(0)
 
-    # def viewportEvent(self, event):
-    #     if event.type() == QEvent.TouchBegin or event.type() == QEvent.TouchUpdate:
-    #         touchPointCount = event.touchPoints().count()
-    #         if touchPointCount == 1:
-    #             print('Single Touch')
-    #         elif touchPointCount == 2:
-    #             print('Two Finger touch')
+    def viewportEvent(self, event):
+        if event.type() == QEvent.TouchBegin or event.type() == QEvent.TouchUpdate:
+            touchPointCount = len(event.touchPoints())
+            if touchPointCount == 1:
+                print('Single Touch')
+            elif touchPointCount == 2:
 
-    #     print(event.type())
+                print('Two Finger touch')
 
-    #     return super().viewportEvent(event)
+                distance = event.touchPoints()[0].startPos() - event.touchPoints()[0].lastPos()
+
+
+            event.accept()
+
+        return super().viewportEvent(event)
 
     def wheelEvent(self, event):
         '''
@@ -1412,7 +1418,6 @@ class GraphicsViewHandler(QGraphicsView):
         if event.type() == QEvent.TouchBegin or event.type() == QEvent.TouchUpdate:
             self.touchEvent(event)
 
-        print(event.type())
         return super(GraphicsViewHandler, self).event(event)
 
 
