@@ -5,8 +5,6 @@ from PySide2.QtCore import Qt, Signal, QObject
 from PySide2.QtWidgets import QWidget
 
 
-import markups
-
 testHTML = '''# Title
 
 ## Subtitle

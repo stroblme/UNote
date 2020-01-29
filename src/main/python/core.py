@@ -94,6 +94,7 @@ class QPdfView(QGraphicsPixmapItem):
                 penSize = pdf_annots.defaultPenSize
 
             painter.setPen(QPen(QColor(*color), penSize))
+            painter.setRenderHint(QPainter.TextAntialiasing)
             painter.drawPolyline(list(self.tempPoints.queue))
 
         return res
