@@ -1329,7 +1329,7 @@ class GraphicsViewHandler(QGraphicsView):
         else:
             pdfViewInstance.updatePixMap(qImg)
 
-    def getPageSize(self, page = 0):
+    def getPageSize(self, page=0):
         return self.pdf.getPageSize(0)
 
     def viewportEvent(self, event):
@@ -1339,7 +1339,7 @@ class GraphicsViewHandler(QGraphicsView):
         elif event.type() == QEvent.TouchUpdate:
             touchPointCount = len(event.touchPoints())
             tight = 90
-            print(touchPointCount)
+            # print(touchPointCount)
             if touchPointCount == 1:
                 l1 = event.touchPoints()[0].startPos() - event.touchPoints()[0].pos()
                 distance = l1.manhattanLength()
@@ -1352,8 +1352,21 @@ class GraphicsViewHandler(QGraphicsView):
 
                 distance = l1.manhattanLength() - l2.manhattanLength()
 
-            print(distance)
+                # print(distance)
 
+                zoomFactor = distance / 2000
+                # Zoom
+                if distance > 0 and self.absZoomFactor > 0.4:
+                    relZoomFactor = 1-zoomFactor
+                elif distance < 0 and self.absZoomFactor < 40:
+                    relZoomFactor = 1/1-zoomFactor
+                else:
+                    relZoomFactor = 1
+
+                self.absZoomFactor = self.absZoomFactor * relZoomFactor
+                self.scale(relZoomFactor, relZoomFactor)
+
+                self.updateRenderedPages()
                 # if distance < tight:
                 #     print(tight)
                 # else:
