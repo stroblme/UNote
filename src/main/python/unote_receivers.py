@@ -17,7 +17,7 @@ from guiHelper import GuiHelper, QHLine
 from core import GraphicsViewHandler
 
 from util import toBool
-
+from historyHandler import History
 
 
 class Receivers(QObject):
@@ -26,7 +26,7 @@ class Receivers(QObject):
     '''
 
     SigSendMessageToJS = Signal(str)
-    titleUpdate = Signal(str)
+    titleUpdate = Signal(str, str)
 
     def __init__(self, ui):
         super().__init__()
@@ -35,12 +35,10 @@ class Receivers(QObject):
         self.guiHelper = GuiHelper()
 
         self.ui.splitView = None
+        self.ui.graphicsView.changesMade.connect(self.changesMadeReceiver)
 
 
 
-    def __del__(self):
-        if toBool(Preferences.data['radioButtonSaveOnExit']):
-            self.ui.graphicsView.saveCurrentPdf()
 
     def setLogHelperInst(self, logHelper):
         '''
@@ -61,11 +59,11 @@ class Receivers(QObject):
         self.ui.graphicsView.updateRenderedPages()
 
     def newPdf(self, pdfFileName = None, isDraft=False):
-        if not pdfFileName or pdfFileName == '' or not isDraft:
+        if not pdfFileName or not isDraft:
             pdfFileName = self.guiHelper.saveFileDialog("PDF File (*.pdf)")
 
-        if pdfFileName and pdfFileName != '' and isDraft:
-            os.mknod(pdfFileName)
+        if pdfFileName and isDraft:
+            pdfFileName.open('w')
 
         # Make sure it's a PDF
         name, ext = os.path.splitext(pdfFileName)
@@ -98,7 +96,10 @@ class Receivers(QObject):
 
     def savePdf(self):
         self.ui.graphicsView.saveCurrentPdf()
+
         self.updateWindowTitle(self.ui.graphicsView.pdf.filename, False)
+        History.resetHistoryChanges()
+
 
     def savePdfAs(self, pdfFileName = None):
         if not pdfFileName:
@@ -110,11 +111,17 @@ class Receivers(QObject):
         self.ui.graphicsView.saveCurrentPdfAs(pdfFileName)
 
         self.updateWindowTitle(pdfFileName, False)
+        History.resetHistoryChanges()
 
-
+    @Slot()
+    def changesMadeReceiver(self):
+        self.updateWindowTitle(self.ui.graphicsView.pdf.filename, True)
 
     def updateWindowTitle(self, var, isDraft=False):
-        self.titleUpdate.emit(var + ' *')
+        if isDraft:
+            self.titleUpdate.emit(var, ' *')
+        else:
+            self.titleUpdate.emit(var, '')
 
     def pageInsertHere(self):
         self.ui.graphicsView.pageInsertHere()

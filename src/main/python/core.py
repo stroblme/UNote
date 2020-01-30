@@ -1050,6 +1050,8 @@ class GraphicsViewHandler(QGraphicsView):
 
     # x, y, pageNumber, currentContent
     requestTextInput = Signal(int, int, int, str)
+    changesMade = Signal()
+
     tempObj = list()
 
     def __init__(self, parent):
@@ -1075,7 +1077,10 @@ class GraphicsViewHandler(QGraphicsView):
         # # self.resize(parent.size())
 
 
-
+    def __del__(self):
+        if toBool(Preferences.data['radioButtonSaveOnExit']):
+            if History.recentChanges > 0:
+                self.saveCurrentPdf()
 
 
     def createNewPdf(self, fileName):
@@ -1376,6 +1381,9 @@ class GraphicsViewHandler(QGraphicsView):
                 #     print(wide)
 
             # event.accept()
+
+        if History.recentChanges == 1:
+            self.changesMade.emit()
 
         return super().viewportEvent(event)
 

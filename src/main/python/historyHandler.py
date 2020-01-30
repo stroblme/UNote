@@ -1,14 +1,24 @@
 import sys
 from indexed import IndexedOrderedDict
 
+
 class History():
 
     MAXTIMELINELENGTH = 20
     timeline = list()
     pointer = -1 # Latest pointer
+    recentChanges = 0
 
-    def __init__(self):
-        pass
+    def __init__(self, parent):
+        super().__init__(parent)
+
+
+    @staticmethod
+    def resetHistoryChanges():
+        '''
+        Called e.g. when the pdf is saved
+        '''
+        History.recentChanges = 0
 
     @staticmethod
     def undo():
@@ -22,6 +32,8 @@ class History():
 
         action["undoFuncHandle"](action["undoFuncParam"])
 
+        History.recentChanges -= 1
+
     @staticmethod
     def redo():
         if History.pointer == -1:
@@ -34,6 +46,8 @@ class History():
 
         action["undoFuncParam"] = action["redoFuncHandle"](action["redoFuncParam"])
 
+        History.recentChanges -= 1
+
     @staticmethod
     def addToHistory(undoFuncHandle, undoFuncParam, redoFuncHandle, redoFuncParam):
         if History.pointer != -1:
@@ -45,6 +59,8 @@ class History():
 
         if len(History.timeline) > History.MAXTIMELINELENGTH:
             del History.timeline[-1]
+
+        History.recentChanges += 1
 
     @staticmethod
     def removeFromHistory():

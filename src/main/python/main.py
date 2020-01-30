@@ -136,11 +136,11 @@ class UNote(App):
 
         self.MainWindow.resizeSignal.connect(self.onAppResize)
 
-    @Slot(str)
-    def updateWindowTitle(self, var):
+    @Slot(str, str)
+    def updateWindowTitle(self, var, appendix):
         if str(var) != "":
             # Override window title
-            self.MainWindow.setWindowTitle("UNote - " + Path(str(var)).stem)
+            self.MainWindow.setWindowTitle("UNote - " + Path(str(var)).stem + appendix)
 
         else:
             # Reset the title
@@ -188,6 +188,9 @@ class UNote(App):
 
         self.preferencesGui.storeSettings()
 
+        # Cleanup the eventually mess
+        if Path.is_file(self.newPdf):
+            Path.unlink(self.newPdf)
 
     def connectReceivers(self):
         '''
@@ -200,7 +203,7 @@ class UNote(App):
         self.ui.actionPreferences.triggered.connect(lambda: self.receiversInst.openPreferencesReceiver(self.preferencesGui))
 
         # Create new PDF file
-        self.ui.actionNew_PDF.triggered.connect(lambda: self.receiversInst.newPdf(str(self.newPdf), True))
+        self.ui.actionNew_PDF.triggered.connect(lambda: self.receiversInst.newPdf(self.newPdf, True))
 
         # Load PDF File
         self.ui.actionLoad_PDF.triggered.connect(lambda: self.receiversInst.loadPdf())
