@@ -1361,37 +1361,31 @@ class GraphicsViewHandler(QGraphicsView):
         #     if touchPointCount == 1:
         #         self.touching = event.touchPoints()[0].lastPos()
 
-        if event.type() == QEvent.TouchUpdate:
+        if event.type() == QEvent.TouchUpdate or event.type() == QEvent.TouchBegin:
             touchPointCount = len(event.touchPoints())
-            tight = 40
             # print(touchPointCount)
             if touchPointCount == 2:
                 # print('Two Finger touch')
 
                 l1 = event.touchPoints()[0].startPos() - event.touchPoints()[1].startPos()
-                l2 = event.touchPoints()[0].pos() - event.touchPoints()[1].pos()
+                l2 = event.touchPoints()[0].lastPos() - event.touchPoints()[1].lastPos()
                 l3 = event.touchPoints()[0].lastPos() - event.touchPoints()[0].pos()
 
                 distance = l1.manhattanLength() - l2.manhattanLength()
 
-                # print(distance)
-                if abs(distance) < tight:
-                    deltaX = int(l3.x())
-                    deltaY = int(l3.y())
-                    self.horizontalScrollBar().setValue(self.horizontalScrollBar().value() + deltaX)
-                    self.verticalScrollBar().setValue(self.verticalScrollBar().value() + deltaY)
+                zoomFactor = distance / 20000
+                # Zoom
+                if distance > 0 and self.absZoomFactor > 0.4:
+                    relZoomFactor = 1-zoomFactor
+                elif distance < 0 and self.absZoomFactor < 40:
+                    relZoomFactor = 1/1-zoomFactor
                 else:
-                    zoomFactor = distance / 8000
-                    # Zoom
-                    if distance > 0 and self.absZoomFactor > 0.4:
-                        relZoomFactor = 1-zoomFactor
-                    elif distance < 0 and self.absZoomFactor < 40:
-                        relZoomFactor = 1/1-zoomFactor
-                    else:
-                        relZoomFactor = 1
+                    relZoomFactor = 1
 
-                    self.absZoomFactor = self.absZoomFactor * relZoomFactor
-                    self.scale(relZoomFactor, relZoomFactor)
+                self.absZoomFactor = self.absZoomFactor * relZoomFactor
+                self.scale(relZoomFactor, relZoomFactor)
+
+                self.updateRenderedPages()
 
         if History.recentChanges == 1:
             self.changesMade.emit(True)
