@@ -131,10 +131,16 @@ class Receivers(QObject):
             self.ui.graphicsView.pageDeleteActive()
 
     def pageGoto(self):
-        pageNumber, ok = self.guiHelper.openInputDialog('Goto Page', 'Page Number (<' + str(len(self.ui.graphicsView.pages)) + '): ')
+        pageNumber, ok = self.guiHelper.openInputDialog('Goto Page', 'Page Number (<' + str(len(self.ui.graphicsView.pages)) + '): ', int)
 
         if ok:
             self.ui.graphicsView.pageGoto(pageNumber)
+
+    def pageFind(self):
+        findStr, ok = self.guiHelper.openInputDialog('Find', '', str)
+
+        if ok:
+            self.ui.graphicsView.pageFind(findStr)
 
     def applyWorkspaceDefaults(self):
         t = QTimer()

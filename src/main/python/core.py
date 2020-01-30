@@ -1594,6 +1594,14 @@ class GraphicsViewHandler(QGraphicsView):
         else:
             print('No valid page entered')
 
+    def pageFind(self, findStr):
+        firstPage = -1
+
+        for page in self.pdf.doc:
+            resultAreas = page.searchFor(findStr)
+            if len(resultAreas) > 0:
+                self.pageGoto(page.number+1)
+
     def zoomIn(self):
         zoomInFactor = 1.1
 

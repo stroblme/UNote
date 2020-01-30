@@ -31,14 +31,17 @@ class GuiHelper(QWidget):
         else:
             return False
 
-    def openInputDialog(self, title, text):
+    def openInputDialog(self, title, text, inType):
         qid = QInputDialog(self)
 
         qid.setAttribute(Qt.WA_TranslucentBackground)
 
         qid.setWindowFlags(Qt.WindowTitleHint | Qt.FramelessWindowHint)
 
-        resp, ok = qid.getInt(self, title, text)
+        if inType == int:
+            resp, ok = qid.getInt(self, title, text)
+        elif inType == str:
+            resp, ok = qid.getText(self, title, text)
 
         return resp, ok
 
