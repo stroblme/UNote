@@ -69,25 +69,25 @@ class Ui_PreferencesDialog(object):
         self.formLayout = QFormLayout()
         self.formLayout.setObjectName(u"formLayout")
         self.formLayout.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
-        self.horizontalGroupBox = QGroupBox(self.layoutWidget)
-        self.horizontalGroupBox.setObjectName(u"horizontalGroupBox")
-        sizePolicy.setHeightForWidth(self.horizontalGroupBox.sizePolicy().hasHeightForWidth())
-        self.horizontalGroupBox.setSizePolicy(sizePolicy)
-        self.horizontalLayout_2 = QHBoxLayout(self.horizontalGroupBox)
+        self.horizontalGroupBoxSaveSettings = QGroupBox(self.layoutWidget)
+        self.horizontalGroupBoxSaveSettings.setObjectName(u"horizontalGroupBoxSaveSettings")
+        sizePolicy.setHeightForWidth(self.horizontalGroupBoxSaveSettings.sizePolicy().hasHeightForWidth())
+        self.horizontalGroupBoxSaveSettings.setSizePolicy(sizePolicy)
+        self.horizontalLayout_2 = QHBoxLayout(self.horizontalGroupBoxSaveSettings)
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.labelAutosave = QLabel(self.horizontalGroupBox)
+        self.labelAutosave = QLabel(self.horizontalGroupBoxSaveSettings)
         self.labelAutosave.setObjectName(u"labelAutosave")
 
         self.horizontalLayout_2.addWidget(self.labelAutosave)
 
         self.horizontalLayout_5 = QHBoxLayout()
         self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
-        self.radioButtonSaveOnExit = QRadioButton(self.horizontalGroupBox)
+        self.radioButtonSaveOnExit = QRadioButton(self.horizontalGroupBoxSaveSettings)
         self.radioButtonSaveOnExit.setObjectName(u"radioButtonSaveOnExit")
 
         self.horizontalLayout_5.addWidget(self.radioButtonSaveOnExit)
 
-        self.comboBoxAutosaveMode = QComboBox(self.horizontalGroupBox)
+        self.comboBoxAutosaveMode = QComboBox(self.horizontalGroupBoxSaveSettings)
         self.comboBoxAutosaveMode.setObjectName(u"comboBoxAutosaveMode")
 
         self.horizontalLayout_5.addWidget(self.comboBoxAutosaveMode)
@@ -96,26 +96,26 @@ class Ui_PreferencesDialog(object):
         self.horizontalLayout_2.addLayout(self.horizontalLayout_5)
 
 
-        self.formLayout.setWidget(0, QFormLayout.FieldRole, self.horizontalGroupBox)
+        self.formLayout.setWidget(0, QFormLayout.FieldRole, self.horizontalGroupBoxSaveSettings)
 
-        self.horizontalGroupBox1 = QGroupBox(self.layoutWidget)
-        self.horizontalGroupBox1.setObjectName(u"horizontalGroupBox1")
-        self.horizontalLayout_3 = QHBoxLayout(self.horizontalGroupBox1)
+        self.horizontalGroupBoxThemeSettings = QGroupBox(self.layoutWidget)
+        self.horizontalGroupBoxThemeSettings.setObjectName(u"horizontalGroupBoxThemeSettings")
+        self.horizontalLayout_3 = QHBoxLayout(self.horizontalGroupBoxThemeSettings)
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-        self.labelTheme = QLabel(self.horizontalGroupBox1)
+        self.labelTheme = QLabel(self.horizontalGroupBoxThemeSettings)
         self.labelTheme.setObjectName(u"labelTheme")
 
         self.horizontalLayout_3.addWidget(self.labelTheme)
 
         self.horizontalLayout_7 = QHBoxLayout()
         self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
-        self.radioButtonAffectsPDF = QRadioButton(self.horizontalGroupBox1)
+        self.radioButtonAffectsPDF = QRadioButton(self.horizontalGroupBoxThemeSettings)
         self.radioButtonAffectsPDF.setObjectName(u"radioButtonAffectsPDF")
         self.radioButtonAffectsPDF.setChecked(False)
 
         self.horizontalLayout_7.addWidget(self.radioButtonAffectsPDF)
 
-        self.comboBoxThemeSelect = QComboBox(self.horizontalGroupBox1)
+        self.comboBoxThemeSelect = QComboBox(self.horizontalGroupBoxThemeSettings)
         self.comboBoxThemeSelect.setObjectName(u"comboBoxThemeSelect")
 
         self.horizontalLayout_7.addWidget(self.comboBoxThemeSelect)
@@ -124,28 +124,28 @@ class Ui_PreferencesDialog(object):
         self.horizontalLayout_3.addLayout(self.horizontalLayout_7)
 
 
-        self.formLayout.setWidget(1, QFormLayout.FieldRole, self.horizontalGroupBox1)
+        self.formLayout.setWidget(1, QFormLayout.FieldRole, self.horizontalGroupBoxThemeSettings)
 
-        self.horizontalGroupBox2 = QGroupBox(self.layoutWidget)
-        self.horizontalGroupBox2.setObjectName(u"horizontalGroupBox2")
-        sizePolicy.setHeightForWidth(self.horizontalGroupBox2.sizePolicy().hasHeightForWidth())
-        self.horizontalGroupBox2.setSizePolicy(sizePolicy)
-        self.horizontalLayout_4 = QHBoxLayout(self.horizontalGroupBox2)
+        self.horizontalGroupBoxDrawingSettings = QGroupBox(self.layoutWidget)
+        self.horizontalGroupBoxDrawingSettings.setObjectName(u"horizontalGroupBoxDrawingSettings")
+        sizePolicy.setHeightForWidth(self.horizontalGroupBoxDrawingSettings.sizePolicy().hasHeightForWidth())
+        self.horizontalGroupBoxDrawingSettings.setSizePolicy(sizePolicy)
+        self.horizontalLayout_4 = QHBoxLayout(self.horizontalGroupBoxDrawingSettings)
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.labelPenDraw = QLabel(self.horizontalGroupBox2)
+        self.labelPenDraw = QLabel(self.horizontalGroupBoxDrawingSettings)
         self.labelPenDraw.setObjectName(u"labelPenDraw")
 
         self.horizontalLayout_4.addWidget(self.labelPenDraw)
 
         self.horizontalLayout_6 = QHBoxLayout()
         self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
-        self.radioButtonPenDrawOnly = QRadioButton(self.horizontalGroupBox2)
+        self.radioButtonPenDrawOnly = QRadioButton(self.horizontalGroupBoxDrawingSettings)
         self.radioButtonPenDrawOnly.setObjectName(u"radioButtonPenDrawOnly")
         self.radioButtonPenDrawOnly.setChecked(True)
 
         self.horizontalLayout_6.addWidget(self.radioButtonPenDrawOnly)
 
-        self.comboBoxDrawingMode = QComboBox(self.horizontalGroupBox2)
+        self.comboBoxDrawingMode = QComboBox(self.horizontalGroupBoxDrawingSettings)
         self.comboBoxDrawingMode.setObjectName(u"comboBoxDrawingMode")
 
         self.horizontalLayout_6.addWidget(self.comboBoxDrawingMode)
@@ -154,7 +154,32 @@ class Ui_PreferencesDialog(object):
         self.horizontalLayout_4.addLayout(self.horizontalLayout_6)
 
 
-        self.formLayout.setWidget(2, QFormLayout.FieldRole, self.horizontalGroupBox2)
+        self.formLayout.setWidget(2, QFormLayout.FieldRole, self.horizontalGroupBoxDrawingSettings)
+
+        self.horizontalGroupBoxToolboxSettings = QGroupBox(self.layoutWidget)
+        self.horizontalGroupBoxToolboxSettings.setObjectName(u"horizontalGroupBoxToolboxSettings")
+        sizePolicy.setHeightForWidth(self.horizontalGroupBoxToolboxSettings.sizePolicy().hasHeightForWidth())
+        self.horizontalGroupBoxToolboxSettings.setSizePolicy(sizePolicy)
+        self.horizontalLayout_8 = QHBoxLayout(self.horizontalGroupBoxToolboxSettings)
+        self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
+        self.labelToolBox = QLabel(self.horizontalGroupBoxToolboxSettings)
+        self.labelToolBox.setObjectName(u"labelToolBox")
+
+        self.horizontalLayout_8.addWidget(self.labelToolBox)
+
+        self.horizontalLayout_9 = QHBoxLayout()
+        self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
+        self.radioButtonToolboxFollowsEdit = QRadioButton(self.horizontalGroupBoxToolboxSettings)
+        self.radioButtonToolboxFollowsEdit.setObjectName(u"radioButtonToolboxFollowsEdit")
+        self.radioButtonToolboxFollowsEdit.setChecked(True)
+
+        self.horizontalLayout_9.addWidget(self.radioButtonToolboxFollowsEdit)
+
+
+        self.horizontalLayout_8.addLayout(self.horizontalLayout_9)
+
+
+        self.formLayout.setWidget(3, QFormLayout.FieldRole, self.horizontalGroupBoxToolboxSettings)
 
 
         self.verticalLayout_3.addLayout(self.formLayout)
@@ -172,13 +197,24 @@ class Ui_PreferencesDialog(object):
         PreferencesDialog.setWindowTitle(QCoreApplication.translate("PreferencesDialog", u"UNote - Preferences", None))
         self.label.setText(QCoreApplication.translate("PreferencesDialog", u"Preferences", None))
         self.pushButtonOk.setText(QCoreApplication.translate("PreferencesDialog", u"Ok", None))
+#if QT_CONFIG(shortcut)
+        self.pushButtonOk.setShortcut(QCoreApplication.translate("PreferencesDialog", u"Return", None))
+#endif // QT_CONFIG(shortcut)
         self.pushButtonCancel.setText(QCoreApplication.translate("PreferencesDialog", u"Cancel", None))
-        self.horizontalGroupBox.setTitle("")
+#if QT_CONFIG(shortcut)
+        self.pushButtonCancel.setShortcut(QCoreApplication.translate("PreferencesDialog", u"Esc", None))
+#endif // QT_CONFIG(shortcut)
+        self.horizontalGroupBoxSaveSettings.setTitle("")
         self.labelAutosave.setText(QCoreApplication.translate("PreferencesDialog", u"Save", None))
         self.radioButtonSaveOnExit.setText(QCoreApplication.translate("PreferencesDialog", u"Save On Exit", None))
         self.labelTheme.setText(QCoreApplication.translate("PreferencesDialog", u"Theme", None))
         self.radioButtonAffectsPDF.setText(QCoreApplication.translate("PreferencesDialog", u"Affects PDF", None))
         self.labelPenDraw.setText(QCoreApplication.translate("PreferencesDialog", u"Drawing", None))
         self.radioButtonPenDrawOnly.setText(QCoreApplication.translate("PreferencesDialog", u"Pen Draw Only", None))
+        self.labelToolBox.setText(QCoreApplication.translate("PreferencesDialog", u"Toolbox", None))
+#if QT_CONFIG(tooltip)
+        self.radioButtonToolboxFollowsEdit.setToolTip(QCoreApplication.translate("PreferencesDialog", u"Show only relevant tools. E.g. in tablet mode, a Text Box is not relevant.", None))
+#endif // QT_CONFIG(tooltip)
+        self.radioButtonToolboxFollowsEdit.setText(QCoreApplication.translate("PreferencesDialog", u"Reduced Toolbar", None))
     # retranslateUi
 
