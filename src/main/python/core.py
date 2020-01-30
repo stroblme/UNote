@@ -1211,7 +1211,7 @@ class GraphicsViewHandler(QGraphicsView):
         except Exception as e:
             return
 
-        # get the rectable of the current viewport
+        # get the rectangle of the current viewport
         rect = self.mapToScene(self.viewport().geometry()).boundingRect()
         # Store those properties for easy access
         viewportHeight = rect.height()
@@ -1225,7 +1225,7 @@ class GraphicsViewHandler(QGraphicsView):
             if type(renderedItem) != QPdfView:
                 continue
 
-            # There are now a log of switch-case similar things
+            # There are now a lot of switch-case similar things
             # It looks a bit messy as everything has to be done for both, x and y coordinates
 
             # Initialize clip start coordinates
@@ -1315,7 +1315,14 @@ class GraphicsViewHandler(QGraphicsView):
         if pdfViewInstance.pageNumber:
             pdfViewInstance.setPixMap(qImg, pdfViewInstance.pageNumber)
         else:
-            pdfViewInstance.updatePixMap(qImg)
+            if self.validatePixmap(pdfViewInstance):
+                pdfViewInstance.updatePixMap(qImg)
+
+    def validatePixmap(self, pdfViewInstance):
+        if pdfViewInstance in self.scene.items(self.mapToScene(self.viewport().geometry())):
+            return True
+        else:
+            return False
 
     def updateEmptyPdf(self, pdfViewInstance, width, height):
         '''
@@ -1414,7 +1421,7 @@ class GraphicsViewHandler(QGraphicsView):
             self.scale(relZoomFactor, relZoomFactor)
 
         else:
-            QGraphicsView.wheelEvent(self, event)
+            super(GraphicsViewHandler, self).wheelEvent(event)
 
         self.updateRenderedPages()
 
@@ -1443,7 +1450,7 @@ class GraphicsViewHandler(QGraphicsView):
         '''
         Overrides the default event
         '''
-        self.updateRenderedPages()
+        # self.updateRenderedPages()
 
         super(GraphicsViewHandler, self).keyPressEvent(event)
 
