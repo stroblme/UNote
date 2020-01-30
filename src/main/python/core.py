@@ -13,7 +13,7 @@ from queue import Queue
 from indexed import IndexedOrderedDict
 from enum import Enum
 
-from PySide2.QtWidgets import QFrame, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGraphicsLineItem, QGraphicsEllipseItem
+from PySide2.QtWidgets import QFrame, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGraphicsLineItem, QGraphicsEllipseItem, QScroller
 from PySide2.QtCore import Qt, QRectF, QEvent, QThread, Signal, Slot, QObject, QPoint, QPointF
 from PySide2.QtGui import QPixmap, QBrush, QColor, QImage, QTouchEvent, QPainter, QGuiApplication, QPen
 # from PySide2.QtWebEngineWidgets import QWebEngineView
@@ -1080,6 +1080,7 @@ class GraphicsViewHandler(QGraphicsView):
         # self.setDragMode(self.ScrollHandDrag)
         # self.setFrameShape(QGraphicsView.NoFrame)
         # # self.resize(parent.size())
+        QScroller.grabGesture(self.viewport(), QScroller.LeftMouseButtonGesture)
 
 
     def __del__(self):
@@ -1457,17 +1458,17 @@ class GraphicsViewHandler(QGraphicsView):
         '''
         super(GraphicsViewHandler, self).mouseMoveEvent(event)
 
-        if self.touching:
-            distance = self.touching - event.pos()
-            deltaX = int(distance.x())
-            deltaY = int(distance.y())
+        # if self.touching:
+        #     distance = self.touching - event.pos()
+        #     deltaX = int(distance.x())
+        #     deltaY = int(distance.y())
 
-            self.horizontalScrollBar().setValue(self.horizontalScrollBar().value() + deltaX)
-            self.verticalScrollBar().setValue(self.verticalScrollBar().value() + deltaY)
+        #     self.horizontalScrollBar().setValue(self.horizontalScrollBar().value() + deltaX)
+        #     self.verticalScrollBar().setValue(self.verticalScrollBar().value() + deltaY)
 
-            self.touching = event.pos()
+        #     self.touching = event.pos()
 
-            self.updateRenderedPages()
+        #     self.updateRenderedPages()
 
 
     def keyPressEvent(self, event):
