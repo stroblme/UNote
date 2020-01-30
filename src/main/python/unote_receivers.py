@@ -37,9 +37,6 @@ class Receivers(QObject):
         self.ui.splitView = None
         self.ui.graphicsView.changesMade.connect(self.changesMadeReceiver)
 
-
-
-
     def setLogHelperInst(self, logHelper):
         '''
         Used to set the log helper instance after instantiating the unote_receiver obj
