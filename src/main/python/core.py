@@ -859,6 +859,7 @@ class QPdfView(QGraphicsPixmapItem):
                     self.stopMarkText(self.toPdfCoordinates(event.pos()))
                 elif editMode == editModes.freehand:
                     self.stopDraw(self.toPdfCoordinates(event.pos()))
+                    self.tempPoints = Queue()
                 elif editMode == editModes.eraser:
                     self.stopEraser(self.toPdfCoordinates(event.pos()))
                 elif editMode == editModes.forms:
@@ -896,6 +897,24 @@ class QPdfView(QGraphicsPixmapItem):
                     # elif mimeData.hasText():
                     #     self.insertText(mimeData.text())
 
+    def mouseMoveEvent(self, event):
+        '''
+        Overrides the default event
+        '''
+        self.blockEdit = False
+
+        if self.ongoingEdit and not toBool(Preferences.data['radioButtonPenDrawOnly']):
+            if editMode == editModes.freehand:
+                self.updateDrawPoints(self.toPdfCoordinates(event.pos()))
+                self.tempPoints.put(self.toPdfCoordinates(event.pos()))
+                self.update()
+            elif editMode == editModes.eraser:
+                self.updateEraserPoints(self.toPdfCoordinates(event.pos()))
+            elif editMode == editModes.forms:
+                self.updateFormPoints(self.toPdfCoordinates(event.pos()))
+
+        QGraphicsPixmapItem.mouseMoveEvent(self, event)
+
     def qPixmapTofPixmap(self, qPixmap):
         mode = "RGBA" if qPixmap.hasAlphaChannel else "RGB"
 
@@ -920,21 +939,6 @@ class QPdfView(QGraphicsPixmapItem):
         self.eh.deleteLastIndicatorPoint.emit()
         self.eh.deleteLastIndicatorPoint.emit()
 
-    def mouseMoveEvent(self, event):
-        '''
-        Overrides the default event
-        '''
-        self.blockEdit = False
-
-        if self.ongoingEdit and not toBool(Preferences.data['radioButtonPenDrawOnly']):
-            if editMode == editModes.freehand:
-                self.updateDrawPoints(self.toPdfCoordinates(event.pos()))
-            elif editMode == editModes.eraser:
-                self.updateEraserPoints(self.toPdfCoordinates(event.pos()))
-            elif editMode == editModes.forms:
-                self.updateFormPoints(self.toPdfCoordinates(event.pos()))
-
-        QGraphicsPixmapItem.mouseMoveEvent(self, event)
 
     def tabletEvent(self, eventType, pressure, highResPos, zoom, xOff, yOff):
         self.blockEdit = False
