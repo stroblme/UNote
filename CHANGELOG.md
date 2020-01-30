@@ -50,6 +50,7 @@
 - [x] Filename in title
 - [ ] Implement split view with overlay widget
 - [ ] Update to latest muPDF
+- [ ] Smoothing to mouse draw
 - [ ] Improve saving mechanism
 - [ ] Implement object resizing
 - [ ] Implement object moving
