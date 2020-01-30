@@ -1,4 +1,4 @@
-src\build\settings\secret.json
+src/build/settings/secret.json
 
 ### Test Files ###
 *.pdf
