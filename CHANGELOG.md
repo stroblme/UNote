@@ -98,6 +98,7 @@
 - [x] Zooming capability via menu
 - [x] Creating executable
 - [ ] Improve defaults
+- [ ] New page without saving first
 
 ### Issues in 1.x
 

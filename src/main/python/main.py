@@ -16,7 +16,7 @@ import argparse  # parsing cmdline arguments
 import os  # launching external python script
 import sys  # exit script, file parsing
 import atexit
-from pathlib import Path
+from pathlib import Path, PurePath
 
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QMainWindow, QWidget
@@ -37,6 +37,8 @@ print('Dependencies loaded')
 
 class App(QObject):
     appctxt = ApplicationContext()
+
+    homeDir = Path.home() / "UNote"
 
     ICONPATH = appctxt.get_resource('icon.png')
     CURVERSION = "2020.01"
@@ -70,11 +72,8 @@ class UNote(App):
         super().__init__()
 
         self.initUI()
-
         t = QTimer()
         t.singleShot(0, self.onQApplicationStarted)
-
-
 
         self.preferencesGui = PreferencesGUI(self.appctxt, self.PreferenceWindow)
 
