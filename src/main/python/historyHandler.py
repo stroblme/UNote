@@ -46,7 +46,7 @@ class History():
 
         action["undoFuncParam"] = action["redoFuncHandle"](action["redoFuncParam"])
 
-        History.recentChanges -= 1
+        History.recentChanges += 1
 
     @staticmethod
     def addToHistory(undoFuncHandle, undoFuncParam, redoFuncHandle, redoFuncParam):

@@ -1050,7 +1050,7 @@ class GraphicsViewHandler(QGraphicsView):
 
     # x, y, pageNumber, currentContent
     requestTextInput = Signal(int, int, int, str)
-    changesMade = Signal()
+    changesMade = Signal(bool)
 
     tempObj = list()
 
@@ -1383,7 +1383,9 @@ class GraphicsViewHandler(QGraphicsView):
             # event.accept()
 
         if History.recentChanges == 1:
-            self.changesMade.emit()
+            self.changesMade.emit(True)
+        elif History.recentChanges == 0:
+            self.changesMade.emit(False)
 
         return super().viewportEvent(event)
 

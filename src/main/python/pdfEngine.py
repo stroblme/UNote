@@ -60,6 +60,8 @@ class pdfEngine():
         except ValueError as identifier:
             print(str(identifier))
 
+        print('PDF saved')
+
     def savePdfAs(self, filename):
         name, ext = os.path.splitext(filename)
 

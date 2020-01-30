@@ -110,9 +110,12 @@ class Receivers(QObject):
         self.updateWindowTitle(pdfFileName, False)
         History.resetHistoryChanges()
 
-    @Slot()
-    def changesMadeReceiver(self):
-        self.updateWindowTitle(self.ui.graphicsView.pdf.filename, True)
+    @Slot(bool)
+    def changesMadeReceiver(self, made):
+        if made:
+            self.updateWindowTitle(self.ui.graphicsView.pdf.filename, True)
+        else:
+            self.updateWindowTitle(self.ui.graphicsView.pdf.filename, False)
 
     def updateWindowTitle(self, var, isDraft=False):
         if isDraft:
