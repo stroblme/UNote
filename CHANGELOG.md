@@ -58,6 +58,7 @@
 - [ ] Reduced toolbar based on device mode
 - [ ] Use the circle at the toolbar to retrieve properties of an already existing line
 - [ ] Improve ui of small dialogs
+- [ ] Freehand draw per default
 
 ## Features for v2.x
 
@@ -112,8 +113,9 @@
 - [x] Text box can be positioned outside pdf area
 - [x] Indicator Points not disappear after cancelling edit
 - [x] Still got issues that pen is suddenly not recogniced anymore. Fixed after restart; fixed on with new framework
-- [ ] Changing "affects PDF" setting only issues after restart of app
+- [x] Changing "affects PDF" setting only issues after restart of app
 - [ ] toolbar buttom border fix
+- [x] no live mouse draw
 
 ## Features for v1.x - Completed
 
