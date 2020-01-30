@@ -1080,8 +1080,7 @@ class GraphicsViewHandler(QGraphicsView):
         # self.setDragMode(self.ScrollHandDrag)
         # self.setFrameShape(QGraphicsView.NoFrame)
         # # self.resize(parent.size())
-        QScroller.grabGesture(self.viewport(), QScroller.LeftMouseButtonGesture)
-
+        QScroller.grabGesture(self.viewport(), QScroller.TouchGesture)
 
     def __del__(self):
         if toBool(Preferences.data['radioButtonSaveOnExit']):
@@ -1355,22 +1354,18 @@ class GraphicsViewHandler(QGraphicsView):
 
 
     def viewportEvent(self, event):
-        if event.type() == QEvent.TouchBegin:
-            event.accept()
-            touchPointCount = len(event.touchPoints())
+        # if event.type() == QEvent.TouchBegin:
+        #     event.accept()
+        #     touchPointCount = len(event.touchPoints())
 
-            if touchPointCount == 1:
-                self.touching = event.touchPoints()[0].lastPos()
+        #     if touchPointCount == 1:
+        #         self.touching = event.touchPoints()[0].lastPos()
 
         if event.type() == QEvent.TouchUpdate:
             touchPointCount = len(event.touchPoints())
             tight = 40
             # print(touchPointCount)
-            if touchPointCount == 1:
-                l1 = event.touchPoints()[0].startPos() - event.touchPoints()[0].pos()
-                distance = l1.manhattanLength()
-                print('hi')
-            elif touchPointCount == 2:
+            if touchPointCount == 2:
                 # print('Two Finger touch')
 
                 l1 = event.touchPoints()[0].startPos() - event.touchPoints()[1].startPos()
@@ -1397,8 +1392,6 @@ class GraphicsViewHandler(QGraphicsView):
 
                     self.absZoomFactor = self.absZoomFactor * relZoomFactor
                     self.scale(relZoomFactor, relZoomFactor)
-
-                self.updateRenderedPages()
 
         if History.recentChanges == 1:
             self.changesMade.emit(True)
@@ -1457,7 +1450,6 @@ class GraphicsViewHandler(QGraphicsView):
         Overrides the default event
         '''
         super(GraphicsViewHandler, self).mouseMoveEvent(event)
-
         # if self.touching:
         #     distance = self.touching - event.pos()
         #     deltaX = int(distance.x())
@@ -1467,8 +1459,6 @@ class GraphicsViewHandler(QGraphicsView):
         #     self.verticalScrollBar().setValue(self.verticalScrollBar().value() + deltaY)
 
         #     self.touching = event.pos()
-
-        #     self.updateRenderedPages()
 
 
     def keyPressEvent(self, event):
