@@ -1341,9 +1341,20 @@ class GraphicsViewHandler(QGraphicsView):
     def getPageSize(self, page=0):
         return self.pdf.getPageSize(0)
 
+    # def event(self, event):
+    #     if event.type() == QEvent.TouchEnd:
+    #         print('single touch end')
+
+    #     return super().event(event)
+
+
     def viewportEvent(self, event):
         if event.type() == QEvent.TouchBegin:
             event.accept()
+            touchPointCount = len(event.touchPoints())
+            # print(touchPointCount)
+            # if touchPointCount == 1:
+            #     print('single touch start')
 
         elif event.type() == QEvent.TouchUpdate:
             touchPointCount = len(event.touchPoints())
@@ -1352,7 +1363,7 @@ class GraphicsViewHandler(QGraphicsView):
             if touchPointCount == 1:
                 l1 = event.touchPoints()[0].startPos() - event.touchPoints()[0].pos()
                 distance = l1.manhattanLength()
-
+                print(distance)
             elif touchPointCount == 2:
                 # print('Two Finger touch')
 
@@ -1382,12 +1393,6 @@ class GraphicsViewHandler(QGraphicsView):
                     self.scale(relZoomFactor, relZoomFactor)
 
                     self.updateRenderedPages()
-                # if distance < tight:
-                #     print(tight)
-                # else:
-                #     print(wide)
-
-            # event.accept()
 
         if History.recentChanges == 1:
             self.changesMade.emit(True)
@@ -1442,9 +1447,8 @@ class GraphicsViewHandler(QGraphicsView):
         '''
         Overrides the default event
         '''
-        self.mousePos = event.localPos()
         super(GraphicsViewHandler, self).mouseMoveEvent(event)
-        # self.updateRenderedPages()
+        self.updateRenderedPages()
 
     def keyPressEvent(self, event):
         '''
