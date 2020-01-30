@@ -60,24 +60,23 @@ class Receivers(QObject):
 
         self.ui.graphicsView.updateRenderedPages()
 
-    def newPdf(self, pdfFileName = None):
-        if not pdfFileName:
+    def newPdf(self, pdfFileName = None, isDraft=False):
+        if not pdfFileName or pdfFileName == '' or not isDraft:
             pdfFileName = self.guiHelper.saveFileDialog("PDF File (*.pdf)")
 
-        if pdfFileName == '':
-            return
+        if pdfFileName and pdfFileName != '' and isDraft:
+            os.mknod(pdfFileName)
 
+        # Make sure it's a PDF
         name, ext = os.path.splitext(pdfFileName)
-
         ext = '.pdf'
-
         pdfFileName = name + ext
 
         self.ui.graphicsView.createNewPdf(pdfFileName)
 
         self.applyWorkspaceDefaults()
 
-        self.updateWindowTitle(pdfFileName)
+        self.updateWindowTitle(pdfFileName, isDraft)
 
 
     def loadPdf(self, pdfFileName = None):
@@ -99,6 +98,7 @@ class Receivers(QObject):
 
     def savePdf(self):
         self.ui.graphicsView.saveCurrentPdf()
+        self.updateWindowTitle(self.ui.graphicsView.pdf.filename, False)
 
     def savePdfAs(self, pdfFileName = None):
         if not pdfFileName:
@@ -109,12 +109,12 @@ class Receivers(QObject):
 
         self.ui.graphicsView.saveCurrentPdfAs(pdfFileName)
 
-        self.updateWindowTitle(pdfFileName)
+        self.updateWindowTitle(pdfFileName, False)
 
 
 
-    def updateWindowTitle(self, var):
-        self.titleUpdate.emit(var)
+    def updateWindowTitle(self, var, isDraft=False):
+        self.titleUpdate.emit(var + ' *')
 
     def pageInsertHere(self):
         self.ui.graphicsView.pageInsertHere()

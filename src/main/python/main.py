@@ -39,6 +39,7 @@ class App(QObject):
     appctxt = ApplicationContext()
 
     homeDir = Path.home() / "UNote"
+    newPdf = homeDir / "new.pdf"
 
     ICONPATH = appctxt.get_resource('icon.png')
     CURVERSION = "2020.01"
@@ -82,6 +83,9 @@ class UNote(App):
         self.connectReceivers()
 
         self.ui.floatingToolBox.restoreDefaults()
+
+        if not os.path.exists(self.homeDir):
+            os.makedirs(self.homeDir)
 
         if args != '':
             if os.path.isfile(args):
@@ -196,7 +200,7 @@ class UNote(App):
         self.ui.actionPreferences.triggered.connect(lambda: self.receiversInst.openPreferencesReceiver(self.preferencesGui))
 
         # Create new PDF file
-        self.ui.actionNew_PDF.triggered.connect(lambda: self.receiversInst.newPdf())
+        self.ui.actionNew_PDF.triggered.connect(lambda: self.receiversInst.newPdf(str(self.newPdf), True))
 
         # Load PDF File
         self.ui.actionLoad_PDF.triggered.connect(lambda: self.receiversInst.loadPdf())
