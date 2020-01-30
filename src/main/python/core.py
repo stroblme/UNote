@@ -1182,7 +1182,7 @@ class GraphicsViewHandler(QGraphicsView):
         pdfView.setPage(self.pdf.getPage(pageNumber), pageNumber)
 
         # Render according to the parameters
-        self.updatePage(pdfView, zoom = zoom)
+        self.updatePage(pdfView, zoom = zoom, forceRender=True)
 
         # Store instance locally
         self.pages[pageNumber] = pdfView
@@ -1291,7 +1291,7 @@ class GraphicsViewHandler(QGraphicsView):
 
 
 
-    def updatePage(self, pdfViewInstance, zoom=absZoomFactor, clip=None):
+    def updatePage(self, pdfViewInstance, zoom=absZoomFactor, clip=None, forceRender=False):
         '''
         Update the provided pdf file at the desired page to render only the zoom and clip
         This methods is used when instantiating the pdf and later, when performance optimzation and zooming is required
@@ -1312,10 +1312,10 @@ class GraphicsViewHandler(QGraphicsView):
         qImg.setDevicePixelRatio(zoom)
         qImg = self.imageHelper.applyTheme(qImg)
 
-        if pdfViewInstance.pageNumber:
-            pdfViewInstance.setPixMap(qImg, pdfViewInstance.pageNumber)
-        else:
-            if self.validatePixmap(pdfViewInstance):
+        if self.validatePixmap(pdfViewInstance) or forceRender:
+            if pdfViewInstance.pageNumber:
+                pdfViewInstance.setPixMap(qImg, pdfViewInstance.pageNumber)
+            else:
                 pdfViewInstance.updatePixMap(qImg)
 
     def validatePixmap(self, pdfViewInstance):
