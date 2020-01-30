@@ -1057,6 +1057,8 @@ class GraphicsViewHandler(QGraphicsView):
 
     tempObj = list()
 
+    touching = None
+
     def __init__(self, parent):
         '''
         Creates the graphic view handler instance, which is a main feature of the unote application
@@ -1355,18 +1357,18 @@ class GraphicsViewHandler(QGraphicsView):
         if event.type() == QEvent.TouchBegin:
             event.accept()
             touchPointCount = len(event.touchPoints())
-            print(touchPointCount)
-            # if touchPointCount == 1:
-            #     print('single touch start')
 
-        elif event.type() == QEvent.TouchUpdate:
+            if touchPointCount == 1:
+                self.touching = event.touchPoints()[0].lastPos()
+
+        if event.type() == QEvent.TouchUpdate:
             touchPointCount = len(event.touchPoints())
             tight = 40
             # print(touchPointCount)
             if touchPointCount == 1:
                 l1 = event.touchPoints()[0].startPos() - event.touchPoints()[0].pos()
                 distance = l1.manhattanLength()
-                print(distance)
+                print('hi')
             elif touchPointCount == 2:
                 # print('Two Finger touch')
 
@@ -1446,11 +1448,27 @@ class GraphicsViewHandler(QGraphicsView):
         super(GraphicsViewHandler, self).mouseReleaseEvent(event)
         self.updateRenderedPages()
 
+        if self.touching:
+            self.touching = None
+
     def mouseMoveEvent(self, event):
         '''
         Overrides the default event
         '''
         super(GraphicsViewHandler, self).mouseMoveEvent(event)
+
+        if self.touching:
+            distance = self.touching - event.pos()
+            deltaX = int(distance.x())
+            deltaY = int(distance.y())
+
+            self.horizontalScrollBar().setValue(self.horizontalScrollBar().value() + deltaX)
+            self.verticalScrollBar().setValue(self.verticalScrollBar().value() + deltaY)
+
+            self.touching = event.pos()
+
+            self.updateRenderedPages()
+
 
     def keyPressEvent(self, event):
         '''
