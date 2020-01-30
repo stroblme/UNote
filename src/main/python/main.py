@@ -113,6 +113,8 @@ class UNote(App):
         # Load the icon
         self.MainWindow.setWindowIcon(QIcon(self.ICONPATH))
 
+        self.appctxt.app.setAttribute(Qt.AA_SynthesizeTouchForUnhandledMouseEvents)
+
         # Get the preferences window ready
         self.PreferenceWindow = QWidget(self.MainWindow)
         self.PreferenceWindow.move(self.MainWindow.width()/2 - 500, self.MainWindow.height()/2 - 250)

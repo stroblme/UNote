@@ -835,6 +835,9 @@ class QPdfView(QGraphicsPixmapItem):
                     # Start moving this obj
                     self.startMoveObject(self.toPdfCoordinates(event.pos()), annot)
 
+        QGraphicsPixmapItem.mousePressEvent(self, event)
+
+
     def mouseReleaseEvent(self, event):
         '''
         Overrides the default event
@@ -1352,7 +1355,7 @@ class GraphicsViewHandler(QGraphicsView):
         if event.type() == QEvent.TouchBegin:
             event.accept()
             touchPointCount = len(event.touchPoints())
-            # print(touchPointCount)
+            print(touchPointCount)
             # if touchPointCount == 1:
             #     print('single touch start')
 
@@ -1392,7 +1395,7 @@ class GraphicsViewHandler(QGraphicsView):
                     self.absZoomFactor = self.absZoomFactor * relZoomFactor
                     self.scale(relZoomFactor, relZoomFactor)
 
-                    self.updateRenderedPages()
+                self.updateRenderedPages()
 
         if History.recentChanges == 1:
             self.changesMade.emit(True)
@@ -1448,7 +1451,6 @@ class GraphicsViewHandler(QGraphicsView):
         Overrides the default event
         '''
         super(GraphicsViewHandler, self).mouseMoveEvent(event)
-        self.updateRenderedPages()
 
     def keyPressEvent(self, event):
         '''
