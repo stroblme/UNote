@@ -227,7 +227,7 @@ class UNote(App):
         self.ui.actionPageGoto.triggered.connect(lambda: self.receiversInst.pageGoto())
 
         # Find in PDF
-        self.ui.actionFind.triggered.connect(lambda: self.receiversInst.pageFind())
+        self.ui.actionPageFind.triggered.connect(lambda: self.receiversInst.pageFind())
 
         # Zoom In
         self.ui.actionZoomIn.triggered.connect(lambda: self.receiversInst.zoomIn())
