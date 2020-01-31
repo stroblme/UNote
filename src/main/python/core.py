@@ -81,6 +81,8 @@ class QPdfView(QGraphicsPixmapItem):
         self.lastZoomFactor = -1
 
 
+
+
     def paint(self, painter, option, widget):
         res = super().paint(painter, option, widget)
 
@@ -112,12 +114,16 @@ class QPdfView(QGraphicsPixmapItem):
         self.qImg = qImg
 
         self.pixImg = QPixmap()
+        self.draftImg = QPixmap()
+
         self.pixImg.convertFromImage(self.qImg)
 
         self.setPixmap(self.pixImg)
 
         self.lastZoomFactor = newZoomFactor
 
+    def setAsDraft(self):
+        self.draftImg = self.pixImg
 
     def setAsOrigin(self):
         self.xOrigin = self.x()
@@ -1050,6 +1056,7 @@ class QPdfView(QGraphicsPixmapItem):
 
 class Renderer(QObject):
     itemRenderFinished = Signal(QPdfView, int, int)
+    pdfRenderFinished = Signal()
     pages = IndexedOrderedDict()
     absZoomFactor = float(1)
     lowResZoomFactor = float(0.1)
@@ -1071,7 +1078,7 @@ class Renderer(QObject):
     def renderPdfToCurrentView(self):
         t = QTimer()
               
-        t.singleShot(10, self.delayedRenderer)
+        t.singleShot(0, self.delayedRenderer)
 
     def delayedRenderer(self):
         # Start at the top
@@ -1086,10 +1093,13 @@ class Renderer(QObject):
                 self.loadPdfPageToCurrentView(pIt, posX, posY, self.absZoomFactor)
             elif pIt <= 20:
                 self.loadPdfPageToCurrentView(pIt, posX, posY, self.lowResZoomFactor)
+                self.pages[pIt].setAsDraft()
             else:
                 self.loadBlankImageToCurrentView(pIt, posX, posY, height, width)
+                self.pages[pIt].setAsDraft()
 
             posY += height + self.DEFAULTPAGESPACE
+
 
     def loadBlankImageToCurrentView(self, pageNumber, posX, posY, width, height):
         '''
