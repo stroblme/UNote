@@ -193,7 +193,7 @@
                  <string>Pen Draw Only</string>
                 </property>
                 <property name="checked">
-                 <bool>true</bool>
+                 <bool>false</bool>
                 </property>
                </widget>
               </item>
@@ -223,6 +223,19 @@
             </item>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_9">
+              <item>
+               <widget class="QRadioButton" name="radioButtonUsePenAsDefault">
+                <property name="toolTip">
+                 <string>Show only relevant tools. E.g. in tablet mode, a Text Box is not relevant.</string>
+                </property>
+                <property name="text">
+                 <string>Use Pen As Default</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
               <item>
                <widget class="QRadioButton" name="radioButtonToolboxFollowsEdit">
                 <property name="toolTip">

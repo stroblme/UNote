@@ -981,7 +981,6 @@ class QPdfView(QGraphicsPixmapItem):
                     self.stopMarkText(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
                 elif editMode == editModes.freehand:
                     self.stopDraw(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
-                    self.tempPoints = Queue()
                 elif editMode == editModes.eraser:
                     self.stopEraser(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
                 elif editMode == editModes.forms:
@@ -993,6 +992,10 @@ class QPdfView(QGraphicsPixmapItem):
                 print('leave prox')
 
             # event.accept()
+
+    def RenderingFinished(self):
+        self.tempPoints = Queue()
+
 
     # def paint(self, QPainter, QStyleOptionGraphicsItem, QWidget):
     #     QPainter.begin(QWidget)
@@ -1665,6 +1668,7 @@ class GraphicsViewHandler(QGraphicsView):
 
             if event.type() == QEvent.Type.TabletRelease:
                 self.updateRenderedPages()
+                item.RenderingFinished()
 
         return super(GraphicsViewHandler, self).tabletEvent(event)
 
