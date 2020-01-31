@@ -1048,11 +1048,134 @@ class QPdfView(QGraphicsPixmapItem):
 
         return qPos
 
+class Renderer(QObject):
+    itemRenderFinished = Signal(QPdfView)
+    pages = IndexedOrderedDict()
+
+    def __init__(self):
+        self.pdf = pdfEngine()
+        self.imageHelper = imageHelper()
+
+    def updateReceiver(self):
+        pass
+
+    def renderPdfToCurrentView(self, startPage=0):
+        self.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+
+        # Start at the top
+        posX = float(0)
+        posY = float(0)
+
+        self.qli = QGraphicsLineItem(0,0,0,1)
+        self.scene.addItem(self.qli)
+
+        # self.thread = QThread
+        # self.moveToThread(self.thread)
+
+        width, height = self.getPageSize()
+
+        for pIt in range(self.pdf.doc.pageCount):
+
+            if (startPage-2) <= pIt <= (startPage+2):
+                # Load each page to a new position in the current view.
+                posX, posY = self.loadPdfPageToCurrentView(pIt, posX, posY, self.absZoomFactor)
+            else:
+                posX, posY = self.loadBlankImageToCurrentView(pIt, posX, posY, width, height)
+
+
+    def loadBlankImageToCurrentView(self, pageNumber, posX, posY, width, height):
+        '''
+        Creates a qpdf instance and loads an empty image.
+        This is intended to be used in combination with the initial pdf loading
+        '''
+        # Create a qpdf instance
+        pdfView = QPdfView()
+        pdfView.setPage(self.pdf.getPage(pageNumber), pageNumber)
+
+        # Render a blank image
+        self.updateEmptyPdf(pdfView, width, height)
+
+        # Store instance locally
+        self.pages[pageNumber] = pdfView
+
+        # Connect event handlers
+        self.pages[pageNumber].eh.requestTextInput.connect(self.toolBoxTextInputRequestedEvent)
+        self.pages[pageNumber].eh.addIndicatorPoint.connect(self.addIndicatorPoint)
+        self.pages[pageNumber].eh.deleteLastIndicatorPoint.connect(self.deleteLastIndicatorPoint)
+
+        # add and arrange the new page in the scene
+        self.itemRenderFinished.emit(self.pages[pageNumber])
+        self.pages[pageNumber].setPos(posX, posY)
+
+        # some stuff to tell the instance that the current position is the original one
+        pdfView.setAsOrigin()
+
+        return posX, posY + pdfView.hOrigin + self.DEFAULTPAGESPACE
+
+    def loadPdfPageToCurrentView(self, pageNumber, posX, posY, zoom = None):
+        '''
+        Creates a qpdfView instance from the desired page and renders it at the provided position with the zoomfactor.
+        A lower zoomFactor will dramatically improve speed, as it always correlates to the dpi of the page
+        '''
+        # Create a qpdf instance
+        pdfView = QPdfView()
+        pdfView.setPage(self.pdf.getPage(pageNumber), pageNumber)
+
+        # Render according to the parameters
+        self.updatePage(pdfView, zoom = zoom, forceRender=True)
+
+        # Store instance locally
+        self.pages[pageNumber] = pdfView
+
+        # Connect event handlers
+        self.pages[pageNumber].eh.requestTextInput.connect(self.toolBoxTextInputRequestedEvent)
+        self.pages[pageNumber].eh.addIndicatorPoint.connect(self.addIndicatorPoint)
+        self.pages[pageNumber].eh.deleteLastIndicatorPoint.connect(self.deleteLastIndicatorPoint)
+
+        # add and arrange the new page in the scene
+        self.itemRenderFinished.emit(self.pages[pageNumber])
+        self.pages[pageNumber].setPos(posX, posY)
+
+        # some stuff to tell the instance that the current position is the original one
+        pdfView.setAsOrigin()
+
+        return posX, posY + pdfView.hOrigin + self.DEFAULTPAGESPACE
+
+    def updatePage(self, pdfViewInstance, zoom, clip=None, forceRender=False):
+        '''
+        Update the provided pdf file at the desired page to render only the zoom and clip
+        This methods is used when instantiating the pdf and later, when performance optimzation and zooming is required
+        '''
+        
+
+        mat = fitz.Matrix(zoom, zoom)
+
+        fClip = None
+        if clip:
+            fClip = fitz.Rect(clip.x(), clip.y(), clip.x() + clip.width(), clip.y() + clip.height())
+
+        try:
+            pixmap = self.pdf.renderPixmap(pdfViewInstance.pageNumber, mat = mat, clip = fClip)
+        except RuntimeError as identifier:
+            print(str(identifier))
+            return
+
+        qImg = self.pdf.getQImage(pixmap)
+        qImg.setDevicePixelRatio(zoom)
+        qImg = self.imageHelper.applyTheme(qImg)
+
+        if self.validatePixmap(pdfViewInstance) or forceRender:
+            if pdfViewInstance.pageNumber:
+                pdfViewInstance.setPixMap(qImg, pdfViewInstance.pageNumber, zoom)
+            else:
+                pdfViewInstance.updatePixMap(qImg, zoom)
+
 
 class GraphicsViewHandler(QGraphicsView):
     pages = IndexedOrderedDict()
     DEFAULTPAGESPACE = 20
-    CONTINOUSVIEW = True
+
+    updatePages = Signal()
 
     absZoomFactor = float(1)
     lowResZoomFactor = float(0.1)
@@ -1089,6 +1212,7 @@ class GraphicsViewHandler(QGraphicsView):
         QScroller.grabGesture(self.viewport(), QScroller.TouchGesture)
 
         self.rendererThread = QThread()
+        
 
 
     def __del__(self):
@@ -1129,6 +1253,35 @@ class GraphicsViewHandler(QGraphicsView):
 
         self.renderPdfToCurrentView(startPage)
         print("--- Loaded PDF within %s seconds ---" % (time.time() - start_time))
+
+    def instructRenderer(self, startPage=0):
+        self.scene = QGraphicsScene()
+        self.setScene(self.scene)
+
+        self.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+
+        # Start at the top
+        posX = float(0)
+        posY = float(0)
+
+        self.qli = QGraphicsLineItem(0,0,0,1)
+        self.scene.addItem(self.qli)
+
+        # self.thread = QThread
+        # self.moveToThread(self.thread)
+
+        width, height = self.getPageSize()
+
+        self.rendererWorker = Renderer()
+        self.rendererWorker.moveToThread(self.rendererThread)
+        # self.rendererThread.finished.connect(QObject.deleteLater)
+        self.updatePages.connect(self.rendererWorker.updateReceiver)
+        self.rendererWorker.itemRenderFinished.connect(self.retrieveRenderedItem)
+        self.rendererThread.start()
+
+    @Slot(QPdfView)
+    def retrieveRenderedItem(self, renderedItem):
+        self.scene.addItem(renderedItem)
 
     def renderPdfToCurrentView(self, startPage=0):
         self.scene = QGraphicsScene()
@@ -1242,6 +1395,9 @@ class GraphicsViewHandler(QGraphicsView):
             if renderedItem.lastZoomFactor == self.absZoomFactor:
                 return
 
+            self.updatePage(renderedItem, zoom = self.absZoomFactor)
+
+
             # # There are now a lot of switch-case similar things
             # # It looks a bit messy as everything has to be done for both, x and y coordinates
 
@@ -1305,7 +1461,6 @@ class GraphicsViewHandler(QGraphicsView):
             # renderedItem.setPos(rItx, rIty)
 
             # self.updatePage(renderedItem, zoom = self.absZoomFactor, clip = clip)
-            self.updatePage(renderedItem, zoom = self.absZoomFactor)
 
 
 
