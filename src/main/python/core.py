@@ -1448,7 +1448,7 @@ class GraphicsViewHandler(QGraphicsView):
         for pIt in range(hIdx+1, hIdx+3):
             if pIt < len(self.rendererWorker.pages):
                 if self.rendererWorker.pages[pIt].isDraft:
-                    print("Post rendering page " + str(pIt))
+                    # print("Post rendering page " + str(pIt))
                     self.rendererWorker.updatePage(self.rendererWorker.pages[pIt], zoom = self.rendererWorker.absZoomFactor)
                     self.rendererWorker.pages[pIt].isDraft = False
 
