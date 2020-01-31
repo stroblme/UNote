@@ -1051,14 +1051,17 @@ class QPdfView(QGraphicsPixmapItem):
 class Renderer(QObject):
     itemRenderFinished = Signal(QPdfView, int, int)
     pages = IndexedOrderedDict()
+    absZoomFactor = float(1)
+    DEFAULTPAGESPACE = 20
+
 
     def __init__(self):
         QObject.__init__(self)
         self.pdf = pdfEngine()
         self.imageHelper = imageHelper()
 
-    def updateReceiver(self):
-        pass
+    def updateReceiver(self, zoom):
+        self.absZoomFactor = zoom
 
     def getPageSize(self, page=0):
         return self.pdf.getPageSize(0)
@@ -1073,8 +1076,8 @@ class Renderer(QObject):
 
         for pIt in range(self.pdf.doc.pageCount):
 
-            posX, posY = self.loadPdfPageToCurrentView(pIt, posX, posY, self.absZoomFactor)
-
+            self.loadPdfPageToCurrentView(pIt, posX, posY, self.absZoomFactor)
+            posY += height + self.DEFAULTPAGESPACE
 
     # def loadBlankImageToCurrentView(self, pageNumber, posX, posY, width, height):
     #     '''
@@ -1116,22 +1119,20 @@ class Renderer(QObject):
         # Store instance locally
         self.pages[pageNumber] = pdfView
 
-        # Connect event handlers
-        self.pages[pageNumber].eh.requestTextInput.connect(self.toolBoxTextInputRequestedEvent)
-        self.pages[pageNumber].eh.addIndicatorPoint.connect(self.addIndicatorPoint)
-        self.pages[pageNumber].eh.deleteLastIndicatorPoint.connect(self.deleteLastIndicatorPoint)
+        # # Connect event handlers
+        # self.pages[pageNumber].eh.requestTextInput.connect(self.toolBoxTextInputRequestedEvent)
+        # self.pages[pageNumber].eh.addIndicatorPoint.connect(self.addIndicatorPoint)
+        # self.pages[pageNumber].eh.deleteLastIndicatorPoint.connect(self.deleteLastIndicatorPoint)
 
         # add and arrange the new page in the scene
         self.itemRenderFinished.emit(self.pages[pageNumber], posX, posY)
-
-        return posX, posY + pdfView.hOrigin + self.DEFAULTPAGESPACE
 
     def updatePage(self, pdfViewInstance, zoom, clip=None, forceRender=False):
         '''
         Update the provided pdf file at the desired page to render only the zoom and clip
         This methods is used when instantiating the pdf and later, when performance optimzation and zooming is required
         '''
-        
+
 
         mat = fitz.Matrix(zoom, zoom)
 
@@ -1149,11 +1150,10 @@ class Renderer(QObject):
         qImg.setDevicePixelRatio(zoom)
         qImg = self.imageHelper.applyTheme(qImg)
 
-        if self.validatePixmap(pdfViewInstance) or forceRender:
-            if pdfViewInstance.pageNumber:
-                pdfViewInstance.setPixMap(qImg, pdfViewInstance.pageNumber, zoom)
-            else:
-                pdfViewInstance.updatePixMap(qImg, zoom)
+        if pdfViewInstance.pageNumber:
+            pdfViewInstance.setPixMap(qImg, pdfViewInstance.pageNumber, zoom)
+        else:
+            pdfViewInstance.updatePixMap(qImg, zoom)
 
 
 class GraphicsViewHandler(QGraphicsView):
@@ -1198,7 +1198,7 @@ class GraphicsViewHandler(QGraphicsView):
         QScroller.grabGesture(self.viewport(), QScroller.TouchGesture)
 
         self.rendererThread = QThread()
-        
+
 
 
     def __del__(self):
@@ -1254,12 +1254,13 @@ class GraphicsViewHandler(QGraphicsView):
         self.rendererWorker.moveToThread(self.rendererThread)
         # self.rendererThread.finished.connect(QObject.deleteLater)
         self.updatePages.connect(self.rendererWorker.updateReceiver)
-        self.renderPdf.connect(self.rendererWorker.renderPdfToCurrentView)
+        self.renderPdf.connect(self.rendererWorker.renderPdfToCurrentView, Qt.QueuedConnection)
         self.rendererWorker.itemRenderFinished.connect(self.retrieveRenderedItem)
 
         self.rendererWorker.pdf = self.pdf
         self.rendererWorker.imageHelper = self.imageHelper
-        
+        self.rendererWorker.absZoomFactor = self.absZoomFactor
+
         self.rendererThread.start()
 
         self.renderPdf.emit()
@@ -1267,13 +1268,13 @@ class GraphicsViewHandler(QGraphicsView):
     @Slot(QPdfView, int, int)
     def retrieveRenderedItem(self, renderedItem, posX, posY):
         self.scene.addItem(renderedItem)
-        self.renderedItem.setPos(posX, posY)
-        self.renderedItem.setOrigin()
+        renderedItem.setPos(posX, posY)
+        renderedItem.setAsOrigin()
 
 
     def renderPdfToCurrentView(self, startPage=0):
-        # self.instructRenderer()
-        # return
+        self.instructRenderer()
+        return
 
         self.scene = QGraphicsScene()
         self.setScene(self.scene)
@@ -1460,7 +1461,7 @@ class GraphicsViewHandler(QGraphicsView):
         Update the provided pdf file at the desired page to render only the zoom and clip
         This methods is used when instantiating the pdf and later, when performance optimzation and zooming is required
         '''
-        
+
 
         mat = fitz.Matrix(zoom, zoom)
 

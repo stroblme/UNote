@@ -84,6 +84,7 @@ class Receivers(QObject):
         if pdfFileName == '':
             return
 
+
         self.ui.graphicsView.loadPdfToCurrentView(pdfFileName)
 
         self.applyWorkspaceDefaults()
