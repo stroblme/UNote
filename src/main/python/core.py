@@ -1049,68 +1049,57 @@ class QPdfView(QGraphicsPixmapItem):
         return qPos
 
 class Renderer(QObject):
-    itemRenderFinished = Signal(QPdfView)
+    itemRenderFinished = Signal(QPdfView, int, int)
     pages = IndexedOrderedDict()
 
     def __init__(self):
+        QObject.__init__(self)
         self.pdf = pdfEngine()
         self.imageHelper = imageHelper()
 
     def updateReceiver(self):
         pass
 
-    def renderPdfToCurrentView(self, startPage=0):
-        self.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+    def getPageSize(self, page=0):
+        return self.pdf.getPageSize(0)
 
+    @Slot()
+    def renderPdfToCurrentView(self):
         # Start at the top
         posX = float(0)
         posY = float(0)
-
-        self.qli = QGraphicsLineItem(0,0,0,1)
-        self.scene.addItem(self.qli)
-
-        # self.thread = QThread
-        # self.moveToThread(self.thread)
 
         width, height = self.getPageSize()
 
         for pIt in range(self.pdf.doc.pageCount):
 
-            if (startPage-2) <= pIt <= (startPage+2):
-                # Load each page to a new position in the current view.
-                posX, posY = self.loadPdfPageToCurrentView(pIt, posX, posY, self.absZoomFactor)
-            else:
-                posX, posY = self.loadBlankImageToCurrentView(pIt, posX, posY, width, height)
+            posX, posY = self.loadPdfPageToCurrentView(pIt, posX, posY, self.absZoomFactor)
 
 
-    def loadBlankImageToCurrentView(self, pageNumber, posX, posY, width, height):
-        '''
-        Creates a qpdf instance and loads an empty image.
-        This is intended to be used in combination with the initial pdf loading
-        '''
-        # Create a qpdf instance
-        pdfView = QPdfView()
-        pdfView.setPage(self.pdf.getPage(pageNumber), pageNumber)
+    # def loadBlankImageToCurrentView(self, pageNumber, posX, posY, width, height):
+    #     '''
+    #     Creates a qpdf instance and loads an empty image.
+    #     This is intended to be used in combination with the initial pdf loading
+    #     '''
+    #     # Create a qpdf instance
+    #     pdfView = QPdfView()
+    #     pdfView.setPage(self.pdf.getPage(pageNumber), pageNumber)
 
-        # Render a blank image
-        self.updateEmptyPdf(pdfView, width, height)
+    #     # Render a blank image
+    #     self.updateEmptyPdf(pdfView, width, height)
 
-        # Store instance locally
-        self.pages[pageNumber] = pdfView
+    #     # Store instance locally
+    #     self.pages[pageNumber] = pdfView
 
-        # Connect event handlers
-        self.pages[pageNumber].eh.requestTextInput.connect(self.toolBoxTextInputRequestedEvent)
-        self.pages[pageNumber].eh.addIndicatorPoint.connect(self.addIndicatorPoint)
-        self.pages[pageNumber].eh.deleteLastIndicatorPoint.connect(self.deleteLastIndicatorPoint)
+    #     # Connect event handlers
+    #     self.pages[pageNumber].eh.requestTextInput.connect(self.toolBoxTextInputRequestedEvent)
+    #     self.pages[pageNumber].eh.addIndicatorPoint.connect(self.addIndicatorPoint)
+    #     self.pages[pageNumber].eh.deleteLastIndicatorPoint.connect(self.deleteLastIndicatorPoint)
 
-        # add and arrange the new page in the scene
-        self.itemRenderFinished.emit(self.pages[pageNumber])
-        self.pages[pageNumber].setPos(posX, posY)
+    #     # add and arrange the new page in the scene
+    #     self.itemRenderFinished.emit(self.pages[pageNumber], posX, posY)
 
-        # some stuff to tell the instance that the current position is the original one
-        pdfView.setAsOrigin()
-
-        return posX, posY + pdfView.hOrigin + self.DEFAULTPAGESPACE
+    #     return posX, posY + pdfView.hOrigin + self.DEFAULTPAGESPACE
 
     def loadPdfPageToCurrentView(self, pageNumber, posX, posY, zoom = None):
         '''
@@ -1133,11 +1122,7 @@ class Renderer(QObject):
         self.pages[pageNumber].eh.deleteLastIndicatorPoint.connect(self.deleteLastIndicatorPoint)
 
         # add and arrange the new page in the scene
-        self.itemRenderFinished.emit(self.pages[pageNumber])
-        self.pages[pageNumber].setPos(posX, posY)
-
-        # some stuff to tell the instance that the current position is the original one
-        pdfView.setAsOrigin()
+        self.itemRenderFinished.emit(self.pages[pageNumber], posX, posY)
 
         return posX, posY + pdfView.hOrigin + self.DEFAULTPAGESPACE
 
@@ -1176,6 +1161,7 @@ class GraphicsViewHandler(QGraphicsView):
     DEFAULTPAGESPACE = 20
 
     updatePages = Signal()
+    renderPdf = Signal()
 
     absZoomFactor = float(1)
     lowResZoomFactor = float(0.1)
@@ -1260,30 +1246,35 @@ class GraphicsViewHandler(QGraphicsView):
 
         self.setAlignment(Qt.AlignLeft | Qt.AlignTop)
 
-        # Start at the top
-        posX = float(0)
-        posY = float(0)
 
         self.qli = QGraphicsLineItem(0,0,0,1)
         self.scene.addItem(self.qli)
-
-        # self.thread = QThread
-        # self.moveToThread(self.thread)
-
-        width, height = self.getPageSize()
 
         self.rendererWorker = Renderer()
         self.rendererWorker.moveToThread(self.rendererThread)
         # self.rendererThread.finished.connect(QObject.deleteLater)
         self.updatePages.connect(self.rendererWorker.updateReceiver)
+        self.renderPdf.connect(self.rendererWorker.renderPdfToCurrentView)
         self.rendererWorker.itemRenderFinished.connect(self.retrieveRenderedItem)
+
+        self.rendererWorker.pdf = self.pdf
+        self.rendererWorker.imageHelper = self.imageHelper
+        
         self.rendererThread.start()
 
-    @Slot(QPdfView)
-    def retrieveRenderedItem(self, renderedItem):
+        self.renderPdf.emit()
+
+    @Slot(QPdfView, int, int)
+    def retrieveRenderedItem(self, renderedItem, posX, posY):
         self.scene.addItem(renderedItem)
+        self.renderedItem.setPos(posX, posY)
+        self.renderedItem.setOrigin()
+
 
     def renderPdfToCurrentView(self, startPage=0):
+        # self.instructRenderer()
+        # return
+
         self.scene = QGraphicsScene()
         self.setScene(self.scene)
 
