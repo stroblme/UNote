@@ -1257,7 +1257,7 @@ class GraphicsViewHandler(QGraphicsView):
         # self.rendererThread.finished.connect(QObject.deleteLater)
         self.updatePages.connect(self.rendererWorker.updateReceiver)
         self.renderPdf.connect(self.rendererWorker.renderPdfToCurrentView, Qt.QueuedConnection)
-        self.rendererWorker.itemRenderFinished.connect(self.retrieveRenderedItem)
+        self.rendererWorker.itemRenderFinished.connect(self.retrieveRenderedItem, Qt.QueuedConnection)
 
 
         self.rendererWorker.absZoomFactor = self.rendererWorker.absZoomFactor
