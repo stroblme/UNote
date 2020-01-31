@@ -1,7 +1,6 @@
 {
     "app_name": "UNote",
     "url": "unote.stroblme.tech",
-    "sign_file": "src/sign/windows/certificate.pfx",
     "author": "Melvin Strobl",
     "main_module": "src/main/python/main.py",
     "version": "1.8"
