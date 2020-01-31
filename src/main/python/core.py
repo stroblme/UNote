@@ -1239,65 +1239,68 @@ class GraphicsViewHandler(QGraphicsView):
             if type(renderedItem) != QPdfView:
                 continue
 
-            # There are now a lot of switch-case similar things
-            # It looks a bit messy as everything has to be done for both, x and y coordinates
+            if renderedItem.lastZoomFactor == self.absZoomFactor:
+                return
 
-            # Initialize clip start coordinates
-            clipX = 0
-            clipY = 0
+            # # There are now a lot of switch-case similar things
+            # # It looks a bit messy as everything has to be done for both, x and y coordinates
 
-            if(renderedItem.xOrigin < viewportX):
+            # # Initialize clip start coordinates
+            # clipX = 0
+            # clipY = 0
 
-                clipX = viewportX - renderedItem.xOrigin
+            # if(renderedItem.xOrigin < viewportX):
 
-            if(renderedItem.yOrigin < viewportY):
+            #     clipX = viewportX - renderedItem.xOrigin
 
-                clipY = viewportY - renderedItem.yOrigin
+            # if(renderedItem.yOrigin < viewportY):
 
-
-            if((renderedItem.xOrigin + renderedItem.wOrigin) - (viewportX + viewportWidth) > 0):
-                # Start in scope, End not in scope
-                if clipX == 0:
-                    clipW = (viewportX + viewportWidth) - renderedItem.xOrigin
-                # Start not in scope, End not in scope
-                else:
-                    clipW = viewportWidth
-
-            else:
-                # Start in scope, End in scope
-                if clipX == 0:
-                    clipW = renderedItem.wOrigin
-                # Start not in scope, End in scope
-                else:
-                    clipW = renderedItem.wOrigin - clipX
-
-            if((renderedItem.yOrigin + renderedItem.hOrigin) - (viewportY + viewportHeight) > 0):
-                # Start in scope, End not in scope
-                if clipY == 0:
-                    clipH = (viewportY + viewportHeight) - renderedItem.yOrigin
-                # Start not in scope, End not in scope
-                else:
-                    clipH = viewportHeight
-
-            else:
-                # Start in scope, End in scope
-                if clipY == 0:
-                    clipH = renderedItem.hOrigin
-                # Start not in scope, End in scope
-                else:
-                    clipH = renderedItem.hOrigin - clipY
+            #     clipY = viewportY - renderedItem.yOrigin
 
 
-            clip = QRectF(clipX, clipY, clipW, clipH)
+            # if((renderedItem.xOrigin + renderedItem.wOrigin) - (viewportX + viewportWidth) > 0):
+            #     # Start in scope, End not in scope
+            #     if clipX == 0:
+            #         clipW = (viewportX + viewportWidth) - renderedItem.xOrigin
+            #     # Start not in scope, End not in scope
+            #     else:
+            #         clipW = viewportWidth
 
-            if clipX != 0:
-                rItx = viewportX
-            else:
-                rItx = renderedItem.xOrigin
-            if clipY != 0:
-                rIty = viewportY
-            else:
-                rIty = renderedItem.yOrigin
+            # else:
+            #     # Start in scope, End in scope
+            #     if clipX == 0:
+            #         clipW = renderedItem.wOrigin
+            #     # Start not in scope, End in scope
+            #     else:
+            #         clipW = renderedItem.wOrigin - clipX
+
+            # if((renderedItem.yOrigin + renderedItem.hOrigin) - (viewportY + viewportHeight) > 0):
+            #     # Start in scope, End not in scope
+            #     if clipY == 0:
+            #         clipH = (viewportY + viewportHeight) - renderedItem.yOrigin
+            #     # Start not in scope, End not in scope
+            #     else:
+            #         clipH = viewportHeight
+
+            # else:
+            #     # Start in scope, End in scope
+            #     if clipY == 0:
+            #         clipH = renderedItem.hOrigin
+            #     # Start not in scope, End in scope
+            #     else:
+            #         clipH = renderedItem.hOrigin - clipY
+
+
+            # clip = QRectF(clipX, clipY, clipW, clipH)
+
+            # if clipX != 0:
+            #     rItx = viewportX
+            # else:
+            #     rItx = renderedItem.xOrigin
+            # if clipY != 0:
+            #     rIty = viewportY
+            # else:
+            #     rIty = renderedItem.yOrigin
 
             # renderedItem.setPos(rItx, rIty)
 
@@ -1311,8 +1314,7 @@ class GraphicsViewHandler(QGraphicsView):
         Update the provided pdf file at the desired page to render only the zoom and clip
         This methods is used when instantiating the pdf and later, when performance optimzation and zooming is required
         '''
-        if pdfViewInstance.lastZoomFactor == zoom:
-            return
+        
 
         mat = fitz.Matrix(zoom, zoom)
 
