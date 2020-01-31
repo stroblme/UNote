@@ -78,6 +78,8 @@ class QPdfView(QGraphicsPixmapItem):
         self.formPoints = []
         self.drawIndicators = []
 
+        self.lastZoomFactor = -1
+
 
     def paint(self, painter, option, widget):
         res = super().paint(painter, option, widget)
@@ -99,18 +101,22 @@ class QPdfView(QGraphicsPixmapItem):
 
         return res
 
-    def setPixMap(self, qImg, pageNumber):
+    def setPixMap(self, qImg, pageNumber, newZoomFactor=1):
         self.pageNumber = pageNumber
 
         self.updatePixMap(qImg)
 
-    def updatePixMap(self, qImg):
+        self.lastZoomFactor = newZoomFactor
+
+    def updatePixMap(self, qImg, newZoomFactor=1):
         self.qImg = qImg
 
         self.pixImg = QPixmap()
         self.pixImg.convertFromImage(self.qImg)
 
         self.setPixmap(self.pixImg)
+
+        self.lastZoomFactor = newZoomFactor
 
 
     def setAsOrigin(self):
@@ -1082,6 +1088,9 @@ class GraphicsViewHandler(QGraphicsView):
         # # self.resize(parent.size())
         QScroller.grabGesture(self.viewport(), QScroller.TouchGesture)
 
+        self.rendererThread = QThread()
+
+
     def __del__(self):
         if toBool(Preferences.data['radioButtonSaveOnExit']):
             if History.recentChanges > 0:
@@ -1290,9 +1299,10 @@ class GraphicsViewHandler(QGraphicsView):
             else:
                 rIty = renderedItem.yOrigin
 
-            renderedItem.setPos(rItx, rIty)
+            # renderedItem.setPos(rItx, rIty)
 
-            self.updatePage(renderedItem, zoom = self.absZoomFactor, clip = clip)
+            # self.updatePage(renderedItem, zoom = self.absZoomFactor, clip = clip)
+            self.updatePage(renderedItem, zoom = self.absZoomFactor)
 
 
 
@@ -1301,6 +1311,9 @@ class GraphicsViewHandler(QGraphicsView):
         Update the provided pdf file at the desired page to render only the zoom and clip
         This methods is used when instantiating the pdf and later, when performance optimzation and zooming is required
         '''
+        if pdfViewInstance.lastZoomFactor == zoom:
+            return
+
         mat = fitz.Matrix(zoom, zoom)
 
         fClip = None
@@ -1319,9 +1332,9 @@ class GraphicsViewHandler(QGraphicsView):
 
         if self.validatePixmap(pdfViewInstance) or forceRender:
             if pdfViewInstance.pageNumber:
-                pdfViewInstance.setPixMap(qImg, pdfViewInstance.pageNumber)
+                pdfViewInstance.setPixMap(qImg, pdfViewInstance.pageNumber, zoom)
             else:
-                pdfViewInstance.updatePixMap(qImg)
+                pdfViewInstance.updatePixMap(qImg, zoom)
 
     def validatePixmap(self, pdfViewInstance):
         if pdfViewInstance in self.scene.items(self.mapToScene(self.viewport().geometry())):
