@@ -14,7 +14,7 @@ from indexed import IndexedOrderedDict
 from enum import Enum
 
 from PySide2.QtWidgets import QFrame, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGraphicsLineItem, QGraphicsEllipseItem, QScroller
-from PySide2.QtCore import Qt, QRectF, QEvent, QThread, Signal, Slot, QObject, QPoint, QPointF
+from PySide2.QtCore import Qt, QRectF, QEvent, QThread, Signal, Slot, QObject, QPoint, QPointF, QTimer
 from PySide2.QtGui import QPixmap, QBrush, QColor, QImage, QTouchEvent, QPainter, QGuiApplication, QPen
 # from PySide2.QtWebEngineWidgets import QWebEngineView
 
@@ -1052,7 +1052,7 @@ class Renderer(QObject):
     itemRenderFinished = Signal(QPdfView, int, int)
     pages = IndexedOrderedDict()
     absZoomFactor = float(1)
-    lowResZoomFactor = float(0.01)
+    lowResZoomFactor = float(0.1)
     DEFAULTPAGESPACE = 10
 
 
@@ -1069,6 +1069,11 @@ class Renderer(QObject):
 
     @Slot()
     def renderPdfToCurrentView(self):
+        t = QTimer()
+              
+        t.singleShot(10, self.delayedRenderer)
+
+    def delayedRenderer(self):
         # Start at the top
         posX = float(0)
         posY = float(0)
@@ -1077,8 +1082,10 @@ class Renderer(QObject):
 
         for pIt in range(self.pdf.doc.pageCount):
 
-            if pIt < 3:
+            if pIt <= 2:
                 self.loadPdfPageToCurrentView(pIt, posX, posY, self.absZoomFactor)
+            elif pIt <= 20:
+                self.loadPdfPageToCurrentView(pIt, posX, posY, self.lowResZoomFactor)
             else:
                 self.loadBlankImageToCurrentView(pIt, posX, posY, height, width)
 
