@@ -1,4 +1,5 @@
 src/build/settings/secret.json
+distribute.cmd
 
 ### Test Files ###
 *.pdf
