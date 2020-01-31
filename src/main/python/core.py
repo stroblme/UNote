@@ -1086,6 +1086,7 @@ class Renderer(QObject):
 
         t.singleShot(0, self.delayedRenderer)
 
+
     def delayedRenderer(self):
         # Start at the top
         posX = float(0)
@@ -1106,7 +1107,7 @@ class Renderer(QObject):
 
             posY += height + self.DEFAULTPAGESPACE
 
-        pdfRenderFinished.emit()
+        self.pdfRenderFinished.emit()
 
     def loadBlankImageToCurrentView(self, pageNumber, posX, posY, width, height):
         '''
@@ -1319,7 +1320,7 @@ class GraphicsViewHandler(QGraphicsView):
 
     @Slot()
     def rendererFinished(self):
-        print("--- Loaded PDF within %s seconds ---" % (time.time() - start_time))
+        print("--- Loaded PDF within %s seconds ---" % (time.time() - self.start_time))
 
     def renderPdfToCurrentView(self, startPage=0):
         self.renderPdf.emit()

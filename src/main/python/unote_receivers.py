@@ -217,6 +217,8 @@ class Receivers(QObject):
 
             else:
                 self.ui.splitView = GraphicsViewHandler(self.ui.centralwidget)
+                self.ui.splitView.rendererWorker.pdfRenderFinished.connect(self.syncPages)
+
                 self.ui.splitView.loadPdfInstanceToCurrentView(self.ui.graphicsView.rendererWorker.pdf)
 
 
@@ -232,19 +234,23 @@ class Receivers(QObject):
                 self.ui.floatingToolBox.textInputFinished.connect(self.ui.splitView.toolBoxTextInputEvent)
                 self.ui.splitView.requestTextInput.connect(self.ui.floatingToolBox.handleTextInputRequest)
 
-                t = QTimer()
-                t.singleShot(10, self.ui.splitView.zoomToFit)
-                t.singleShot(50, self.syncPages)
-                t.singleShot(55, self.ui.graphicsView.updateRenderedPages)
+
         else:
             self.ui.gridLayout.itemAtPosition(1,0).widget().setEnabled(False)
             self.ui.gridLayout.itemAtPosition(1,0).widget().setVisible(False)
             # self.ui.gridLayout.removeWidget(self.ui.gridLayout.itemAtPosition(1,0).widget())
 
+    @Slot()
     def syncPages(self):
+        print('syncing')
         curNum = self.ui.graphicsView.getCurrentPageNumber()
 
         self.ui.splitView.pageGoto(curNum+1)
+
+        self.ui.splitView.updateRenderedPages
+
+        self.ui.splitView.zoomToFit()
+
 
     def JSReceiveMessage(self, msg):
         '''
