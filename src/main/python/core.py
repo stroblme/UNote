@@ -1289,6 +1289,15 @@ class GraphicsViewHandler(QGraphicsView):
 
         self.renderPdfToCurrentView(startPage)
 
+    def loadPdfInstanceToCurrentView(self, pdfInstance, startPage=0):
+        self.start_time = time.time()
+
+        self.instructRenderer()
+
+        self.rendererWorker.pdf = pdfInstance
+
+        self.renderPdfToCurrentView(startPage)
+
     def instructRenderer(self, startPage=0):
         self.rendererWorker.moveToThread(self.rendererThread)
         # self.rendererThread.finished.connect(QObject.deleteLater)
