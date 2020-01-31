@@ -180,7 +180,8 @@ class Receivers(QObject):
 
     def snippedContainer(self):
         self.ui.splitView = GraphicsViewHandler(self.ui.centralwidget)
-        self.ui.splitView.pdf = self.ui.graphicsView.rendererWorker.pdf
+        self.ui.splitView.rendererWorker.pdf = self.ui.graphicsView.rendererWorker.pdf
+        self.ui.splitView.instructRenderer()
         self.ui.splitView.renderPdfToCurrentView()
 
         self.ui.snippetContainer.setChildWidget(self.ui.splitView)
@@ -218,7 +219,7 @@ class Receivers(QObject):
 
             else:
                 self.ui.splitView = GraphicsViewHandler(self.ui.centralwidget)
-                self.ui.splitView.pdf = self.ui.graphicsView.rendererWorker.pdf
+                self.ui.splitView.rendererWorker.pdf = self.ui.graphicsView.rendererWorker.pdf
                 self.ui.splitView.renderPdfToCurrentView()
 
                 self.ui.seperator = QHLine()

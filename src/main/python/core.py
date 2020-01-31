@@ -1063,8 +1063,8 @@ class Renderer(QObject):
     pdfRenderFinished = Signal()
     pages = IndexedOrderedDict()
     absZoomFactor = float(1)
-    lowResZoomFactor = float(0.1)
-    DEFAULTPAGESPACE = 10
+    lowResZoomFactor = float(0.3)
+    DEFAULTPAGESPACE = 7
 
 
     def __init__(self):
@@ -1081,7 +1081,7 @@ class Renderer(QObject):
     @Slot()
     def renderPdfToCurrentView(self):
         t = QTimer()
-              
+
         t.singleShot(0, self.delayedRenderer)
 
     def delayedRenderer(self):
@@ -1095,7 +1095,7 @@ class Renderer(QObject):
 
             if pIt <= 2:
                 self.loadPdfPageToCurrentView(pIt, posX, posY, self.absZoomFactor)
-            elif pIt <= 20:
+            elif pIt <= 10:
                 self.loadPdfPageToCurrentView(pIt, posX, posY, self.lowResZoomFactor)
                 self.pages[pIt].setAsDraft()
             else:
@@ -1212,6 +1212,8 @@ class GraphicsViewHandler(QGraphicsView):
     tempObj = list()
 
 
+
+
     def __init__(self, parent):
         '''
         Creates the graphic view handler instance, which is a main feature of the unote application
@@ -1236,7 +1238,12 @@ class GraphicsViewHandler(QGraphicsView):
         QScroller.grabGesture(self.viewport(), QScroller.TouchGesture)
 
         self.rendererThread = QThread()
+        self.rendererWorker = Renderer()
 
+        self.scene = QGraphicsScene()
+        self.setScene(self.scene)
+
+        self.setAlignment(Qt.AlignLeft | Qt.AlignTop)
 
 
     def __del__(self):
@@ -1258,6 +1265,7 @@ class GraphicsViewHandler(QGraphicsView):
         Just handles saving the pdf
         '''
         if self.rendererWorker.pdf.filename:
+            print('PDF saved')
             return self.rendererWorker.pdf.savePdf()
 
     def saveCurrentPdfAs(self, fileName):
@@ -1281,16 +1289,6 @@ class GraphicsViewHandler(QGraphicsView):
         self.renderPdfToCurrentView(startPage)
 
     def instructRenderer(self, startPage=0):
-        self.scene = QGraphicsScene()
-        self.setScene(self.scene)
-
-        self.setAlignment(Qt.AlignLeft | Qt.AlignTop)
-
-
-        self.qli = QGraphicsLineItem(0,0,0,1)
-        self.scene.addItem(self.qli)
-
-        self.rendererWorker = Renderer()
         self.rendererWorker.moveToThread(self.rendererThread)
         # self.rendererThread.finished.connect(QObject.deleteLater)
         self.updatePages.connect(self.rendererWorker.updateReceiver)
@@ -1298,11 +1296,9 @@ class GraphicsViewHandler(QGraphicsView):
         self.rendererWorker.itemRenderFinished.connect(self.retrieveRenderedItem, Qt.QueuedConnection)
         self.rendererWorker.pdfRenderFinished.connect(self.rendererFinished)
 
-
         self.rendererWorker.absZoomFactor = self.rendererWorker.absZoomFactor
 
         self.rendererThread.start()
-
 
     @Slot(QPdfView, int, int)
     def retrieveRenderedItem(self, renderedItem, posX, posY):
@@ -1358,16 +1354,16 @@ class GraphicsViewHandler(QGraphicsView):
         self.updateEmptyPdf(pdfView, width, height)
 
         # Store instance locally
-        self.pages[pageNumber] = pdfView
+        self.rendererWorker.pages[pageNumber] = pdfView
 
         # Connect event handlers
-        self.pages[pageNumber].eh.requestTextInput.connect(self.toolBoxTextInputRequestedEvent)
-        self.pages[pageNumber].eh.addIndicatorPoint.connect(self.addIndicatorPoint)
-        self.pages[pageNumber].eh.deleteLastIndicatorPoint.connect(self.deleteLastIndicatorPoint)
+        self.rendererWorker.pages[pageNumber].eh.requestTextInput.connect(self.toolBoxTextInputRequestedEvent)
+        self.rendererWorker.pages[pageNumber].eh.addIndicatorPoint.connect(self.addIndicatorPoint)
+        self.rendererWorker.pages[pageNumber].eh.deleteLastIndicatorPoint.connect(self.deleteLastIndicatorPoint)
 
         # add and arrange the new page in the scene
-        self.scene.addItem(self.pages[pageNumber])
-        self.pages[pageNumber].setPos(posX, posY)
+        self.scene.addItem(self.rendererWorker.pages[pageNumber])
+        self.rendererWorker.pages[pageNumber].setPos(posX, posY)
 
         # some stuff to tell the instance that the current position is the original one
         pdfView.setAsOrigin()
@@ -1387,16 +1383,16 @@ class GraphicsViewHandler(QGraphicsView):
         self.updatePage(pdfView, zoom = zoom, forceRender=True)
 
         # Store instance locally
-        self.pages[pageNumber] = pdfView
+        self.rendererWorker.pages[pageNumber] = pdfView
 
         # Connect event handlers
-        self.pages[pageNumber].eh.requestTextInput.connect(self.toolBoxTextInputRequestedEvent)
-        self.pages[pageNumber].eh.addIndicatorPoint.connect(self.addIndicatorPoint)
-        self.pages[pageNumber].eh.deleteLastIndicatorPoint.connect(self.deleteLastIndicatorPoint)
+        self.rendererWorker.pages[pageNumber].eh.requestTextInput.connect(self.toolBoxTextInputRequestedEvent)
+        self.rendererWorker.pages[pageNumber].eh.addIndicatorPoint.connect(self.addIndicatorPoint)
+        self.rendererWorker.pages[pageNumber].eh.deleteLastIndicatorPoint.connect(self.deleteLastIndicatorPoint)
 
         # add and arrange the new page in the scene
-        self.scene.addItem(self.pages[pageNumber])
-        self.pages[pageNumber].setPos(posX, posY)
+        self.scene.addItem(self.rendererWorker.pages[pageNumber])
+        self.rendererWorker.pages[pageNumber].setPos(posX, posY)
 
         # some stuff to tell the instance that the current position is the original one
         pdfView.setAsOrigin()
@@ -1793,9 +1789,9 @@ class GraphicsViewHandler(QGraphicsView):
             return renderedItem.pageNumber
 
     def pageGoto(self, pageNumber):
-        if self.pages and pageNumber in range(len(self.pages)):
+        if self.rendererWorker.pages and pageNumber in range(len(self.rendererWorker.pages)):
             if pageNumber >= 1:
-                self.verticalScrollBar().setValue(self.pages[pageNumber - 1].yOrigin * self.rendererWorker.absZoomFactor)
+                self.verticalScrollBar().setValue(self.rendererWorker.pages[pageNumber - 1].yOrigin * self.rendererWorker.absZoomFactor)
             else:
                 self.verticalScrollBar().setValue(0)
 
@@ -1850,7 +1846,7 @@ class GraphicsViewHandler(QGraphicsView):
         Triggered by the toolBox when user finished text editing
         '''
         # get the desired page which waits for user input
-        self.pages[pageNumber].textInputReceived(x, y, result, content)
+        self.rendererWorker.pages[pageNumber].textInputReceived(x, y, result, content)
 
         # Redraw all, as there are some changes now
         self.updateRenderedPages()

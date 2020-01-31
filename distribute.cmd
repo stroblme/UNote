@@ -17,28 +17,28 @@ IF %ERRORLEVEL% NEQ 0 (
 )
 
 echo zipping application
-7z a ".\target\out.zip" ".\target\UNote\"
+7z a ".\target\UNote.zip" ".\target\UNote\"
 IF %ERRORLEVEL% NEQ 0 (
     echo Failed Zipping application
     echo %ERRORLEVEL%
     GOTO FAIL
 )
 
-echo copying application to server
-copy ".\target\out.zip" "%1"
-IF %ERRORLEVEL% NEQ 0 (
-    echo Copying to server failed
-    echo %ERRORLEVEL%
-    GOTO FAIL
-)
+REM echo copying application to server
+REM copy ".\target\UNote.zip" "%1"
+REM IF %ERRORLEVEL% NEQ 0 (
+REM     echo Copying to server failed
+REM     echo %ERRORLEVEL%
+REM     GOTO FAIL
+REM )
 
-echo removing local zip
-rd /s /q ".\target\out.zip"
-IF %ERRORLEVEL% NEQ 0 (
-    echo Failed deleting local zip
-    echo %ERRORLEVEL%
-    GOTO FAIL
-)
+REM echo removing local zip
+REM rd /s /q ".\target\UNote.zip"
+REM IF %ERRORLEVEL% NEQ 0 (
+REM     echo Failed deleting local zip
+REM     echo %ERRORLEVEL%
+REM     GOTO FAIL
+REM )
 
 GOTO PASS
 
