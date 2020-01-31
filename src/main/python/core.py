@@ -1059,16 +1059,18 @@ class QPdfView(QGraphicsPixmapItem):
         return qPos
 
 class Renderer(QObject):
+    DEFAULTPAGESPACE = 7
+    LOWRESZOOM = float(0.3)
+
     itemRenderFinished = Signal(QPdfView, int, int)
     pdfRenderFinished = Signal()
-    pages = IndexedOrderedDict()
-    absZoomFactor = float(1)
-    lowResZoomFactor = float(0.3)
-    DEFAULTPAGESPACE = 7
-
 
     def __init__(self):
         QObject.__init__(self)
+
+        self.pages = IndexedOrderedDict()
+        self.absZoomFactor = float(1)
+
         self.pdf = pdfEngine()
         self.imageHelper = imageHelper()
 
@@ -1096,7 +1098,7 @@ class Renderer(QObject):
             if pIt <= 2:
                 self.loadPdfPageToCurrentView(pIt, posX, posY, self.absZoomFactor)
             elif pIt <= 10:
-                self.loadPdfPageToCurrentView(pIt, posX, posY, self.lowResZoomFactor)
+                self.loadPdfPageToCurrentView(pIt, posX, posY, self.LOWRESZOOM)
                 self.pages[pIt].setAsDraft()
             else:
                 self.loadBlankImageToCurrentView(pIt, posX, posY, height, width)
@@ -1203,7 +1205,7 @@ class GraphicsViewHandler(QGraphicsView):
     renderPdf = Signal()
 
     # absZoomFactor = float(1)
-    lowResZoomFactor = float(0.1)
+    LOWRESZOOM = float(0.1)
 
     # x, y, pageNumber, currentContent
     requestTextInput = Signal(int, int, int, str)
@@ -1285,7 +1287,6 @@ class GraphicsViewHandler(QGraphicsView):
 
         self.rendererWorker.pdf.openPdf(pdfFilePath)
 
-
         self.renderPdfToCurrentView(startPage)
 
     def instructRenderer(self, startPage=0):
@@ -1313,236 +1314,6 @@ class GraphicsViewHandler(QGraphicsView):
     def renderPdfToCurrentView(self, startPage=0):
         self.renderPdf.emit()
 
-        return
-
-        self.scene = QGraphicsScene()
-        self.setScene(self.scene)
-
-        self.setAlignment(Qt.AlignLeft | Qt.AlignTop)
-
-        # Start at the top
-        posX = float(0)
-        posY = float(0)
-
-        self.qli = QGraphicsLineItem(0,0,0,1)
-        self.scene.addItem(self.qli)
-
-        # self.thread = QThread
-        # self.moveToThread(self.thread)
-
-        width, height = self.getPageSize()
-
-        for pIt in range(self.rendererWorker.pdf.doc.pageCount):
-
-            if (startPage-2) <= pIt <= (startPage+2):
-                # Load each page to a new position in the current view.
-                posX, posY = self.loadPdfPageToCurrentView(pIt, posX, posY, self.rendererWorker.absZoomFactor)
-            else:
-                posX, posY = self.loadBlankImageToCurrentView(pIt, posX, posY, width, height)
-
-
-    def loadBlankImageToCurrentView(self, pageNumber, posX, posY, width, height):
-        '''
-        Creates a qpdf instance and loads an empty image.
-        This is intended to be used in combination with the initial pdf loading
-        '''
-        # Create a qpdf instance
-        pdfView = QPdfView()
-        pdfView.setPage(self.rendererWorker.pdf.getPage(pageNumber), pageNumber)
-
-        # Render a blank image
-        self.updateEmptyPdf(pdfView, width, height)
-
-        # Store instance locally
-        self.rendererWorker.pages[pageNumber] = pdfView
-
-        # Connect event handlers
-        self.rendererWorker.pages[pageNumber].eh.requestTextInput.connect(self.toolBoxTextInputRequestedEvent)
-        self.rendererWorker.pages[pageNumber].eh.addIndicatorPoint.connect(self.addIndicatorPoint)
-        self.rendererWorker.pages[pageNumber].eh.deleteLastIndicatorPoint.connect(self.deleteLastIndicatorPoint)
-
-        # add and arrange the new page in the scene
-        self.scene.addItem(self.rendererWorker.pages[pageNumber])
-        self.rendererWorker.pages[pageNumber].setPos(posX, posY)
-
-        # some stuff to tell the instance that the current position is the original one
-        pdfView.setAsOrigin()
-
-        return posX, posY + pdfView.hOrigin + self.DEFAULTPAGESPACE
-
-    def loadPdfPageToCurrentView(self, pageNumber, posX, posY, zoom = None):
-        '''
-        Creates a qpdfView instance from the desired page and renders it at the provided position with the zoomfactor.
-        A lower zoomFactor will dramatically improve speed, as it always correlates to the dpi of the page
-        '''
-        # Create a qpdf instance
-        pdfView = QPdfView()
-        pdfView.setPage(self.rendererWorker.pdf.getPage(pageNumber), pageNumber)
-
-        # Render according to the parameters
-        self.updatePage(pdfView, zoom = zoom, forceRender=True)
-
-        # Store instance locally
-        self.rendererWorker.pages[pageNumber] = pdfView
-
-        # Connect event handlers
-        self.rendererWorker.pages[pageNumber].eh.requestTextInput.connect(self.toolBoxTextInputRequestedEvent)
-        self.rendererWorker.pages[pageNumber].eh.addIndicatorPoint.connect(self.addIndicatorPoint)
-        self.rendererWorker.pages[pageNumber].eh.deleteLastIndicatorPoint.connect(self.deleteLastIndicatorPoint)
-
-        # add and arrange the new page in the scene
-        self.scene.addItem(self.rendererWorker.pages[pageNumber])
-        self.rendererWorker.pages[pageNumber].setPos(posX, posY)
-
-        # some stuff to tell the instance that the current position is the original one
-        pdfView.setAsOrigin()
-
-        return posX, posY + pdfView.hOrigin + self.DEFAULTPAGESPACE
-
-    def updateRenderedPages(self):
-        '''
-        Intended to be called repetitively on every ui change to redraw all visible pdf pages
-        '''
-        # Get all visible pages
-        try:
-            renderedItems = self.scene.items(self.mapToScene(self.viewport().geometry()))
-        except Exception as e:
-            return
-
-        # # get the rectangle of the current viewport
-        # rect = self.mapToScene(self.viewport().geometry()).boundingRect()
-        # # Store those properties for easy access
-        # viewportHeight = rect.height()
-        # viewportWidth = rect.width()
-        # viewportX = rect.x()
-        # viewportY = rect.y()
-
-        hIdx = 0
-        lIdx = len(self.rendererWorker.pages)
-
-        # Iterate all visible items (shouldn't be that much normally)
-        for renderedItem in renderedItems:
-            # Check if we have a pdf view here (visible could be anything)
-            if type(renderedItem) != QPdfView:
-                continue
-
-            if renderedItem.pageNumber > hIdx:
-                hIdx = renderedItem.pageNumber
-            if renderedItem.pageNumber < lIdx:
-                lIdx = renderedItem.pageNumber
-
-            # if renderedItem.lastZoomFactor == self.rendererWorker.absZoomFactor:
-            #     return
-
-            self.rendererWorker.updatePage(renderedItem, zoom = self.rendererWorker.absZoomFactor)
-
-
-        # for pIt in range(lIdx-4, lIdx-1):
-        #     if pIt > 0:
-        #         self.rendererWorker.updatePage(self.rendererWorker.pages[pIt], zoom = self.rendererWorker.absZoomFactor)
-
-        for pIt in range(hIdx+1, hIdx+3):
-            if pIt < len(self.rendererWorker.pages):
-                if self.rendererWorker.pages[pIt].isDraft:
-                    # print("Post rendering page " + str(pIt))
-                    self.rendererWorker.updatePage(self.rendererWorker.pages[pIt], zoom = self.rendererWorker.absZoomFactor)
-                    self.rendererWorker.pages[pIt].isDraft = False
-
-            # # There are now a lot of switch-case similar things
-            # # It looks a bit messy as everything has to be done for both, x and y coordinates
-
-            # # Initialize clip start coordinates
-            # clipX = 0
-            # clipY = 0
-
-            # if(renderedItem.xOrigin < viewportX):
-
-            #     clipX = viewportX - renderedItem.xOrigin
-
-            # if(renderedItem.yOrigin < viewportY):
-
-            #     clipY = viewportY - renderedItem.yOrigin
-
-
-            # if((renderedItem.xOrigin + renderedItem.wOrigin) - (viewportX + viewportWidth) > 0):
-            #     # Start in scope, End not in scope
-            #     if clipX == 0:
-            #         clipW = (viewportX + viewportWidth) - renderedItem.xOrigin
-            #     # Start not in scope, End not in scope
-            #     else:
-            #         clipW = viewportWidth
-
-            # else:
-            #     # Start in scope, End in scope
-            #     if clipX == 0:
-            #         clipW = renderedItem.wOrigin
-            #     # Start not in scope, End in scope
-            #     else:
-            #         clipW = renderedItem.wOrigin - clipX
-
-            # if((renderedItem.yOrigin + renderedItem.hOrigin) - (viewportY + viewportHeight) > 0):
-            #     # Start in scope, End not in scope
-            #     if clipY == 0:
-            #         clipH = (viewportY + viewportHeight) - renderedItem.yOrigin
-            #     # Start not in scope, End not in scope
-            #     else:
-            #         clipH = viewportHeight
-
-            # else:
-            #     # Start in scope, End in scope
-            #     if clipY == 0:
-            #         clipH = renderedItem.hOrigin
-            #     # Start not in scope, End in scope
-            #     else:
-            #         clipH = renderedItem.hOrigin - clipY
-
-
-            # clip = QRectF(clipX, clipY, clipW, clipH)
-
-            # if clipX != 0:
-            #     rItx = viewportX
-            # else:
-            #     rItx = renderedItem.xOrigin
-            # if clipY != 0:
-            #     rIty = viewportY
-            # else:
-            #     rIty = renderedItem.yOrigin
-
-            # renderedItem.setPos(rItx, rIty)
-
-            # self.updatePage(renderedItem, zoom = self.rendererWorker.absZoomFactor, clip = clip)
-
-
-
-    def updatePage(self, pdfViewInstance, zoom, clip=None, forceRender=False):
-        '''
-        Update the provided pdf file at the desired page to render only the zoom and clip
-        This methods is used when instantiating the pdf and later, when performance optimzation and zooming is required
-        '''
-
-
-        mat = fitz.Matrix(zoom, zoom)
-
-        fClip = None
-        if clip:
-            fClip = fitz.Rect(clip.x(), clip.y(), clip.x() + clip.width(), clip.y() + clip.height())
-
-        try:
-            pixmap = self.rendererWorker.pdf.renderPixmap(pdfViewInstance.pageNumber, mat = mat, clip = fClip)
-        except RuntimeError as identifier:
-            print(str(identifier))
-            return
-
-        qImg = self.rendererWorker.pdf.getQImage(pixmap)
-        qImg.setDevicePixelRatio(zoom)
-        qImg = self.rendererWorker.imageHelper.applyTheme(qImg)
-
-        if self.validatePixmap(pdfViewInstance) or forceRender:
-            if pdfViewInstance.pageNumber:
-                pdfViewInstance.setPixMap(qImg, pdfViewInstance.pageNumber, zoom)
-            else:
-                pdfViewInstance.updatePixMap(qImg, zoom)
-
     def validatePixmap(self, pdfViewInstance):
         if pdfViewInstance in self.scene.items(self.mapToScene(self.viewport().geometry())):
             return True
@@ -1553,12 +1324,6 @@ class GraphicsViewHandler(QGraphicsView):
 
     def getPageSize(self, page=0):
         return self.rendererWorker.pdf.getPageSize(0)
-
-    # def event(self, event):
-    #     if event.type() == QEvent.TouchEnd:
-    #         print('single touch end')
-
-    #     return super().event(event)
 
 
     def viewportEvent(self, event):
