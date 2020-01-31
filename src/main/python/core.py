@@ -80,6 +80,7 @@ class QPdfView(QGraphicsPixmapItem):
 
         self.lastZoomFactor = -1
 
+        self.isDraft = False
 
 
 
@@ -123,7 +124,7 @@ class QPdfView(QGraphicsPixmapItem):
         self.lastZoomFactor = newZoomFactor
 
     def setAsDraft(self):
-        self.draftImg = self.pixImg
+        self.isDraft = True
 
     def setAsOrigin(self):
         self.xOrigin = self.x()
@@ -1412,13 +1413,16 @@ class GraphicsViewHandler(QGraphicsView):
         except Exception as e:
             return
 
-        # get the rectangle of the current viewport
-        rect = self.mapToScene(self.viewport().geometry()).boundingRect()
-        # Store those properties for easy access
-        viewportHeight = rect.height()
-        viewportWidth = rect.width()
-        viewportX = rect.x()
-        viewportY = rect.y()
+        # # get the rectangle of the current viewport
+        # rect = self.mapToScene(self.viewport().geometry()).boundingRect()
+        # # Store those properties for easy access
+        # viewportHeight = rect.height()
+        # viewportWidth = rect.width()
+        # viewportX = rect.x()
+        # viewportY = rect.y()
+
+        hIdx = 0
+        lIdx = len(self.rendererWorker.pages)
 
         # Iterate all visible items (shouldn't be that much normally)
         for renderedItem in renderedItems:
@@ -1426,11 +1430,27 @@ class GraphicsViewHandler(QGraphicsView):
             if type(renderedItem) != QPdfView:
                 continue
 
+            if renderedItem.pageNumber > hIdx:
+                hIdx = renderedItem.pageNumber
+            if renderedItem.pageNumber < lIdx:
+                lIdx = renderedItem.pageNumber
+
             # if renderedItem.lastZoomFactor == self.rendererWorker.absZoomFactor:
             #     return
 
             self.rendererWorker.updatePage(renderedItem, zoom = self.rendererWorker.absZoomFactor)
 
+
+        # for pIt in range(lIdx-4, lIdx-1):
+        #     if pIt > 0:
+        #         self.rendererWorker.updatePage(self.rendererWorker.pages[pIt], zoom = self.rendererWorker.absZoomFactor)
+
+        for pIt in range(hIdx+1, hIdx+3):
+            if pIt < len(self.rendererWorker.pages):
+                if self.rendererWorker.pages[pIt].isDraft:
+                    print("Post rendering page " + str(pIt))
+                    self.rendererWorker.updatePage(self.rendererWorker.pages[pIt], zoom = self.rendererWorker.absZoomFactor)
+                    self.rendererWorker.pages[pIt].isDraft = False
 
             # # There are now a lot of switch-case similar things
             # # It looks a bit messy as everything has to be done for both, x and y coordinates
