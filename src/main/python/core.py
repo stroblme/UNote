@@ -1061,7 +1061,7 @@ class Renderer(QObject):
         self.imageHelper = imageHelper()
 
     def updateReceiver(self, zoom):
-        self.absZoomFactor = zoom
+        self.rendererWorker.absZoomFactor = zoom
 
     def getPageSize(self, page=0):
         return self.pdf.getPageSize(0)
@@ -1157,13 +1157,13 @@ class Renderer(QObject):
 
 
 class GraphicsViewHandler(QGraphicsView):
-    pages = IndexedOrderedDict()
+    # pages = IndexedOrderedDict()
     DEFAULTPAGESPACE = 20
 
     updatePages = Signal()
     renderPdf = Signal()
 
-    absZoomFactor = float(1)
+    # absZoomFactor = float(1)
     lowResZoomFactor = float(0.1)
 
     # x, y, pageNumber, currentContent
@@ -1172,7 +1172,6 @@ class GraphicsViewHandler(QGraphicsView):
 
     tempObj = list()
 
-    touching = None
 
     def __init__(self, parent):
         '''
@@ -1182,8 +1181,8 @@ class GraphicsViewHandler(QGraphicsView):
         '''
         QGraphicsView.__init__(self, parent)
 
-        self.pdf = pdfEngine()
-        self.imageHelper = imageHelper()
+        # self.pdf = pdfEngine()
+        # self.imageHelper = imageHelper()
 
         self.setMouseTracking(True)
         self.setTabletTracking(True)
@@ -1211,7 +1210,7 @@ class GraphicsViewHandler(QGraphicsView):
         '''
         Creates a new PDf from the given fileName
         '''
-        self.pdf.newPdf(fileName)
+        self.rendererWorker.pdf.newPdf(fileName)
 
         self.loadPdfToCurrentView(fileName)
 
@@ -1219,14 +1218,14 @@ class GraphicsViewHandler(QGraphicsView):
         '''
         Just handles saving the pdf
         '''
-        if self.pdf.filename:
-            return self.pdf.savePdf()
+        if self.rendererWorker.pdf.filename:
+            return self.rendererWorker.pdf.savePdf()
 
     def saveCurrentPdfAs(self, fileName):
         '''
         Just handles saving the pdf
         '''
-        self.pdf.savePdfAs(fileName)
+        self.rendererWorker.pdf.savePdfAs(fileName)
         print('PDF saved as\t' + fileName)
 
     def loadPdfToCurrentView(self, pdfFilePath, startPage=0):
@@ -1235,7 +1234,10 @@ class GraphicsViewHandler(QGraphicsView):
         '''
         start_time = time.time()
 
-        self.pdf.openPdf(pdfFilePath)
+        self.instructRenderer()
+
+        self.rendererWorker.pdf.openPdf(pdfFilePath)
+
 
         self.renderPdfToCurrentView(startPage)
         print("--- Loaded PDF within %s seconds ---" % (time.time() - start_time))
@@ -1257,13 +1259,11 @@ class GraphicsViewHandler(QGraphicsView):
         self.renderPdf.connect(self.rendererWorker.renderPdfToCurrentView, Qt.QueuedConnection)
         self.rendererWorker.itemRenderFinished.connect(self.retrieveRenderedItem)
 
-        self.rendererWorker.pdf = self.pdf
-        self.rendererWorker.imageHelper = self.imageHelper
-        self.rendererWorker.absZoomFactor = self.absZoomFactor
+
+        self.rendererWorker.absZoomFactor = self.rendererWorker.absZoomFactor
 
         self.rendererThread.start()
 
-        self.renderPdf.emit()
 
     @Slot(QPdfView, int, int)
     def retrieveRenderedItem(self, renderedItem, posX, posY):
@@ -1273,7 +1273,8 @@ class GraphicsViewHandler(QGraphicsView):
 
 
     def renderPdfToCurrentView(self, startPage=0):
-        self.instructRenderer()
+        self.renderPdf.emit()
+
         return
 
         self.scene = QGraphicsScene()
@@ -1293,11 +1294,11 @@ class GraphicsViewHandler(QGraphicsView):
 
         width, height = self.getPageSize()
 
-        for pIt in range(self.pdf.doc.pageCount):
+        for pIt in range(self.rendererWorker.pdf.doc.pageCount):
 
             if (startPage-2) <= pIt <= (startPage+2):
                 # Load each page to a new position in the current view.
-                posX, posY = self.loadPdfPageToCurrentView(pIt, posX, posY, self.absZoomFactor)
+                posX, posY = self.loadPdfPageToCurrentView(pIt, posX, posY, self.rendererWorker.absZoomFactor)
             else:
                 posX, posY = self.loadBlankImageToCurrentView(pIt, posX, posY, width, height)
 
@@ -1309,7 +1310,7 @@ class GraphicsViewHandler(QGraphicsView):
         '''
         # Create a qpdf instance
         pdfView = QPdfView()
-        pdfView.setPage(self.pdf.getPage(pageNumber), pageNumber)
+        pdfView.setPage(self.rendererWorker.pdf.getPage(pageNumber), pageNumber)
 
         # Render a blank image
         self.updateEmptyPdf(pdfView, width, height)
@@ -1338,7 +1339,7 @@ class GraphicsViewHandler(QGraphicsView):
         '''
         # Create a qpdf instance
         pdfView = QPdfView()
-        pdfView.setPage(self.pdf.getPage(pageNumber), pageNumber)
+        pdfView.setPage(self.rendererWorker.pdf.getPage(pageNumber), pageNumber)
 
         # Render according to the parameters
         self.updatePage(pdfView, zoom = zoom, forceRender=True)
@@ -1384,10 +1385,10 @@ class GraphicsViewHandler(QGraphicsView):
             if type(renderedItem) != QPdfView:
                 continue
 
-            if renderedItem.lastZoomFactor == self.absZoomFactor:
-                return
+            # if renderedItem.lastZoomFactor == self.rendererWorker.absZoomFactor:
+            #     return
 
-            self.updatePage(renderedItem, zoom = self.absZoomFactor)
+            self.rendererWorker.updatePage(renderedItem, zoom = self.rendererWorker.absZoomFactor)
 
 
             # # There are now a lot of switch-case similar things
@@ -1452,11 +1453,11 @@ class GraphicsViewHandler(QGraphicsView):
 
             # renderedItem.setPos(rItx, rIty)
 
-            # self.updatePage(renderedItem, zoom = self.absZoomFactor, clip = clip)
+            # self.updatePage(renderedItem, zoom = self.rendererWorker.absZoomFactor, clip = clip)
 
 
 
-    def updatePage(self, pdfViewInstance, zoom=absZoomFactor, clip=None, forceRender=False):
+    def updatePage(self, pdfViewInstance, zoom, clip=None, forceRender=False):
         '''
         Update the provided pdf file at the desired page to render only the zoom and clip
         This methods is used when instantiating the pdf and later, when performance optimzation and zooming is required
@@ -1470,14 +1471,14 @@ class GraphicsViewHandler(QGraphicsView):
             fClip = fitz.Rect(clip.x(), clip.y(), clip.x() + clip.width(), clip.y() + clip.height())
 
         try:
-            pixmap = self.pdf.renderPixmap(pdfViewInstance.pageNumber, mat = mat, clip = fClip)
+            pixmap = self.rendererWorker.pdf.renderPixmap(pdfViewInstance.pageNumber, mat = mat, clip = fClip)
         except RuntimeError as identifier:
             print(str(identifier))
             return
 
-        qImg = self.pdf.getQImage(pixmap)
+        qImg = self.rendererWorker.pdf.getQImage(pixmap)
         qImg.setDevicePixelRatio(zoom)
-        qImg = self.imageHelper.applyTheme(qImg)
+        qImg = self.rendererWorker.imageHelper.applyTheme(qImg)
 
         if self.validatePixmap(pdfViewInstance) or forceRender:
             if pdfViewInstance.pageNumber:
@@ -1506,7 +1507,7 @@ class GraphicsViewHandler(QGraphicsView):
             pdfViewInstance.updatePixMap(qImg)
 
     def getPageSize(self, page=0):
-        return self.pdf.getPageSize(0)
+        return self.rendererWorker.pdf.getPageSize(0)
 
     # def event(self, event):
     #     if event.type() == QEvent.TouchEnd:
@@ -1537,14 +1538,14 @@ class GraphicsViewHandler(QGraphicsView):
 
                 zoomFactor = distance / 20000
                 # Zoom
-                if distance > 0 and self.absZoomFactor > 0.4:
+                if distance > 0 and self.rendererWorker.absZoomFactor > 0.4:
                     relZoomFactor = 1-zoomFactor
-                elif distance < 0 and self.absZoomFactor < 40:
+                elif distance < 0 and self.rendererWorker.absZoomFactor < 40:
                     relZoomFactor = 1/1-zoomFactor
                 else:
                     relZoomFactor = 1
 
-                self.absZoomFactor = self.absZoomFactor * relZoomFactor
+                self.rendererWorker.absZoomFactor = self.rendererWorker.absZoomFactor * relZoomFactor
                 self.scale(relZoomFactor, relZoomFactor)
 
                 self.updateRenderedPages()
@@ -1577,7 +1578,7 @@ class GraphicsViewHandler(QGraphicsView):
             else:
                 relZoomFactor = zoomOutFactor
 
-            self.absZoomFactor = self.absZoomFactor * relZoomFactor
+            self.rendererWorker.absZoomFactor = self.rendererWorker.absZoomFactor * relZoomFactor
             self.scale(relZoomFactor, relZoomFactor)
 
         else:
@@ -1598,8 +1599,6 @@ class GraphicsViewHandler(QGraphicsView):
         super(GraphicsViewHandler, self).mouseReleaseEvent(event)
         self.updateRenderedPages()
 
-        if self.touching:
-            self.touching = None
 
     def mouseMoveEvent(self, event):
         '''
@@ -1639,7 +1638,7 @@ class GraphicsViewHandler(QGraphicsView):
             # get the rectable of the current viewport
             rect = self.mapToScene(self.viewport().geometry()).boundingRect()
             # Store those properties for easy access
-            item.tabletEvent(event.type(), event.pressure(), self.mapFromGlobalHighRes(event.pos(), event.globalPos(), event.hiResGlobalX(), event.hiResGlobalY()), self.absZoomFactor, rect.x(), rect.y())
+            item.tabletEvent(event.type(), event.pressure(), self.mapFromGlobalHighRes(event.pos(), event.globalPos(), event.hiResGlobalX(), event.hiResGlobalY()), self.rendererWorker.absZoomFactor, rect.x(), rect.y())
 
             if event.type() == QEvent.Type.TabletRelease:
                 self.updateRenderedPages()
@@ -1683,13 +1682,13 @@ class GraphicsViewHandler(QGraphicsView):
                 continue
 
             # Insert after current page
-            newPage = self.pdf.insertPage(renderedItem.pageNumber+1)
+            newPage = self.rendererWorker.pdf.insertPage(renderedItem.pageNumber+1)
             fileName = self.saveCurrentPdf()
-            self.pdf.closePdf()
-            os.replace(fileName, self.pdf.filename)
+            self.rendererWorker.pdf.closePdf()
+            os.replace(fileName, self.rendererWorker.pdf.filename)
 
             prevScroll = self.verticalScrollBar().value()
-            self.loadPdfToCurrentView(self.pdf.filename, renderedItem.pageNumber+1)
+            self.loadPdfToCurrentView(self.rendererWorker.pdf.filename, renderedItem.pageNumber+1)
             self.updateRenderedPages()
             self.verticalScrollBar().setMaximum(self.verticalScrollBar().maximumHeight())
             self.verticalScrollBar().setValue(prevScroll)
@@ -1711,13 +1710,13 @@ class GraphicsViewHandler(QGraphicsView):
                 continue
 
             # Delete after current page
-            if self.pdf.deletePage(renderedItem.pageNumber):
+            if self.rendererWorker.pdf.deletePage(renderedItem.pageNumber):
                 fileName = self.saveCurrentPdf()
-                self.pdf.closePdf()
-                os.replace(fileName, self.pdf.filename)
+                self.rendererWorker.pdf.closePdf()
+                os.replace(fileName, self.rendererWorker.pdf.filename)
 
                 prevScroll = self.verticalScrollBar().value()
-                self.loadPdfToCurrentView(self.pdf.filename, renderedItem.pageNumber)
+                self.loadPdfToCurrentView(self.rendererWorker.pdf.filename, renderedItem.pageNumber)
                 self.updateRenderedPages()
                 self.verticalScrollBar().setMaximum(self.verticalScrollBar().maximumHeight())
                 self.verticalScrollBar().setValue(prevScroll)
@@ -1745,7 +1744,7 @@ class GraphicsViewHandler(QGraphicsView):
     def pageGoto(self, pageNumber):
         if self.pages and pageNumber in range(len(self.pages)):
             if pageNumber >= 1:
-                self.verticalScrollBar().setValue(self.pages[pageNumber - 1].yOrigin * self.absZoomFactor)
+                self.verticalScrollBar().setValue(self.pages[pageNumber - 1].yOrigin * self.rendererWorker.absZoomFactor)
             else:
                 self.verticalScrollBar().setValue(0)
 
@@ -1759,7 +1758,7 @@ class GraphicsViewHandler(QGraphicsView):
     def pageFind(self, findStr):
         firstPage = -1
 
-        for page in self.pdf.doc:
+        for page in self.rendererWorker.pdf.doc:
             resultAreas = page.searchFor(findStr)
             if len(resultAreas) > 0:
                 self.pageGoto(page.number+1)
@@ -1767,7 +1766,7 @@ class GraphicsViewHandler(QGraphicsView):
     def zoomIn(self):
         zoomInFactor = 1.1
 
-        self.absZoomFactor = self.absZoomFactor * zoomInFactor
+        self.rendererWorker.absZoomFactor = self.rendererWorker.absZoomFactor * zoomInFactor
         self.scale(zoomInFactor, zoomInFactor)
 
         self.updateRenderedPages()
@@ -1776,7 +1775,7 @@ class GraphicsViewHandler(QGraphicsView):
         zoomInFactor = 1.1
         zoomOutFactor = 1 / zoomInFactor
 
-        self.absZoomFactor = self.absZoomFactor * zoomOutFactor
+        self.rendererWorker.absZoomFactor = self.rendererWorker.absZoomFactor * zoomOutFactor
         self.scale(zoomOutFactor, zoomOutFactor)
 
         self.updateRenderedPages()
@@ -1789,7 +1788,7 @@ class GraphicsViewHandler(QGraphicsView):
 
         ratio = rect.width() / pSize[0] / 1.15
 
-        self.absZoomFactor = self.absZoomFactor * ratio
+        self.rendererWorker.absZoomFactor = self.rendererWorker.absZoomFactor * ratio
         self.scale(ratio, ratio)
 
         self.updateRenderedPages()

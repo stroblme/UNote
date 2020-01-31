@@ -95,7 +95,7 @@ class Receivers(QObject):
     def savePdf(self):
         self.ui.graphicsView.saveCurrentPdf()
 
-        self.updateWindowTitle(self.ui.graphicsView.pdf.filename, False)
+        self.updateWindowTitle(self.ui.graphicsView.rendererWorker.pdf.filename, False)
         History.resetHistoryChanges()
 
 
@@ -114,9 +114,9 @@ class Receivers(QObject):
     @Slot(bool)
     def changesMadeReceiver(self, made):
         if made:
-            self.updateWindowTitle(self.ui.graphicsView.pdf.filename, True)
+            self.updateWindowTitle(self.ui.graphicsView.rendererWorker.pdf.filename, True)
         else:
-            self.updateWindowTitle(self.ui.graphicsView.pdf.filename, False)
+            self.updateWindowTitle(self.ui.graphicsView.rendererWorker.pdf.filename, False)
 
     def updateWindowTitle(self, var, isDraft=False):
         if isDraft:
@@ -150,7 +150,7 @@ class Receivers(QObject):
         t.singleShot(10, self.delayedWorkspaceDefaults)
 
     def delayedWorkspaceDefaults(self):
-        if self.ui.graphicsView.pdf.filename:
+        if self.ui.graphicsView.rendererWorker.pdf.filename:
             self.ui.graphicsView.zoomToFit()
 
             pW, pH = self.ui.graphicsView.getPageSize()
@@ -158,7 +158,7 @@ class Receivers(QObject):
             curY = self.ui.floatingToolBox.y()
             # curW = self.ui.floatingToolBox.width()
 
-            self.ui.floatingToolBox.move(pW * self.ui.graphicsView.absZoomFactor, curY)
+            self.ui.floatingToolBox.move(pW * self.ui.graphicsView.rendererWorker.absZoomFactor, curY)
 
     def zoomIn(self):
         self.ui.graphicsView.zoomIn()
@@ -180,7 +180,7 @@ class Receivers(QObject):
 
     def snippedContainer(self):
         self.ui.splitView = GraphicsViewHandler(self.ui.centralwidget)
-        self.ui.splitView.pdf = self.ui.graphicsView.pdf
+        self.ui.splitView.pdf = self.ui.graphicsView.rendererWorker.pdf
         self.ui.splitView.renderPdfToCurrentView()
 
         self.ui.snippetContainer.setChildWidget(self.ui.splitView)
@@ -218,7 +218,7 @@ class Receivers(QObject):
 
             else:
                 self.ui.splitView = GraphicsViewHandler(self.ui.centralwidget)
-                self.ui.splitView.pdf = self.ui.graphicsView.pdf
+                self.ui.splitView.pdf = self.ui.graphicsView.rendererWorker.pdf
                 self.ui.splitView.renderPdfToCurrentView()
 
                 self.ui.seperator = QHLine()
