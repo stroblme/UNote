@@ -1103,6 +1103,7 @@ class Renderer(QObject):
 
             posY += height + self.DEFAULTPAGESPACE
 
+        pdfRenderFinished.emit()
 
     def loadBlankImageToCurrentView(self, pageNumber, posX, posY, width, height):
         '''
@@ -1269,7 +1270,7 @@ class GraphicsViewHandler(QGraphicsView):
         '''
         Renderes the whole pdf file in the current graphic view instance
         '''
-        start_time = time.time()
+        self.start_time = time.time()
 
         self.instructRenderer()
 
@@ -1277,7 +1278,6 @@ class GraphicsViewHandler(QGraphicsView):
 
 
         self.renderPdfToCurrentView(startPage)
-        print("--- Loaded PDF within %s seconds ---" % (time.time() - start_time))
 
     def instructRenderer(self, startPage=0):
         self.scene = QGraphicsScene()
@@ -1295,6 +1295,7 @@ class GraphicsViewHandler(QGraphicsView):
         self.updatePages.connect(self.rendererWorker.updateReceiver)
         self.renderPdf.connect(self.rendererWorker.renderPdfToCurrentView, Qt.QueuedConnection)
         self.rendererWorker.itemRenderFinished.connect(self.retrieveRenderedItem, Qt.QueuedConnection)
+        self.rendererWorker.pdfRenderFinished.connect(self.rendererFinished)
 
 
         self.rendererWorker.absZoomFactor = self.rendererWorker.absZoomFactor
@@ -1308,6 +1309,9 @@ class GraphicsViewHandler(QGraphicsView):
         renderedItem.setPos(posX, posY)
         renderedItem.setAsOrigin()
 
+    @Slot()
+    def rendererFinished(self):
+        print("--- Loaded PDF within %s seconds ---" % (time.time() - start_time))
 
     def renderPdfToCurrentView(self, startPage=0):
         self.renderPdf.emit()

@@ -141,7 +141,7 @@ class Ui_PreferencesDialog(object):
         self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
         self.radioButtonPenDrawOnly = QRadioButton(self.horizontalGroupBoxDrawingSettings)
         self.radioButtonPenDrawOnly.setObjectName(u"radioButtonPenDrawOnly")
-        self.radioButtonPenDrawOnly.setChecked(True)
+        self.radioButtonPenDrawOnly.setChecked(False)
 
         self.horizontalLayout_6.addWidget(self.radioButtonPenDrawOnly)
 
@@ -169,6 +169,12 @@ class Ui_PreferencesDialog(object):
 
         self.horizontalLayout_9 = QHBoxLayout()
         self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
+        self.radioButtonUsePenAsDefault = QRadioButton(self.horizontalGroupBoxToolboxSettings)
+        self.radioButtonUsePenAsDefault.setObjectName(u"radioButtonUsePenAsDefault")
+        self.radioButtonUsePenAsDefault.setChecked(True)
+
+        self.horizontalLayout_9.addWidget(self.radioButtonUsePenAsDefault)
+
         self.radioButtonToolboxFollowsEdit = QRadioButton(self.horizontalGroupBoxToolboxSettings)
         self.radioButtonToolboxFollowsEdit.setObjectName(u"radioButtonToolboxFollowsEdit")
         self.radioButtonToolboxFollowsEdit.setChecked(True)
@@ -212,6 +218,10 @@ class Ui_PreferencesDialog(object):
         self.labelPenDraw.setText(QCoreApplication.translate("PreferencesDialog", u"Drawing", None))
         self.radioButtonPenDrawOnly.setText(QCoreApplication.translate("PreferencesDialog", u"Pen Draw Only", None))
         self.labelToolBox.setText(QCoreApplication.translate("PreferencesDialog", u"Toolbox", None))
+#if QT_CONFIG(tooltip)
+        self.radioButtonUsePenAsDefault.setToolTip(QCoreApplication.translate("PreferencesDialog", u"Show only relevant tools. E.g. in tablet mode, a Text Box is not relevant.", None))
+#endif // QT_CONFIG(tooltip)
+        self.radioButtonUsePenAsDefault.setText(QCoreApplication.translate("PreferencesDialog", u"Use Pen As Default", None))
 #if QT_CONFIG(tooltip)
         self.radioButtonToolboxFollowsEdit.setToolTip(QCoreApplication.translate("PreferencesDialog", u"Show only relevant tools. E.g. in tablet mode, a Text Box is not relevant.", None))
 #endif // QT_CONFIG(tooltip)
