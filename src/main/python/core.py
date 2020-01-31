@@ -1316,6 +1316,7 @@ class GraphicsViewHandler(QGraphicsView):
         renderedItem.setPos(posX, posY)
         renderedItem.setAsOrigin()
 
+
     @Slot()
     def rendererFinished(self):
         print("--- Loaded PDF within %s seconds ---" % (time.time() - start_time))
@@ -1323,12 +1324,54 @@ class GraphicsViewHandler(QGraphicsView):
     def renderPdfToCurrentView(self, startPage=0):
         self.renderPdf.emit()
 
-    def validatePixmap(self, pdfViewInstance):
-        if pdfViewInstance in self.scene.items(self.mapToScene(self.viewport().geometry())):
-            return True
-        else:
-            return False
+    def updateRenderedPages(self):
+        '''
+        Intended to be called repetitively on every ui change to redraw all visible pdf pages
+        '''
+        # Get all visible pages
+        try:
+            renderedItems = self.scene.items(self.mapToScene(self.viewport().geometry()))
+        except Exception as e:
+            return
 
+        # # get the rectangle of the current viewport
+        # rect = self.mapToScene(self.viewport().geometry()).boundingRect()
+        # # Store those properties for easy access
+        # viewportHeight = rect.height()
+        # viewportWidth = rect.width()
+        # viewportX = rect.x()
+        # viewportY = rect.y()
+
+        hIdx = 0
+        lIdx = len(self.rendererWorker.pages)
+
+        # Iterate all visible items (shouldn't be that much normally)
+        for renderedItem in renderedItems:
+            # Check if we have a pdf view here (visible could be anything)
+            if type(renderedItem) != QPdfView:
+                continue
+
+            if renderedItem.pageNumber > hIdx:
+                hIdx = renderedItem.pageNumber
+            if renderedItem.pageNumber < lIdx:
+                lIdx = renderedItem.pageNumber
+
+            # if renderedItem.lastZoomFactor == self.rendererWorker.absZoomFactor:
+            #     return
+
+            self.rendererWorker.updatePage(renderedItem, zoom = self.rendererWorker.absZoomFactor)
+
+
+        # for pIt in range(lIdx-4, lIdx-1):
+        #     if pIt > 0:
+        #         self.rendererWorker.updatePage(self.rendererWorker.pages[pIt], zoom = self.rendererWorker.absZoomFactor)
+
+        for pIt in range(hIdx+1, hIdx+3):
+            if pIt < len(self.rendererWorker.pages):
+                if self.rendererWorker.pages[pIt].isDraft:
+                    # print("Post rendering page " + str(pIt))
+                    self.rendererWorker.updatePage(self.rendererWorker.pages[pIt], zoom = self.rendererWorker.absZoomFactor)
+                    self.rendererWorker.pages[pIt].isDraft = False
 
 
     def getPageSize(self, page=0):

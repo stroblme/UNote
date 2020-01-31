@@ -132,7 +132,7 @@ class Receivers(QObject):
             self.ui.graphicsView.pageDeleteActive()
 
     def pageGoto(self):
-        pageNumber, ok = self.guiHelper.openInputDialog('Goto Page', 'Page Number (<' + str(len(self.ui.graphicsView.pages)) + '): ', int)
+        pageNumber, ok = self.guiHelper.openInputDialog('Goto Page', 'Page Number (<' + str(len(self.ui.graphicsView.rendererWorker.pages)) + '): ', int)
 
         if ok:
             self.ui.graphicsView.pageGoto(pageNumber)
@@ -212,13 +212,13 @@ class Receivers(QObject):
 
                 t = QTimer()
                 t.singleShot(10, self.ui.splitView.zoomToFit)
-                t.singleShot(15, self.syncPages)
-                t.singleShot(20, self.ui.graphicsView.updateRenderedPages)
+                t.singleShot(50, self.syncPages)
+                t.singleShot(55, self.ui.graphicsView.updateRenderedPages)
 
             else:
                 self.ui.splitView = GraphicsViewHandler(self.ui.centralwidget)
-                self.ui.splitView.rendererWorker.pdf = self.ui.graphicsView.rendererWorker.pdf
-                self.ui.splitView.renderPdfToCurrentView()
+                self.ui.splitView.loadPdfInstanceToCurrentView(self.ui.graphicsView.rendererWorker.pdf)
+
 
                 self.ui.seperator = QHLine()
 
@@ -234,8 +234,8 @@ class Receivers(QObject):
 
                 t = QTimer()
                 t.singleShot(10, self.ui.splitView.zoomToFit)
-                t.singleShot(15, self.syncPages)
-                t.singleShot(20, self.ui.graphicsView.updateRenderedPages)
+                t.singleShot(50, self.syncPages)
+                t.singleShot(55, self.ui.graphicsView.updateRenderedPages)
         else:
             self.ui.gridLayout.itemAtPosition(1,0).widget().setEnabled(False)
             self.ui.gridLayout.itemAtPosition(1,0).widget().setVisible(False)
