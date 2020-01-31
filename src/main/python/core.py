@@ -1052,7 +1052,8 @@ class Renderer(QObject):
     itemRenderFinished = Signal(QPdfView, int, int)
     pages = IndexedOrderedDict()
     absZoomFactor = float(1)
-    DEFAULTPAGESPACE = 20
+    lowResZoomFactor = float(0.01)
+    DEFAULTPAGESPACE = 10
 
 
     def __init__(self):
@@ -1076,45 +1077,24 @@ class Renderer(QObject):
 
         for pIt in range(self.pdf.doc.pageCount):
 
-            self.loadPdfPageToCurrentView(pIt, posX, posY, self.absZoomFactor)
+            if pIt < 3:
+                self.loadPdfPageToCurrentView(pIt, posX, posY, self.absZoomFactor)
+            else:
+                self.loadBlankImageToCurrentView(pIt, posX, posY, height, width)
+
             posY += height + self.DEFAULTPAGESPACE
 
-    # def loadBlankImageToCurrentView(self, pageNumber, posX, posY, width, height):
-    #     '''
-    #     Creates a qpdf instance and loads an empty image.
-    #     This is intended to be used in combination with the initial pdf loading
-    #     '''
-    #     # Create a qpdf instance
-    #     pdfView = QPdfView()
-    #     pdfView.setPage(self.pdf.getPage(pageNumber), pageNumber)
-
-    #     # Render a blank image
-    #     self.updateEmptyPdf(pdfView, width, height)
-
-    #     # Store instance locally
-    #     self.pages[pageNumber] = pdfView
-
-    #     # Connect event handlers
-    #     self.pages[pageNumber].eh.requestTextInput.connect(self.toolBoxTextInputRequestedEvent)
-    #     self.pages[pageNumber].eh.addIndicatorPoint.connect(self.addIndicatorPoint)
-    #     self.pages[pageNumber].eh.deleteLastIndicatorPoint.connect(self.deleteLastIndicatorPoint)
-
-    #     # add and arrange the new page in the scene
-    #     self.itemRenderFinished.emit(self.pages[pageNumber], posX, posY)
-
-    #     return posX, posY + pdfView.hOrigin + self.DEFAULTPAGESPACE
-
-    def loadPdfPageToCurrentView(self, pageNumber, posX, posY, zoom = None):
+    def loadBlankImageToCurrentView(self, pageNumber, posX, posY, width, height):
         '''
-        Creates a qpdfView instance from the desired page and renders it at the provided position with the zoomfactor.
-        A lower zoomFactor will dramatically improve speed, as it always correlates to the dpi of the page
+        Creates a qpdf instance and loads an empty image.
+        This is intended to be used in combination with the initial pdf loading
         '''
         # Create a qpdf instance
         pdfView = QPdfView()
         pdfView.setPage(self.pdf.getPage(pageNumber), pageNumber)
 
-        # Render according to the parameters
-        self.updatePage(pdfView, zoom = zoom, forceRender=True)
+        # Render a blank image
+        self.updateEmptyPdf(pdfView, width, height)
 
         # Store instance locally
         self.pages[pageNumber] = pdfView
@@ -1127,7 +1107,31 @@ class Renderer(QObject):
         # add and arrange the new page in the scene
         self.itemRenderFinished.emit(self.pages[pageNumber], posX, posY)
 
-    def updatePage(self, pdfViewInstance, zoom, clip=None, forceRender=False):
+
+    def loadPdfPageToCurrentView(self, pageNumber, posX, posY, zoom = None):
+        '''
+        Creates a qpdfView instance from the desired page and renders it at the provided position with the zoomfactor.
+        A lower zoomFactor will dramatically improve speed, as it always correlates to the dpi of the page
+        '''
+        # Create a qpdf instance
+        pdfView = QPdfView()
+        pdfView.setPage(self.pdf.getPage(pageNumber), pageNumber)
+
+        # Render according to the parameters
+        self.updatePage(pdfView, zoom = zoom)
+
+        # Store instance locally
+        self.pages[pageNumber] = pdfView
+
+        # # Connect event handlers
+        # self.pages[pageNumber].eh.requestTextInput.connect(self.toolBoxTextInputRequestedEvent)
+        # self.pages[pageNumber].eh.addIndicatorPoint.connect(self.addIndicatorPoint)
+        # self.pages[pageNumber].eh.deleteLastIndicatorPoint.connect(self.deleteLastIndicatorPoint)
+
+        # add and arrange the new page in the scene
+        self.itemRenderFinished.emit(self.pages[pageNumber], posX, posY)
+
+    def updatePage(self, pdfViewInstance, zoom, clip=None):
         '''
         Update the provided pdf file at the desired page to render only the zoom and clip
         This methods is used when instantiating the pdf and later, when performance optimzation and zooming is required
@@ -1155,6 +1159,19 @@ class Renderer(QObject):
         else:
             pdfViewInstance.updatePixMap(qImg, zoom)
 
+    def updateEmptyPdf(self, pdfViewInstance, width, height):
+        '''
+        Update the provided pdf file at the desired page to render only the zoom and clip
+        This methods is used when instantiating the pdf and later, when performance optimzation and zooming is required
+        '''
+
+        qImg = QImage(width, height, QImage.Format_Mono)
+        qImg.fill(0)
+
+        if pdfViewInstance.pageNumber:
+            pdfViewInstance.setPixMap(qImg, pdfViewInstance.pageNumber)
+        else:
+            pdfViewInstance.updatePixMap(qImg)
 
 class GraphicsViewHandler(QGraphicsView):
     # pages = IndexedOrderedDict()
@@ -1492,19 +1509,7 @@ class GraphicsViewHandler(QGraphicsView):
         else:
             return False
 
-    def updateEmptyPdf(self, pdfViewInstance, width, height):
-        '''
-        Update the provided pdf file at the desired page to render only the zoom and clip
-        This methods is used when instantiating the pdf and later, when performance optimzation and zooming is required
-        '''
 
-        qImg = QImage(width, height, QImage.Format_Mono)
-        qImg.fill(0)
-
-        if pdfViewInstance.pageNumber:
-            pdfViewInstance.setPixMap(qImg, pdfViewInstance.pageNumber)
-        else:
-            pdfViewInstance.updatePixMap(qImg)
 
     def getPageSize(self, page=0):
         return self.rendererWorker.pdf.getPageSize(0)
@@ -1591,13 +1596,14 @@ class GraphicsViewHandler(QGraphicsView):
         Overrides the default event
         '''
         super(GraphicsViewHandler, self).mousePressEvent(event)
+        self.updateRenderedPages()
+
 
     def mouseReleaseEvent(self, event):
         '''
         Overrides the default event
         '''
         super(GraphicsViewHandler, self).mouseReleaseEvent(event)
-        self.updateRenderedPages()
 
 
     def mouseMoveEvent(self, event):
