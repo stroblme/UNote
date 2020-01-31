@@ -170,6 +170,7 @@ class PreferencesGUI(App):
         Preferences.updateKeyValue("radioButtonAffectsPDF", str(self.ui.radioButtonAffectsPDF.isChecked()))
         Preferences.updateKeyValue("comboBoxThemeSelect", str(self.ui.comboBoxThemeSelect.currentIndex()))
         Preferences.updateKeyValue("radioButtonPenDrawOnly", str(self.ui.radioButtonPenDrawOnly.isChecked()))
+        Preferences.updateKeyValue("radioButtonUsePenAsDefault", str(self.ui.radioButtonPenDrawOnly.isChecked()))
         Preferences.updateKeyValue("comboBoxDrawingMode", str(self.ui.comboBoxDrawingMode.currentIndex()))
         Preferences.updateKeyValue("radioButtonSaveOnExit", int(self.ui.radioButtonSaveOnExit.isChecked()))
         Preferences.updateKeyValue("comboBoxAutosaveMode", int(self.ui.comboBoxAutosaveMode.currentIndex()))
@@ -201,6 +202,7 @@ class PreferencesGUI(App):
         self.ui.comboBoxThemeSelect.setCurrentIndex(int(Preferences.data["comboBoxThemeSelect"]))
         self.receiversInst.setComboBoxThemeSelect(int(Preferences.data["comboBoxThemeSelect"]))
 
+        self.ui.radioButtonUsePenAsDefault.setChecked(toBool(Preferences.data["radioButtonUsePenAsDefault"]))
         self.ui.radioButtonPenDrawOnly.setChecked(toBool(Preferences.data["radioButtonPenDrawOnly"]))
         self.ui.comboBoxDrawingMode.setCurrentIndex(int(Preferences.data["comboBoxDrawingMode"]))
 
@@ -218,6 +220,8 @@ class PreferencesGUI(App):
 
         if Preferences.data['radioButtonPenDrawOnly'] == "":
             Preferences.updateKeyValue('radioButtonPenDrawOnly', str(True))
+        if Preferences.data['radioButtonUsePenAsDefault'] == "":
+            Preferences.updateKeyValue('radioButtonUsePenAsDefault', str(True))
         if Preferences.data['comboBoxDrawingMode'] == "":
             Preferences.updateKeyValue('comboBoxDrawingMode', 0)
 

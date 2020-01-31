@@ -1,5 +1,6 @@
 radioButtonAffectsPDF
 comboBoxThemeSelect
+radioButtonUsePenAsDefault
 radioButtonPenDrawOnly
 comboBoxDrawingMode
 radioButtonSaveOnExit

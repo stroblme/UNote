@@ -959,7 +959,7 @@ class QPdfView(QGraphicsPixmapItem):
         self.blockEdit = False
         if toBool(Preferences.data['radioButtonPenDrawOnly']):
             if eventType == QEvent.TabletMove and self.ongoingEdit:
-                if editMode == editModes.freehand:
+                if editMode == editModes.freehand or toBool(Preferences.data['radioButtonUsePenAsDefault']):
                     self.updateDrawPoints(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff), pressure)
                     self.tempPoints.put(self.toWidgetCoordinates(highResPos, zoom, xOff, yOff))
                     self.update()
@@ -970,7 +970,7 @@ class QPdfView(QGraphicsPixmapItem):
             elif eventType == QEvent.TabletPress:
                 if editMode == editModes.marker:
                     self.startMarkText(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
-                elif editMode == editModes.freehand:
+                elif editMode == editModes.freehand or toBool(Preferences.data['radioButtonUsePenAsDefault']):
                     self.startDraw(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
                 elif editMode == editModes.eraser:
                     self.startEraser(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
@@ -979,7 +979,7 @@ class QPdfView(QGraphicsPixmapItem):
             elif eventType == QEvent.TabletRelease:
                 if editMode == editModes.marker:
                     self.stopMarkText(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
-                elif editMode == editModes.freehand:
+                elif editMode == editModes.freehand or toBool(Preferences.data['radioButtonUsePenAsDefault']):
                     self.stopDraw(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
                 elif editMode == editModes.eraser:
                     self.stopEraser(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
