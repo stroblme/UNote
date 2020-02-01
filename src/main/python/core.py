@@ -1255,7 +1255,7 @@ class GraphicsViewHandler(QGraphicsView):
         self.rendererThread.terminate()
 
         if toBool(Preferences.data['radioButtonSaveOnExit']):
-            if History.recentChanges > 0:
+            if History.recentChanges != 0:
                 self.saveCurrentPdf()
 
 
