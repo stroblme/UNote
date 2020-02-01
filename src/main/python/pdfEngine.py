@@ -16,6 +16,7 @@ class pdfEngine():
             self.doc.close()
 
             if not self.incremental:
+                print("Replacing temp file")
                 name, ext = os.path.splitext(self.filename)
                 name = name + '_m'
 
@@ -59,6 +60,8 @@ class pdfEngine():
             return self.savePdf()
         except ValueError as identifier:
             print(str(identifier))
+            self.incremental = False
+
 
         print('PDF saved')
 

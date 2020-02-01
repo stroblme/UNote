@@ -186,6 +186,8 @@ class UNote(App):
         '''
         Executed immediately when Application stops
         '''
+        self.ui.graphicsView.terminate()
+
         Preferences.updateKeyValue('geometry', self.MainWindow.saveGeometry())
         Preferences.updateKeyValue('state', self.MainWindow.saveState())
 

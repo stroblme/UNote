@@ -1065,7 +1065,7 @@ class Renderer(QObject):
     itemRenderFinished = Signal(QPdfView, int, int)
     pdfRenderFinished = Signal()
 
-    def __init__(self):
+    def __init__(self, parent):
         QObject.__init__(self)
 
         self.pages = IndexedOrderedDict()
@@ -1240,8 +1240,8 @@ class GraphicsViewHandler(QGraphicsView):
         # # self.resize(parent.size())
         QScroller.grabGesture(self.viewport(), QScroller.TouchGesture)
 
-        self.rendererThread = QThread()
-        self.rendererWorker = Renderer()
+        self.rendererThread = QThread(parent)
+        self.rendererWorker = Renderer(parent)
 
         self.scene = QGraphicsScene()
         self.setScene(self.scene)
@@ -1249,7 +1249,10 @@ class GraphicsViewHandler(QGraphicsView):
         self.setAlignment(Qt.AlignLeft | Qt.AlignTop)
 
 
-    def __del__(self):
+    def terminate(self):
+        print("cleaning")
+        self.rendererThread.terminate()
+
         if toBool(Preferences.data['radioButtonSaveOnExit']):
             if History.recentChanges > 0:
                 self.saveCurrentPdf()
@@ -1300,7 +1303,7 @@ class GraphicsViewHandler(QGraphicsView):
         self.renderPdfToCurrentView(startPage)
 
     def instructRenderer(self, startPage=0):
-        self.rendererWorker.moveToThread(self.rendererThread)
+        # self.rendererWorker.moveToThread(self.rendererThread)
         # self.rendererThread.finished.connect(QObject.deleteLater)
         self.updatePages.connect(self.rendererWorker.updateReceiver)
         self.renderPdf.connect(self.rendererWorker.renderPdfToCurrentView, Qt.QueuedConnection)
