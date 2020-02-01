@@ -1250,7 +1250,8 @@ class GraphicsViewHandler(QGraphicsView):
 
 
     def terminate(self):
-        print("cleaning")
+        print("Terminating Viewer")
+
         self.rendererThread.terminate()
 
         if toBool(Preferences.data['radioButtonSaveOnExit']):

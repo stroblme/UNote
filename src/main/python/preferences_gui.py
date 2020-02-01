@@ -66,7 +66,9 @@ class PreferencesGUI(App):
 
         self.loadSettings()
 
-    def __exit__(self, exc_type, exc_value, traceback):
+
+    def terminate(self):
+        self.storeSettings()
         del self.settings
 
 

@@ -186,12 +186,14 @@ class UNote(App):
         '''
         Executed immediately when Application stops
         '''
-        self.ui.graphicsView.terminate()
-
         Preferences.updateKeyValue('geometry', self.MainWindow.saveGeometry())
         Preferences.updateKeyValue('state', self.MainWindow.saveState())
 
-        self.preferencesGui.storeSettings()
+        self.ui.graphicsView.terminate()
+        self.receiversInst.terminate()
+        self.preferencesGui.terminate()
+
+
 
         # Cleanup the eventually mess
         if Path.is_file(self.newPdf):
