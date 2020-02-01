@@ -401,7 +401,7 @@ class ToolBoxWidget(QWidget):
             self.buttons['colorButton'].move(self.row2Right)
 
         elif self.editMode == editModes.eraser:
-            self.setEnableOnAllButtonsButThose(['eraserButton'])
+            self.setEnableOnAllButtonsButThose(['eraserButton', 'undoButton', 'redoButton'])
 
         elif self.editMode == editModes.forms:
             self.prevEditMode = editModes.forms
