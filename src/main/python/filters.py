@@ -2,7 +2,8 @@
 # from scipySavgol import savgol_filter
 # from scipy.linalg import lstsq
 # from scipy import dot
-from math import sqrt
+from math import sqrt, tan, pi
+rad_to_deg = lambda x: 180.0/pi * x
 
 def tuplesToArrays(points):
     xPoints = []
@@ -32,10 +33,19 @@ class FormEstimator(object):
 
         distance = sqrt(pow(fStart.y - fStop.y, 2) + pow(fStart.x - fStop.x, 2))
 
-        if abs(fStart.y - fStop.y)/distance < MAXYDELTA:
-            fStop.y = fStart.y
+        if abs(fStart.y - fStop.y) != 0 and abs(fStart.x - fStop.x) != 0:
+            angle = rad_to_deg(tan(abs(fStart.y - fStop.y)/abs(fStart.x - fStop.x)))
+        elif abs(fStart.x - fStop.x) == 0:
+            angle = 90
+        else: # abs(fStart.y - fStop.y) == 0:
+            angle = 0
+
         if abs(fStart.x - fStop.x)/distance < MAXXDELTA:
+            fStop.y = fStart.y
+        if abs(fStart.y - fStop.y)/distance < MAXYDELTA:
             fStop.x = fStart.x
+
+        print(angle)
 
         return fStart, fStop
 
