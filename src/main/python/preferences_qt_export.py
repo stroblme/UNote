@@ -19,7 +19,7 @@ class Ui_PreferencesDialog(object):
     def setupUi(self, PreferencesDialog):
         if PreferencesDialog.objectName():
             PreferencesDialog.setObjectName(u"PreferencesDialog")
-        PreferencesDialog.resize(656, 329)
+        PreferencesDialog.resize(688, 365)
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -31,7 +31,7 @@ class Ui_PreferencesDialog(object):
         self.centralwidget.setObjectName(u"centralwidget")
         self.layoutWidget = QWidget(self.centralwidget)
         self.layoutWidget.setObjectName(u"layoutWidget")
-        self.layoutWidget.setGeometry(QRect(10, 10, 618, 291))
+        self.layoutWidget.setGeometry(QRect(10, 10, 647, 318))
         self.verticalLayout_3 = QVBoxLayout(self.layoutWidget)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
@@ -171,7 +171,7 @@ class Ui_PreferencesDialog(object):
         self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
         self.radioButtonUsePenAsDefault = QRadioButton(self.horizontalGroupBoxToolboxSettings)
         self.radioButtonUsePenAsDefault.setObjectName(u"radioButtonUsePenAsDefault")
-        self.radioButtonUsePenAsDefault.setChecked(True)
+        self.radioButtonUsePenAsDefault.setChecked(False)
 
         self.horizontalLayout_9.addWidget(self.radioButtonUsePenAsDefault)
 
@@ -186,6 +186,31 @@ class Ui_PreferencesDialog(object):
 
 
         self.formLayout.setWidget(3, QFormLayout.FieldRole, self.horizontalGroupBoxToolboxSettings)
+
+        self.horizontalGroupBoxToolboxSettings_2 = QGroupBox(self.layoutWidget)
+        self.horizontalGroupBoxToolboxSettings_2.setObjectName(u"horizontalGroupBoxToolboxSettings_2")
+        sizePolicy.setHeightForWidth(self.horizontalGroupBoxToolboxSettings_2.sizePolicy().hasHeightForWidth())
+        self.horizontalGroupBoxToolboxSettings_2.setSizePolicy(sizePolicy)
+        self.horizontalLayout_10 = QHBoxLayout(self.horizontalGroupBoxToolboxSettings_2)
+        self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
+        self.labelToolBox_2 = QLabel(self.horizontalGroupBoxToolboxSettings_2)
+        self.labelToolBox_2.setObjectName(u"labelToolBox_2")
+
+        self.horizontalLayout_10.addWidget(self.labelToolBox_2)
+
+        self.horizontalLayout_11 = QHBoxLayout()
+        self.horizontalLayout_11.setObjectName(u"horizontalLayout_11")
+        self.radioButtonNoInteractionWhileEditing = QRadioButton(self.horizontalGroupBoxToolboxSettings_2)
+        self.radioButtonNoInteractionWhileEditing.setObjectName(u"radioButtonNoInteractionWhileEditing")
+        self.radioButtonNoInteractionWhileEditing.setChecked(False)
+
+        self.horizontalLayout_11.addWidget(self.radioButtonNoInteractionWhileEditing)
+
+
+        self.horizontalLayout_10.addLayout(self.horizontalLayout_11)
+
+
+        self.formLayout.setWidget(4, QFormLayout.FieldRole, self.horizontalGroupBoxToolboxSettings_2)
 
 
         self.verticalLayout_3.addLayout(self.formLayout)
@@ -226,5 +251,10 @@ class Ui_PreferencesDialog(object):
         self.radioButtonToolboxFollowsEdit.setToolTip(QCoreApplication.translate("PreferencesDialog", u"Show only relevant tools. E.g. in tablet mode, a Text Box is not relevant.", None))
 #endif // QT_CONFIG(tooltip)
         self.radioButtonToolboxFollowsEdit.setText(QCoreApplication.translate("PreferencesDialog", u"Reduced Toolbar", None))
+        self.labelToolBox_2.setText(QCoreApplication.translate("PreferencesDialog", u"Interactuin", None))
+#if QT_CONFIG(tooltip)
+        self.radioButtonNoInteractionWhileEditing.setToolTip(QCoreApplication.translate("PreferencesDialog", u"Show only relevant tools. E.g. in tablet mode, a Text Box is not relevant.", None))
+#endif // QT_CONFIG(tooltip)
+        self.radioButtonNoInteractionWhileEditing.setText(QCoreApplication.translate("PreferencesDialog", u"No interaction while editing", None))
     # retranslateUi
 

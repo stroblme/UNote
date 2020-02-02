@@ -298,16 +298,28 @@ class ToolBoxWidget(QWidget):
 
         if self.editMode == editModes.freehand:
             if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
-                color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['freehandColor']))
+                try:
+                    color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['freehandColor']))
+                except ValueError as identifier:
+                    color = rgb.white
             else:
-                color = tuple(map(lambda x: float(x)*255, Preferences.data['freehandColor']))
+                try:
+                    color = tuple(map(lambda x: float(x)*255, Preferences.data['freehandColor']))
+                except ValueError as identifier:
+                    color = rgb.black
 
             size = pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/pdf_annots.freeHandScale)
         elif self.editMode == editModes.marker:
             if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
-                color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['markerColor']))
+                try:
+                    color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['markerColor']))
+                except ValueError as identifier:
+                    color = rgb.white
             else:
-                color = tuple(map(lambda x: float(x)*255, Preferences.data['markerColor']))
+                try:
+                    color = tuple(map(lambda x: float(x)*255, Preferences.data['markerColor']))
+                except ValueError as identifier:
+                    color = rgb.black
 
             size = pdf_annots.defaultPenSize * (int(Preferences.data['markerSize'])/pdf_annots.freeHandScale)
         # elif self.editMode == editModes.forms:

@@ -88,19 +88,71 @@ class QPdfView(QGraphicsPixmapItem):
         res = super().paint(painter, option, widget)
 
         if self.tempPoints.qsize() > 0:
-            if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
-                color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['freehandColor']))
-            else:
-                color = tuple(map(lambda x: float(x)*255, Preferences.data['freehandColor']))
+            if editMode == editModes.freehand or editMode == editModes.none:
+                if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
+                    try:
+                        color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['freehandColor']))
+                    except ValueError as identifier:
+                        color = rgb.white
+                else:
+                    try:
+                        color = tuple(map(lambda x: float(x)*255, Preferences.data['freehandColor']))
+                    except ValueError as identifier:
+                        color = rgb.black
 
-            try:
-                penSize = pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/pdf_annots.freeHandScale)
-            except ValueError:
-                penSize = pdf_annots.defaultPenSize
+                try:
+                    penSize = pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/pdf_annots.freeHandScale)
+                except ValueError:
+                    penSize = pdf_annots.defaultPenSize
 
-            painter.setPen(QPen(QColor(*color), penSize))
-            painter.setRenderHint(QPainter.TextAntialiasing)
-            painter.drawPolyline(list(self.tempPoints.queue))
+                painter.setPen(QPen(QColor(*color), penSize))
+                painter.setRenderHint(QPainter.TextAntialiasing)
+                painter.drawPolyline(list(self.tempPoints.queue))
+
+            elif editMode == editModes.marker:
+                if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
+                    try:
+                        color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['markerColor']))
+                    except ValueError as identifier:
+                        color = rgb.white
+                else:
+                    try:
+                        color = tuple(map(lambda x: float(x)*255, Preferences.data['markerColor']))
+                    except ValueError as identifier:
+                        color = rgb.black
+
+                try:
+                    penSize = pdf_annots.defaultPenSize * (int(Preferences.data['markerSize'])/pdf_annots.freeHandScale)
+                except ValueError:
+                    penSize = pdf_annots.defaultPenSize
+
+
+                painter.setPen(QPen(QColor(*color), penSize))
+                painter.setRenderHint(QPainter.TextAntialiasing)
+                painter.drawPolyline(list(self.tempPoints.queue))
+
+            elif editMode == editModes.forms:
+                if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
+                    try:
+                        color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['formColor']))
+                    except ValueError as identifier:
+                        color = rgb.white
+                else:
+                    try:
+                        color = tuple(map(lambda x: float(x)*255, Preferences.data['formColor']))
+                    except ValueError as identifier:
+                        color = rgb.black
+
+                try:
+                    penSize = pdf_annots.defaultPenSize * (int(Preferences.data['formSize'])/pdf_annots.freeHandScale)
+                except ValueError:
+                    penSize = pdf_annots.defaultPenSize
+
+
+                painter.setPen(QPen(QColor(*color), penSize))
+                painter.setRenderHint(QPainter.TextAntialiasing)
+                lst = list(self.tempPoints.queue)
+                painter.drawLine(lst[0],lst[-1])
 
         return res
 
@@ -964,6 +1016,11 @@ class QPdfView(QGraphicsPixmapItem):
                     self.updateEraserPoints(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
                 elif editMode == editModes.forms:
                     self.updateFormPoints(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
+                    self.tempPoints.put(self.toWidgetCoordinates(highResPos, zoom, xOff, yOff))
+                    self.update()
+                elif editMode == editModes.marker:
+                    self.tempPoints.put(self.toWidgetCoordinates(highResPos, zoom, xOff, yOff))
+                    self.update()
                 elif editMode == editModes.freehand or toBool(Preferences.data['radioButtonUsePenAsDefault']):
                     self.updateDrawPoints(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff), pressure)
                     self.tempPoints.put(self.toWidgetCoordinates(highResPos, zoom, xOff, yOff))
@@ -1694,10 +1751,13 @@ class GraphicsViewHandler(QGraphicsView):
 
         editMode = editModeUpdate
 
-        if editMode == editModes.none:
-            self.setDragMode(self.ScrollHandDrag)
-        else:
-            self.setDragMode(self.NoDrag)
+        if toBool(Preferences.data["radioButtonNoInteractionWhileEditing"]):
+            if editMode == editModes.none:
+                QScroller.grabGesture(self.viewport(), QScroller.TouchGesture)
+
+            else:
+                QScroller.ungrabGesture(self.viewport())
+
 
 
     @Slot(int, int)

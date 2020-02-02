@@ -171,11 +171,15 @@ class PreferencesGUI(App):
         '''
         Preferences.updateKeyValue("radioButtonAffectsPDF", str(self.ui.radioButtonAffectsPDF.isChecked()))
         Preferences.updateKeyValue("comboBoxThemeSelect", str(self.ui.comboBoxThemeSelect.currentIndex()))
+
         Preferences.updateKeyValue("radioButtonPenDrawOnly", str(self.ui.radioButtonPenDrawOnly.isChecked()))
         Preferences.updateKeyValue("radioButtonUsePenAsDefault", str(self.ui.radioButtonPenDrawOnly.isChecked()))
         Preferences.updateKeyValue("comboBoxDrawingMode", str(self.ui.comboBoxDrawingMode.currentIndex()))
+
         Preferences.updateKeyValue("radioButtonSaveOnExit", int(self.ui.radioButtonSaveOnExit.isChecked()))
         Preferences.updateKeyValue("comboBoxAutosaveMode", int(self.ui.comboBoxAutosaveMode.currentIndex()))
+
+        Preferences.updateKeyValue("radioButtonNoInteractionWhileEditing", str(self.ui.radioButtonNoInteractionWhileEditing.isChecked()))
 
     @Slot(bool)
     def onClose(self, store):
@@ -211,6 +215,8 @@ class PreferencesGUI(App):
         self.ui.radioButtonSaveOnExit.setChecked(toBool(Preferences.data["radioButtonSaveOnExit"]))
         self.ui.comboBoxAutosaveMode.setCurrentIndex(int(Preferences.data["comboBoxAutosaveMode"]))
 
+        self.ui.radioButtonNoInteractionWhileEditing.setChecked(toBool(Preferences.data["radioButtonNoInteractionWhileEditing"]))
+
 
     def ensureValidData(self):
         # Apply all default preferences if necessary
@@ -231,6 +237,9 @@ class PreferencesGUI(App):
             Preferences.updateKeyValue('radioButtonSaveOnExit', str(True))
         if Preferences.data['comboBoxAutosaveMode'] == "":
             Preferences.updateKeyValue('comboBoxAutosaveMode', 0)
+
+        if Preferences.data['radioButtonNoInteractionWhileEditing'] == "":
+            Preferences.updateKeyValue('radioButtonNoInteractionWhileEditing', str(True))
 
     # def applySettings(self):
     #     '''

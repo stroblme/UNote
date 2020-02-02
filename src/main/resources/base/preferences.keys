@@ -5,6 +5,7 @@ radioButtonPenDrawOnly
 comboBoxDrawingMode
 radioButtonSaveOnExit
 comboBoxAutosaveMode
+radioButtonNoInteractionWhileEditing
 state
 geometry
 textSize
