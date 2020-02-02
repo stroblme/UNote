@@ -979,7 +979,11 @@ class QPdfView(QGraphicsPixmapItem):
             elif editMode == editModes.eraser:
                 self.updateEraserPoints(self.toPdfCoordinates(event.pos()))
             elif editMode == editModes.forms:
-                self.updateFormPoints(self.toPdfCoordinates(event.pos()))
+                self.tempPoints.put(self.toPdfCoordinates(event.pos()))
+                self.update()
+            elif editMode == editModes.marker:
+                self.tempPoints.put(self.toPdfCoordinates(event.pos()))
+                self.update()
 
         QGraphicsPixmapItem.mouseMoveEvent(self, event)
 
