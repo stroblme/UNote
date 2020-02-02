@@ -1299,7 +1299,9 @@ class GraphicsViewHandler(QGraphicsView):
         # self.setDragMode(self.ScrollHandDrag)
         # self.setFrameShape(QGraphicsView.NoFrame)
         # # self.resize(parent.size())
-        QScroller.grabGesture(self.viewport(), QScroller.TouchGesture)
+        self.graphicsScroller = QScroller()
+        self.graphicsScroller.grabGesture(self.viewport(), self.graphicsScroller.TouchGesture)
+        self.graphicsScroller.stateChanged.connect(self.scrollerStateChanged)
 
         self.rendererThread = QThread(parent)
         self.rendererWorker = Renderer(parent)
@@ -1307,7 +1309,6 @@ class GraphicsViewHandler(QGraphicsView):
         self.setupScene()
 
         self.instructRenderer()
-
 
     def terminate(self):
         print("Terminating Viewer")
@@ -1520,7 +1521,7 @@ class GraphicsViewHandler(QGraphicsView):
         Overrides the default event
         '''
         super(GraphicsViewHandler, self).mousePressEvent(event)
-        self.updateRenderedPages()
+
 
 
     def mouseReleaseEvent(self, event):
@@ -1544,6 +1545,12 @@ class GraphicsViewHandler(QGraphicsView):
         #     self.verticalScrollBar().setValue(self.verticalScrollBar().value() + deltaY)
 
         #     self.touching = event.pos()
+
+    @Slot(QScroller.State)
+    def scrollerStateChanged(self, newState):
+        print("hu")
+        if newState == QScroller.Inactive:
+            self.updateRenderedPages()
 
 
     def keyPressEvent(self, event):
@@ -1757,10 +1764,10 @@ class GraphicsViewHandler(QGraphicsView):
 
         if toBool(Preferences.data["radioButtonNoInteractionWhileEditing"]):
             if editMode == editModes.none:
-                QScroller.grabGesture(self.viewport(), QScroller.TouchGesture)
+                self.graphicsScroller.grabGesture(self.viewport(), self.graphicsScroller.TouchGesture)
 
             else:
-                QScroller.ungrabGesture(self.viewport())
+                self.graphicsScroller.ungrabGesture(self.viewport())
 
 
 
