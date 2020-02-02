@@ -1243,10 +1243,9 @@ class GraphicsViewHandler(QGraphicsView):
         self.rendererThread = QThread(parent)
         self.rendererWorker = Renderer(parent)
 
-        self.scene = QGraphicsScene()
-        self.setScene(self.scene)
+        self.setupScene()
 
-        self.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+        self.instructRenderer()
 
 
     def terminate(self):
@@ -1257,6 +1256,12 @@ class GraphicsViewHandler(QGraphicsView):
         if toBool(Preferences.data['radioButtonSaveOnExit']):
             if History.recentChanges != 0:
                 self.saveCurrentPdf()
+
+    def setupScene(self):
+        self.scene = QGraphicsScene()
+        self.setScene(self.scene)
+
+        self.setAlignment(Qt.AlignLeft | Qt.AlignTop)
 
 
     def createNewPdf(self, fileName):
@@ -1288,16 +1293,12 @@ class GraphicsViewHandler(QGraphicsView):
         '''
         self.start_time = time.time()
 
-        self.instructRenderer()
-
         self.rendererWorker.pdf.openPdf(pdfFilePath)
 
         self.renderPdfToCurrentView(startPage)
 
     def loadPdfInstanceToCurrentView(self, pdfInstance, startPage=0):
         self.start_time = time.time()
-
-        self.instructRenderer()
 
         self.rendererWorker.pdf = pdfInstance
 
@@ -1557,6 +1558,9 @@ class GraphicsViewHandler(QGraphicsView):
             os.replace(fileName, self.rendererWorker.pdf.filename)
 
             prevScroll = self.verticalScrollBar().value()
+
+            self.setupScene()
+
             self.loadPdfToCurrentView(self.rendererWorker.pdf.filename, renderedItem.pageNumber+1)
             self.updateRenderedPages()
             self.verticalScrollBar().setMaximum(self.verticalScrollBar().maximumHeight())
@@ -1585,6 +1589,9 @@ class GraphicsViewHandler(QGraphicsView):
                 os.replace(fileName, self.rendererWorker.pdf.filename)
 
                 prevScroll = self.verticalScrollBar().value()
+
+                self.setupScene()
+
                 self.loadPdfToCurrentView(self.rendererWorker.pdf.filename, renderedItem.pageNumber)
                 self.updateRenderedPages()
                 self.verticalScrollBar().setMaximum(self.verticalScrollBar().maximumHeight())
