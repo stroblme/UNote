@@ -1299,7 +1299,7 @@ class GraphicsViewHandler(QGraphicsView):
         # self.setDragMode(self.ScrollHandDrag)
         # self.setFrameShape(QGraphicsView.NoFrame)
         # # self.resize(parent.size())
-        self.scroller = QScroller.scroller()
+        self.scroller = QScroller.scroller(self.viewport())
         self.scroller.grabGesture(self.viewport(), QScroller.TouchGesture)
         self.scroller.stateChanged.connect(self.scrollerStateChanged)
 
