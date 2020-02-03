@@ -13,7 +13,7 @@ from queue import Queue
 from indexed import IndexedOrderedDict
 from enum import Enum
 
-from PySide2.QtWidgets import QFrame, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGraphicsLineItem, QGraphicsEllipseItem, QScroller
+from PySide2.QtWidgets import QFrame, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGraphicsLineItem, QGraphicsEllipseItem, QScroller, QScrollerProperties
 from PySide2.QtCore import Qt, QRectF, QEvent, QThread, Signal, Slot, QObject, QPoint, QPointF, QTimer
 from PySide2.QtGui import QPixmap, QBrush, QColor, QImage, QTouchEvent, QPainter, QGuiApplication, QPen
 # from PySide2.QtWebEngineWidgets import QWebEngineView
@@ -1499,7 +1499,7 @@ class GraphicsViewHandler(QGraphicsView):
         Mmodo = QApplication.mouseButtons()
         if bool(Mmodo == Qt.RightButton) or bool(modifiers == Qt.ControlModifier):
 
-            zoomInFactor = 1.1
+            zoomInFactor = 1.05
             zoomOutFactor = 1 / zoomInFactor
 
             # Zoom

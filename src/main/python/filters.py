@@ -40,9 +40,9 @@ class FormEstimator(object):
         else: # abs(fStart.y - fStop.y) == 0:
             angle = 0
 
-        if abs(fStart.x - fStop.x)/distance < MAXXDELTA:
-            fStop.y = fStart.y
         if abs(fStart.y - fStop.y)/distance < MAXYDELTA:
+            fStop.y = fStart.y
+        if abs(fStart.x - fStop.x)/distance < MAXXDELTA:
             fStop.x = fStart.x
 
         print(angle)
