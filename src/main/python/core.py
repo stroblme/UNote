@@ -1400,7 +1400,7 @@ class GraphicsViewHandler(QGraphicsView):
 
         # In case of a slow pc or a large pdf. Make sure to call that again
         t = QTimer()
-        t.singleShot(200, self.updateRenderedPages)
+        t.singleShot(400, self.updateRenderedPages)
 
     def renderPdfToCurrentView(self, startPage=0):
         self.renderPdf.emit()

@@ -155,7 +155,7 @@ class Receivers(QObject):
             curY = self.ui.floatingToolBox.y()
             # curW = self.ui.floatingToolBox.width()
 
-            self.ui.floatingToolBox.move(pW * self.ui.graphicsView.rendererWorker.absZoomFactor, curY)
+            self.ui.floatingToolBox.move(pW * self.ui.graphicsView.rendererWorker.absZoomFactor - 200, curY)
 
 
     def zoomIn(self):
