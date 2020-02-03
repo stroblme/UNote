@@ -72,7 +72,7 @@ class Receivers(QObject):
 
         self.ui.graphicsView.createNewPdf(pdfFileName)
 
-        self.applyWorkspaceDefaults()
+        self.ui.graphicsView.rendererWorker.pdfRenderFinished.connect(self.applyWorkspaceDefaults)
 
         self.updateWindowTitle(pdfFileName, isDraft)
 
@@ -90,7 +90,7 @@ class Receivers(QObject):
 
         self.ui.graphicsView.loadPdfToCurrentView(pdfFileName)
 
-        self.applyWorkspaceDefaults()
+        self.ui.graphicsView.rendererWorker.pdfRenderFinished.connect(self.applyWorkspaceDefaults)
 
         self.updateWindowTitle(pdfFileName)
 
@@ -147,12 +147,6 @@ class Receivers(QObject):
             self.ui.graphicsView.pageFind(findStr)
 
     def applyWorkspaceDefaults(self):
-        t = QTimer()
-
-
-        t.singleShot(10, self.delayedWorkspaceDefaults)
-
-    def delayedWorkspaceDefaults(self):
         if self.ui.graphicsView.rendererWorker.pdf.filename:
             self.ui.graphicsView.zoomToFit()
 
@@ -162,6 +156,7 @@ class Receivers(QObject):
             # curW = self.ui.floatingToolBox.width()
 
             self.ui.floatingToolBox.move(pW * self.ui.graphicsView.rendererWorker.absZoomFactor, curY)
+
 
     def zoomIn(self):
         self.ui.graphicsView.zoomIn()

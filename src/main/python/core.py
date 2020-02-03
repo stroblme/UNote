@@ -1398,6 +1398,10 @@ class GraphicsViewHandler(QGraphicsView):
     def rendererFinished(self):
         print("--- Loaded PDF within %s seconds ---" % (time.time() - self.start_time))
 
+        # In case of a slow pc or a large pdf. Make sure to call that again
+        t = QTimer()
+        t.singleShot(200, self.updateRenderedPages)
+
     def renderPdfToCurrentView(self, startPage=0):
         self.renderPdf.emit()
 
@@ -1410,14 +1414,6 @@ class GraphicsViewHandler(QGraphicsView):
             renderedItems = self.scene.items(self.mapToScene(self.viewport().geometry()))
         except Exception as e:
             return
-
-        # # get the rectangle of the current viewport
-        # rect = self.mapToScene(self.viewport().geometry()).boundingRect()
-        # # Store those properties for easy access
-        # viewportHeight = rect.height()
-        # viewportWidth = rect.width()
-        # viewportX = rect.x()
-        # viewportY = rect.y()
 
         hIdx = 1
         lIdx = len(self.rendererWorker.pages)
@@ -1433,15 +1429,10 @@ class GraphicsViewHandler(QGraphicsView):
             if renderedItem.pageNumber < lIdx:
                 lIdx = renderedItem.pageNumber
 
-            # if renderedItem.lastZoomFactor == self.rendererWorker.absZoomFactor:
-            #     return
+            self.rendererWorker.updatePage(renderedItem, zoom = self.rendererWorker.absZoomFactor)
 
-        # for pIt in range(lIdx-4, lIdx-1):
-        #     if pIt > 0:
-        #         self.rendererWorker.updatePage(self.rendererWorker.pages[pIt], zoom = self.rendererWorker.absZoomFactor)
-
-        for pIt in range(hIdx-1, hIdx+3):
-            if pIt < len(self.rendererWorker.pages):
+        for pIt in [lIdx-2,lIdx-1,hIdx+1,hIdx+2]:
+            if pIt > -1 and pIt < len(self.rendererWorker.pages):
                 if self.rendererWorker.pages[pIt].isDraft:
                     # print("Post rendering page " + str(pIt))
                     self.rendererWorker.updatePage(self.rendererWorker.pages[pIt], zoom = self.rendererWorker.absZoomFactor)
@@ -1735,7 +1726,7 @@ class GraphicsViewHandler(QGraphicsView):
         rect = self.mapToScene(self.viewport().geometry()).boundingRect()
             # Store those properties for easy access
 
-        ratio = rect.width() / pSize[0] / 1.15
+        ratio = rect.width() / pSize[0]
 
         self.rendererWorker.absZoomFactor = self.rendererWorker.absZoomFactor * ratio
         self.scale(ratio, ratio)
