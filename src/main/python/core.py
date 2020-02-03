@@ -1410,7 +1410,7 @@ class GraphicsViewHandler(QGraphicsView):
         # viewportX = rect.x()
         # viewportY = rect.y()
 
-        hIdx = 0
+        hIdx = 1
         lIdx = len(self.rendererWorker.pages)
 
         # Iterate all visible items (shouldn't be that much normally)
@@ -1427,14 +1427,11 @@ class GraphicsViewHandler(QGraphicsView):
             # if renderedItem.lastZoomFactor == self.rendererWorker.absZoomFactor:
             #     return
 
-            self.rendererWorker.updatePage(renderedItem, zoom = self.rendererWorker.absZoomFactor)
-
-
         # for pIt in range(lIdx-4, lIdx-1):
         #     if pIt > 0:
         #         self.rendererWorker.updatePage(self.rendererWorker.pages[pIt], zoom = self.rendererWorker.absZoomFactor)
 
-        for pIt in range(hIdx+1, hIdx+3):
+        for pIt in range(hIdx-1, hIdx+3):
             if pIt < len(self.rendererWorker.pages):
                 if self.rendererWorker.pages[pIt].isDraft:
                     # print("Post rendering page " + str(pIt))
