@@ -1299,9 +1299,9 @@ class GraphicsViewHandler(QGraphicsView):
         # self.setDragMode(self.ScrollHandDrag)
         # self.setFrameShape(QGraphicsView.NoFrame)
         # # self.resize(parent.size())
-        self.graphicsScroller = QScroller()
-        self.graphicsScroller.grabGesture(self.viewport(), self.graphicsScroller.TouchGesture)
-        self.graphicsScroller.stateChanged.connect(self.scrollerStateChanged)
+        self.scroller = QScroller.scroller()
+        self.scroller.grabGesture(self.viewport(), QScroller.TouchGesture)
+        self.scroller.stateChanged.connect(self.scrollerStateChanged)
 
         self.rendererThread = QThread(parent)
         self.rendererWorker = Renderer(parent)
@@ -1548,7 +1548,6 @@ class GraphicsViewHandler(QGraphicsView):
 
     @Slot(QScroller.State)
     def scrollerStateChanged(self, newState):
-        print("hu")
         if newState == QScroller.Inactive:
             self.updateRenderedPages()
 
@@ -1764,10 +1763,10 @@ class GraphicsViewHandler(QGraphicsView):
 
         if toBool(Preferences.data["radioButtonNoInteractionWhileEditing"]):
             if editMode == editModes.none:
-                self.graphicsScroller.grabGesture(self.viewport(), self.graphicsScroller.TouchGesture)
+                self.scroller.grabGesture(self.viewport(), self.scroller.TouchGesture)
 
             else:
-                self.graphicsScroller.ungrabGesture(self.viewport())
+                self.scroller.ungrabGesture(self.viewport())
 
 
 
