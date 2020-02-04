@@ -1568,6 +1568,8 @@ class GraphicsViewHandler(QGraphicsView):
     def tabletEvent(self, event):
         item = self.itemAt(event.pos())
         if type(item) == QPdfView:
+            if Qt.MidButton == event.button():
+                print("yu")
             # get the rectable of the current viewport
             rect = self.mapToScene(self.viewport().geometry()).boundingRect()
             # Store those properties for easy access
