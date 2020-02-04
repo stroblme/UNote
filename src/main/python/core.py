@@ -53,9 +53,9 @@ class EventHelper(QObject):
     addIndicatorPoint = Signal(int, int)
     deleteLastIndicatorPoint = Signal()
 
+PRESSUREMULTIPLIER = 1
 
 class QPdfView(QGraphicsPixmapItem):
-
 
     def __init__(self):
         QGraphicsPixmapItem.__init__(self)
@@ -82,7 +82,7 @@ class QPdfView(QGraphicsPixmapItem):
 
         self.isDraft = False
 
-
+        self.avPressure = 1
 
     def paint(self, painter, option, widget):
         res = super().paint(painter, option, widget)
@@ -101,7 +101,7 @@ class QPdfView(QGraphicsPixmapItem):
                         color = rgb.black
 
                 try:
-                    penSize = pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/pdf_annots.freeHandScale)
+                    penSize = self.avPressure * PRESSUREMULTIPLIER * pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/pdf_annots.freeHandScale)
                 except ValueError:
                     penSize = pdf_annots.defaultPenSize
 
@@ -653,6 +653,8 @@ class QPdfView(QGraphicsPixmapItem):
         self.drawPoints.put(curPos)
         # self.drawIndicators.append(qpos)
 
+        # self.avPressure = (self.avPressure + pressure) / self.drawPoints.qsize()
+
     def applyDrawPoints(self):
 
         # self.kalman.initKalman(self.qPointToFloatParirs(self.startPos))
@@ -662,6 +664,7 @@ class QPdfView(QGraphicsPixmapItem):
 
         with self.drawPoints.mutex:
             self.drawPoints.queue.clear()
+
 
         self.ongoingEdit = False
 
@@ -678,6 +681,8 @@ class QPdfView(QGraphicsPixmapItem):
         #     pressure.append(point[2])
 
         annot = self.addInkAnnot(pointList, None)
+
+        self.avPressure = 1
 
         History.addToHistory(self.deleteInkAnnot, annot, self.addInkAnnot, pointList)
 
@@ -698,7 +703,7 @@ class QPdfView(QGraphicsPixmapItem):
             return
 
         try:
-            penSize = pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/pdf_annots.freeHandScale)
+            penSize = self.avPressure * PRESSUREMULTIPLIER * pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/pdf_annots.freeHandScale)
         except ValueError:
             penSize = pdf_annots.defaultPenSize
 
@@ -1568,8 +1573,12 @@ class GraphicsViewHandler(QGraphicsView):
     def tabletEvent(self, event):
         item = self.itemAt(event.pos())
         if type(item) == QPdfView:
-            if Qt.MidButton == event.button():
-                print("yu")
+            Mmodo = QApplication.mouseButtons()
+
+            if Qt.MidButton == Mmodo:
+                print(event.pos())
+            if Qt.RightButton == Mmodo:
+                print(event.pos())
             # get the rectable of the current viewport
             rect = self.mapToScene(self.viewport().geometry()).boundingRect()
             # Store those properties for easy access
