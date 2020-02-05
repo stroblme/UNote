@@ -1231,8 +1231,8 @@ class Renderer(QObject):
 
 
 
+        fClip = None
         if clip:
-            fClip = None
             fClip = fitz.Rect(clip.x(), clip.y(), clip.x() + clip.width(), clip.y() + clip.height())
 
         try:
