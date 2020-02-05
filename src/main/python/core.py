@@ -1146,8 +1146,9 @@ class Renderer(QObject):
     def getPageSize(self, page=0):
         return self.pdf.getPageSize(0)
 
-    @Slot()
-    def renderPdfToCurrentView(self):
+    @Slot(int)
+    def renderPdfToCurrentView(self, startPage):
+        self.startPage = startPage
         t = QTimer()
 
         t.singleShot(0, self.delayedRenderer)
@@ -1269,7 +1270,7 @@ class GraphicsViewHandler(QGraphicsView):
     DEFAULTPAGESPACE = 20
 
     updatePages = Signal()
-    renderPdf = Signal()
+    renderPdf = Signal(int)
 
     # absZoomFactor = float(1)
     LOWRESZOOM = float(0.1)
@@ -1290,6 +1291,8 @@ class GraphicsViewHandler(QGraphicsView):
         :param parent: Parent editor widget.
         '''
         QGraphicsView.__init__(self, parent)
+
+        self.gotoScrollPos = 0
 
         # self.pdf = pdfEngine()
         # self.imageHelper = imageHelper()
@@ -1405,10 +1408,18 @@ class GraphicsViewHandler(QGraphicsView):
 
         # In case of a slow pc or a large pdf. Make sure to call that again
         t = QTimer()
+        t.singleShot(300, self.scrollTo)
         t.singleShot(400, self.updateRenderedPages)
 
+    def scrollTo(self):
+        if self.gotoScrollPos != 0:
+            self.verticalScrollBar().setMaximum(self.verticalScrollBar().maximumHeight())
+            self.verticalScrollBar().setValue(self.gotoScrollPos)
+            self.update()
+            self.gotoScrollPos = 0
+
     def renderPdfToCurrentView(self, startPage=0):
-        self.renderPdf.emit()
+        self.renderPdf.emit(startPage)
 
     def updateRenderedPages(self):
         '''
@@ -1637,10 +1648,11 @@ class GraphicsViewHandler(QGraphicsView):
             self.setupScene()
 
             self.loadPdfToCurrentView(self.rendererWorker.pdf.filename, renderedItem.pageNumber+1)
-            self.updateRenderedPages()
-            self.verticalScrollBar().setMaximum(self.verticalScrollBar().maximumHeight())
-            self.verticalScrollBar().setValue(prevScroll)
-            self.update()
+            # self.updateRenderedPages()
+
+            self.gotoScrollPos = prevScroll
+
+
 
             return
 
