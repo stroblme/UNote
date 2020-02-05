@@ -1230,13 +1230,13 @@ class Renderer(QObject):
         '''
 
 
-        mat = fitz.Matrix(zoom, zoom)
 
-        fClip = None
         if clip:
+            fClip = None
             fClip = fitz.Rect(clip.x(), clip.y(), clip.x() + clip.width(), clip.y() + clip.height())
 
         try:
+            mat = fitz.Matrix(zoom, zoom)
             pixmap = self.pdf.renderPixmap(pdfViewInstance.pageNumber, mat = mat, clip = fClip)
         except RuntimeError as identifier:
             print(str(identifier))
@@ -1447,7 +1447,9 @@ class GraphicsViewHandler(QGraphicsView):
 
             self.rendererWorker.updatePage(renderedItem, zoom = self.rendererWorker.absZoomFactor)
 
-        for pIt in [lIdx-2,lIdx-1,hIdx+1,hIdx+2]:
+
+
+        for pIt in [lIdx-3,lIdx-2,lIdx-1,hIdx+1,hIdx+2,hIdx+3]:
             if pIt > -1 and pIt < len(self.rendererWorker.pages):
                 if self.rendererWorker.pages[pIt].isDraft:
                     # print("Post rendering page " + str(pIt))
