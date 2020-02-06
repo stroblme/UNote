@@ -1163,9 +1163,9 @@ class Renderer(QObject):
 
         for pIt in range(self.pdf.doc.pageCount):
 
-            if pIt <= 2:
+            if pIt <= self.startPage + 2 and pIt >= self.startPage - 2:
                 self.loadPdfPageToCurrentView(pIt, posX, posY, self.absZoomFactor)
-            elif pIt <= 10:
+            elif pIt <= self.startPage + 10 and pIt >= self.startPage - 10:
                 self.loadPdfPageToCurrentView(pIt, posX, posY, self.LOWRESZOOM)
                 self.pages[pIt].setAsDraft()
             else:
@@ -1545,9 +1545,7 @@ class GraphicsViewHandler(QGraphicsView):
         '''
         super(GraphicsViewHandler, self).mouseReleaseEvent(event)
 
-        if self.updateSuggested:
-            self.updateRenderedPages()
-            self.updateSuggested = True
+        
 
     def mouseMoveEvent(self, event):
         '''
@@ -1557,6 +1555,10 @@ class GraphicsViewHandler(QGraphicsView):
 
 
         super(GraphicsViewHandler, self).mouseMoveEvent(event)
+
+        if self.updateSuggested:
+            self.updateRenderedPages()
+            self.updateSuggested = False
         # if self.touching:
         #     distance = self.touching - event.pos()
         #     deltaX = int(distance.x())
