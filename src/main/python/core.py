@@ -1159,6 +1159,7 @@ class Renderer(QObject):
                     self.updatePage(self.pages[pIt], self.absZoomFactor)
                     self.nextRenderingPage = pIt + 1
 
+                    self.enableBackgroundRenderer()
                     self.startBackgroundRenderer()
                     return
                 else:
@@ -1166,7 +1167,9 @@ class Renderer(QObject):
 
     def startBackgroundRenderer(self):
         if self.nextRenderingPage < self.pdf.doc.pageCount and self.enableBackgroundRendering:
-            self.backgroundRenderTimer.singleShot(5, self.backgroundRenderer)
+            self.stopBackgroundRenderer()
+            self.backgroundRenderTimer.singleShot(300, self.backgroundRenderer)
+
 
     def stopBackgroundRenderer(self):
         self.enableBackgroundRendering = False
@@ -1362,7 +1365,7 @@ class GraphicsViewHandler(QGraphicsView):
 
         res = super().paintEvent(event)
 
-        # self.rendererWorker.startBackgroundRenderer()
+        self.rendererWorker.startBackgroundRenderer()
 
         return res
 
