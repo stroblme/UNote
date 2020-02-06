@@ -1131,6 +1131,9 @@ class Renderer(QObject):
     itemRenderFinished = Signal(QPdfView, int, int)
     pdfRenderFinished = Signal()
 
+    nextRenderingPage = 0
+    enableBackgroundRendering = False
+
     def __init__(self, parent):
         QObject.__init__(self)
 
@@ -1140,11 +1143,36 @@ class Renderer(QObject):
         self.pdf = pdfEngine()
         self.imageHelper = imageHelper()
 
+        self.backgroundRenderTimer = QTimer()
+
     def updateReceiver(self, zoom):
         self.rendererWorker.absZoomFactor = zoom
 
     def getPageSize(self, page=0):
         return self.pdf.getPageSize(0)
+
+    def backgroundRenderer(self):
+        for pIt in range(self.pdf.doc.pageCount):
+            if pIt == (self.nextRenderingPage):
+                if self.pages[pIt].isDraft:
+                    print("Rendering " + str(pIt))
+                    self.updatePage(self.pages[pIt], self.absZoomFactor)
+                    self.nextRenderingPage = pIt + 1
+
+                    self.startBackgroundRenderer()
+                    return
+                else:
+                    self.nextRenderingPage = pIt + 1
+
+    def startBackgroundRenderer(self):
+        if self.nextRenderingPage < self.pdf.doc.pageCount and self.enableBackgroundRendering:
+            self.backgroundRenderTimer.singleShot(5, self.backgroundRenderer)
+
+    def stopBackgroundRenderer(self):
+        self.enableBackgroundRendering = False
+
+    def enableBackgroundRenderer(self):
+        self.enableBackgroundRendering = True
 
     @Slot(int)
     def renderPdfToCurrentView(self, startPage):
@@ -1165,9 +1193,9 @@ class Renderer(QObject):
 
             if pIt <= self.startPage + 2 and pIt >= self.startPage - 2:
                 self.loadPdfPageToCurrentView(pIt, posX, posY, self.absZoomFactor)
-            elif pIt <= self.startPage + 10 and pIt >= self.startPage - 10:
-                self.loadPdfPageToCurrentView(pIt, posX, posY, self.LOWRESZOOM)
-                self.pages[pIt].setAsDraft()
+            # elif pIt <= self.startPage + 10 and pIt >= self.startPage - 10:
+            #     self.loadPdfPageToCurrentView(pIt, posX, posY, self.LOWRESZOOM)
+            #     self.pages[pIt].setAsDraft()
             else:
                 self.loadBlankImageToCurrentView(pIt, posX, posY, height, width)
                 self.pages[pIt].setAsDraft()
@@ -1175,6 +1203,7 @@ class Renderer(QObject):
             posY += height + self.DEFAULTPAGESPACE
 
         self.pdfRenderFinished.emit()
+        self.enableBackgroundRendering = True
 
     def loadBlankImageToCurrentView(self, pageNumber, posX, posY, width, height):
         '''
@@ -1326,6 +1355,16 @@ class GraphicsViewHandler(QGraphicsView):
         self.setupScene()
 
         self.instructRenderer()
+
+
+    def paintEvent(self, event):
+
+
+        res = super().paintEvent(event)
+
+        # self.rendererWorker.startBackgroundRenderer()
+
+        return res
 
     def terminate(self):
         print("Terminating Viewer")
@@ -1506,6 +1545,8 @@ class GraphicsViewHandler(QGraphicsView):
         '''
         Overrides the default event
         '''
+        self.rendererWorker.stopBackgroundRenderer()
+
         if not self.scene:
             return
 
@@ -1530,29 +1571,36 @@ class GraphicsViewHandler(QGraphicsView):
             super(GraphicsViewHandler, self).wheelEvent(event)
 
         self.updateSuggested = True
+        self.rendererWorker.enableBackgroundRenderer()
+        
 
     def mousePressEvent(self, event):
         '''
         Overrides the default event
         '''
+        self.rendererWorker.stopBackgroundRenderer()
+
         super(GraphicsViewHandler, self).mousePressEvent(event)
 
+        self.rendererWorker.enableBackgroundRenderer()
 
 
     def mouseReleaseEvent(self, event):
         '''
         Overrides the default event
         '''
+        self.rendererWorker.stopBackgroundRenderer()
+
         super(GraphicsViewHandler, self).mouseReleaseEvent(event)
 
+        self.rendererWorker.enableBackgroundRenderer()
         
 
     def mouseMoveEvent(self, event):
         '''
         Overrides the default event
         '''
-
-
+        self.rendererWorker.stopBackgroundRenderer()
 
         super(GraphicsViewHandler, self).mouseMoveEvent(event)
 
@@ -1569,6 +1617,9 @@ class GraphicsViewHandler(QGraphicsView):
 
         #     self.touching = event.pos()
 
+        self.rendererWorker.enableBackgroundRenderer()
+
+
     @Slot(QScroller.State)
     def scrollerStateChanged(self, newState):
         if newState == QScroller.Inactive:
@@ -1580,18 +1631,29 @@ class GraphicsViewHandler(QGraphicsView):
         Overrides the default event
         '''
         # self.updateRenderedPages()
+        self.rendererWorker.stopBackgroundRenderer()
 
         super(GraphicsViewHandler, self).keyPressEvent(event)
+
+        self.rendererWorker.enableBackgroundRenderer()
+
 
     def keyReleaseEvent(self, event):
         '''
         Overrides the default event
         '''
+        self.rendererWorker.stopBackgroundRenderer()
+
         self.updateRenderedPages()
 
         super(GraphicsViewHandler, self).keyReleaseEvent(event)
 
+        self.rendererWorker.enableBackgroundRenderer()
+
+
     def tabletEvent(self, event):
+        self.rendererWorker.stopBackgroundRenderer()
+
         item = self.itemAt(event.pos())
         if type(item) == QPdfView:
             Mmodo = QApplication.mouseButtons()
@@ -1608,6 +1670,9 @@ class GraphicsViewHandler(QGraphicsView):
             if event.type() == QEvent.Type.TabletRelease:
                 self.updateRenderedPages()
                 item.RenderingFinished()
+
+        self.rendererWorker.enableBackgroundRenderer()
+        
 
         return super(GraphicsViewHandler, self).tabletEvent(event)
 
