@@ -1493,7 +1493,7 @@ class GraphicsViewHandler(QGraphicsView):
                 self.rendererWorker.absZoomFactor = self.rendererWorker.absZoomFactor * relZoomFactor
                 self.scale(relZoomFactor, relZoomFactor)
 
-                self.updateRenderedPages()
+                self.updateSuggested = True
 
         if History.recentChanges == 1:
             self.changesMade.emit(True)
@@ -1529,7 +1529,7 @@ class GraphicsViewHandler(QGraphicsView):
         else:
             super(GraphicsViewHandler, self).wheelEvent(event)
 
-        self.updateRenderedPages()
+        self.updateSuggested = True
 
     def mousePressEvent(self, event):
         '''
@@ -1545,11 +1545,17 @@ class GraphicsViewHandler(QGraphicsView):
         '''
         super(GraphicsViewHandler, self).mouseReleaseEvent(event)
 
+        if self.updateSuggested:
+            self.updateRenderedPages()
+            self.updateSuggested = True
 
     def mouseMoveEvent(self, event):
         '''
         Overrides the default event
         '''
+
+
+
         super(GraphicsViewHandler, self).mouseMoveEvent(event)
         # if self.touching:
         #     distance = self.touching - event.pos()
