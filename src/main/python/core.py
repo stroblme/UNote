@@ -1365,7 +1365,7 @@ class GraphicsViewHandler(QGraphicsView):
 
         res = super().paintEvent(event)
 
-        self.rendererWorker.startBackgroundRenderer()
+        # self.rendererWorker.startBackgroundRenderer()
 
         return res
 
@@ -1573,9 +1573,10 @@ class GraphicsViewHandler(QGraphicsView):
         else:
             super(GraphicsViewHandler, self).wheelEvent(event)
 
-        self.updateSuggested = True
-        self.rendererWorker.enableBackgroundRenderer()
-        
+        self.updateRenderedPages()
+        # self.updateSuggested = True
+        # self.rendererWorker.enableBackgroundRenderer()
+
 
     def mousePressEvent(self, event):
         '''
@@ -1597,7 +1598,7 @@ class GraphicsViewHandler(QGraphicsView):
         super(GraphicsViewHandler, self).mouseReleaseEvent(event)
 
         self.rendererWorker.enableBackgroundRenderer()
-        
+
 
     def mouseMoveEvent(self, event):
         '''
@@ -1675,7 +1676,7 @@ class GraphicsViewHandler(QGraphicsView):
                 item.RenderingFinished()
 
         self.rendererWorker.enableBackgroundRenderer()
-        
+
 
         return super(GraphicsViewHandler, self).tabletEvent(event)
 
