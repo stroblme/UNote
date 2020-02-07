@@ -18,7 +18,7 @@ import sys  # exit script, file parsing
 import atexit
 from pathlib import Path, PurePath
 
-from PySide2.QtGui import QIcon
+from PySide2.QtGui import QIcon, QDrag, QClipboard
 from PySide2.QtWidgets import QMainWindow, QWidget
 from PySide2.QtCore import QTimer, Qt, QRect, QObject, Signal, Slot
 
@@ -79,6 +79,7 @@ class UNote(App):
         self.preferencesGui = PreferencesGUI(self.appctxt, self.PreferenceWindow)
 
         self.receiversInst = Receivers(self.ui)
+        self.receiversInst.setClipboardInst(QClipboard(self))
 
         self.connectReceivers()
 
@@ -245,6 +246,9 @@ class UNote(App):
         # Split View
         self.ui.actionPageSplitView.triggered.connect(lambda: self.receiversInst.splitView())
 
+
+        self.ui.actionPageInsertContent.triggered.connect(lambda: self.receiversInst.insertContent())
+
         # Toolbox Edit modes available
         self.ui.floatingToolBox.editModeChange.connect(self.ui.graphicsView.editModeChangeRequest)
 
@@ -262,6 +266,8 @@ class UNote(App):
         self.ui.actionHelpAbout.triggered.connect(lambda: self.receiversInst.aboutReceiver(self.ABOUTURL))
 
         self.receiversInst.titleUpdate.connect(self.updateWindowTitle)
+
+
 # ----------------------------------------------------------
 # User Parameter region
 # ----------------------------------------------------------

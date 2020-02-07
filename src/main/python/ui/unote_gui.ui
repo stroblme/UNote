@@ -36,7 +36,7 @@
      <x>0</x>
      <y>0</y>
      <width>1680</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -83,6 +83,7 @@
     <addaction name="menuZoom"/>
     <addaction name="separator"/>
     <addaction name="actionPageSplitView"/>
+    <addaction name="actionPageInsertContent"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -156,7 +157,7 @@
   </action>
   <action name="actionPageInsertHere">
    <property name="text">
-    <string>Insert Here</string>
+    <string>Insert Page Here</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+I</string>
@@ -169,7 +170,7 @@
   </action>
   <action name="actionPageDeleteActive">
    <property name="text">
-    <string>Delete Active</string>
+    <string>Delete Active Page</string>
    </property>
   </action>
   <action name="actionPageMoveUp">
@@ -267,6 +268,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+F</string>
+   </property>
+  </action>
+  <action name="actionPageInsertContent">
+   <property name="text">
+    <string>Insert Content</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
    </property>
   </action>
  </widget>

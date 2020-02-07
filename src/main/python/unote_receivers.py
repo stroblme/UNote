@@ -40,11 +40,8 @@ class Receivers(QObject):
     def terminate(self):
         pass
 
-    def setLogHelperInst(self, logHelper):
-        '''
-        Used to set the log helper instance after instantiating the unote_receiver obj
-        '''
-        self.logHelper = logHelper
+    def setClipboardInst(self, clipboardInst):
+        self.clipboard = clipboardInst
 
     def openPreferencesReceiver(self, preferenceInstance):
         '''
@@ -193,15 +190,6 @@ class Receivers(QObject):
         t = QTimer()
         t.singleShot(10, self.ui.splitView.zoomToFit)
 
-    @Slot(str)
-    def JSSendMessage(self, msg):
-        '''
-        This method is called each time the webviewer receives a user input.
-        msg is a valid json object, containing the following data
-        name, id, value
-        '''
-
-
     def splitView(self):
         if self.ui.actionPageSplitView.isChecked():
             if self.ui.splitView:
@@ -238,6 +226,11 @@ class Receivers(QObject):
             self.ui.gridLayout.itemAtPosition(1,0).widget().setVisible(False)
             # self.ui.gridLayout.removeWidget(self.ui.gridLayout.itemAtPosition(1,0).widget())
 
+    def insertContent(self):
+        mimeData = self.clipboard.mimeData()
+
+        self.ui.graphicsView.insertContent(mimeData)
+        
     @Slot()
     def syncPages(self):
         print('syncing')

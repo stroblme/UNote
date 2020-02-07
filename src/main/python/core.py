@@ -14,7 +14,7 @@ from indexed import IndexedOrderedDict
 from enum import Enum
 
 from PySide2.QtWidgets import QFrame, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGraphicsLineItem, QGraphicsEllipseItem, QScroller, QScrollerProperties
-from PySide2.QtCore import Qt, QRectF, QEvent, QThread, Signal, Slot, QObject, QPoint, QPointF, QTimer
+from PySide2.QtCore import Qt, QRectF, QEvent, QThread, Signal, Slot, QObject, QPoint, QPointF, QTimer, QByteArray, QBuffer, QIODevice
 from PySide2.QtGui import QPixmap, QBrush, QColor, QImage, QTouchEvent, QPainter, QGuiApplication, QPen
 # from PySide2.QtWebEngineWidgets import QWebEngineView
 
@@ -404,10 +404,12 @@ class QPdfView(QGraphicsPixmapItem):
     # Images
     #-----------------------------------------------------------------------
 
-    def insertImage(self, qPos, pixmap):
+    def insertImage(self, qPos, qPixmap):
         start = self.qPointToFPoint(qPos)
-        stop = fitz.Point(start.x + pixmap.width(), start.y + pixmap.height())
+        stop = fitz.Point(start.x + qPixmap.width(), start.y + qPixmap.height())
         rect = fitz.Rect(start.x, start.y, stop.x, stop.y)
+
+        fPixmap = self.qPixmapTofPixmap(qPixmap)
 
         self.page.insertImage(rect, pixmap=pixmap)
 
@@ -959,8 +961,7 @@ class QPdfView(QGraphicsPixmapItem):
                     self.eh.requestTextInput.emit(relCorrdinates.x(), relCorrdinates.y(), self.pageNumber, curContent)
                 # There was no annot, so the user might want to insert something
                 else:
-                    clipboard = QGuiApplication.clipboard()
-                    mimeData = clipboard.mimeData();
+                    self.insertContent()
 
                     # if mimeData.hasImage():
                     #     QImage = clipboard.image()
@@ -969,6 +970,22 @@ class QPdfView(QGraphicsPixmapItem):
                     #     self.insertMarkdown(mimeData.html())
                     # elif mimeData.hasText():
                     #     self.insertText(mimeData.text())
+
+    def insertContent(self, pos):
+        clipboard = QGuiApplication.clipboard()
+        mimeData = clipboard.mimeData()
+
+        if mimeData.hasImage():
+            print("Image in clipboard")
+            pixmap = mimeData.imageData()
+            self.insertImage(self.posToQPos(100,100), pixmap)
+        elif mimeData.hasHtml():
+            print("Html in clipboard")
+        elif mimeData.hasText():
+            print("Text in clipboard")
+        else:
+            print("Unknown format in clipboard")
+
 
     def mouseMoveEvent(self, event):
         '''
@@ -993,9 +1010,15 @@ class QPdfView(QGraphicsPixmapItem):
         QGraphicsPixmapItem.mouseMoveEvent(self, event)
 
     def qPixmapTofPixmap(self, qPixmap):
-        mode = "RGBA" if qPixmap.hasAlphaChannel else "RGB"
+        # mode = fitz.cs if qPixmap.hasAlphaChannel else fitz.csRGB
 
-        fPixmap = fitz.Pixmap(fitz.CS_RGB, qPixmap.width(), qPixmap.height(), )
+        bArray = QByteArray()
+        buffer = QBuffer(bArray)
+        buffer.open(QIODevice.ReadWrite)
+        qPixmap.save(buffer, "BMP")
+
+        cs = fitz.Colorspace(4)
+        fPixmap = fitz.Pixmap(cs, qPixmap.width(), qPixmap.height(), bArray.data())
 
     def visualizeCorners(self, annot):
         rect = annot.rect
@@ -1123,6 +1146,7 @@ class QPdfView(QGraphicsPixmapItem):
         qPos = QPoint(x, y)
 
         return qPos
+
 
 class Renderer(QObject):
     DEFAULTPAGESPACE = 7
@@ -1260,8 +1284,6 @@ class Renderer(QObject):
         Update the provided pdf file at the desired page to render only the zoom and clip
         This methods is used when instantiating the pdf and later, when performance optimzation and zooming is required
         '''
-
-
 
         fClip = None
         if clip:
@@ -1578,21 +1600,26 @@ class GraphicsViewHandler(QGraphicsView):
         # self.rendererWorker.enableBackgroundRenderer()
 
 
-    def mousePressEvent(self, event):
-        '''
-        Overrides the default event
-        '''
-        self.rendererWorker.stopBackgroundRenderer()
+    # def mousePressEvent(self, event):
+    #     '''
+    #     Overrides the default event
+    #     '''
+    #     self.rendererWorker.stopBackgroundRenderer()
 
-        super(GraphicsViewHandler, self).mousePressEvent(event)
+    #     super(GraphicsViewHandler, self).mousePressEvent(event)
 
-        self.rendererWorker.enableBackgroundRenderer()
+    #     self.rendererWorker.enableBackgroundRenderer()
 
 
     def mouseReleaseEvent(self, event):
         '''
         Overrides the default event
         '''
+        if event.button() == Qt.RightButton:
+            item = self.itemAt(event.pos())
+            if type(item) == QPdfView:
+                item.insertContent(event.pos())
+
         self.rendererWorker.stopBackgroundRenderer()
 
         super(GraphicsViewHandler, self).mouseReleaseEvent(event)
