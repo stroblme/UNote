@@ -411,7 +411,7 @@ class QPdfView(QGraphicsPixmapItem):
 
         fPixmap = self.qPixmapTofPixmap(qPixmap)
 
-        self.page.insertImage(rect, pixmap=pixmap)
+        self.page.insertImage(rect, pixmap=fPixmap)
 
     #-----------------------------------------------------------------------
     # Annot Editing
@@ -1018,7 +1018,10 @@ class QPdfView(QGraphicsPixmapItem):
         qPixmap.save(buffer, "BMP")
 
         cs = fitz.Colorspace(4)
-        fPixmap = fitz.Pixmap(cs, qPixmap.width(), qPixmap.height(), bArray.data())
+        fPixmap = fitz.Pixmap(bArray.data())
+
+        return fPixmap
+        # fPixmap = fitz.Pixmap(cs, qPixmap.width(), qPixmap.height(), bArray.data())
 
     def visualizeCorners(self, annot):
         rect = annot.rect
