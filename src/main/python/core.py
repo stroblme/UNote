@@ -404,9 +404,9 @@ class QPdfView(QGraphicsPixmapItem):
     # Images
     #-----------------------------------------------------------------------
 
-    def insertImage(self, qPos, qPixmap):
+    def insertImage(self, qPos, zoom, qPixmap):
         start = self.qPointToFPoint(qPos)
-        stop = fitz.Point(start.x + qPixmap.width(), start.y + qPixmap.height())
+        stop = fitz.Point(start.x + qPixmap.width() / zoom, start.y + qPixmap.height() / zoom)
         rect = fitz.Rect(start.x, start.y, stop.x, stop.y)
 
         fPixmap = self.qPixmapTofPixmap(qPixmap)
@@ -971,14 +971,14 @@ class QPdfView(QGraphicsPixmapItem):
                     # elif mimeData.hasText():
                     #     self.insertText(mimeData.text())
 
-    def insertContent(self, pos):
+    def insertContent(self, pos, zoom, xOff, yOff):
         clipboard = QGuiApplication.clipboard()
         mimeData = clipboard.mimeData()
 
         if mimeData.hasImage():
             print("Image in clipboard")
             pixmap = mimeData.imageData()
-            self.insertImage(self.posToQPos(100,100), pixmap)
+            self.insertImage(self.fromSceneCoordinates(pos, zoom, xOff, yOff), zoom, pixmap)
         elif mimeData.hasHtml():
             print("Html in clipboard")
         elif mimeData.hasText():
@@ -1621,7 +1621,9 @@ class GraphicsViewHandler(QGraphicsView):
         if event.button() == Qt.RightButton:
             item = self.itemAt(event.pos())
             if type(item) == QPdfView:
-                item.insertContent(event.pos())
+                rect = self.mapToScene(self.viewport().geometry()).boundingRect()
+
+                item.insertContent(event.pos(), self.rendererWorker.absZoomFactor, rect.x(), rect.y())
 
         self.rendererWorker.stopBackgroundRenderer()
 
