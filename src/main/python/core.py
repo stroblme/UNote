@@ -411,7 +411,19 @@ class QPdfView(QGraphicsPixmapItem):
 
         fPixmap = self.qPixmapTofPixmap(qPixmap)
 
+        prevList = self.page.getImageList()
+
         self.page.insertImage(rect, pixmap=fPixmap)
+
+        latestList = self.page.getImageList()
+        newImageEntry = [value for value in latestList if value not in prevList][0]
+
+        if newImageEntry[8] == '':
+            ref = newImageEntry[8]
+        else:
+            ref = newImageEntry[7]
+
+        pass
 
     #-----------------------------------------------------------------------
     # Annot Editing

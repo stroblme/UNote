@@ -10,6 +10,7 @@
 ## Features for v3.x
 
 - [ ] Implement database structure
+- [ ] Introduce multiprocessing https://pymupdf.readthedocs.io/en/latest/faq/#multiprocessing
 - [ ] Update functionality for unedited pdf pages
 - [ ] Implement unlimited space drawing and annotating for new pdfs
 - [ ] Set up testing environment
