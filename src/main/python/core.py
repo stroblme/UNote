@@ -1337,6 +1337,7 @@ class GraphicsViewHandler(QGraphicsView):
     changesMade = Signal(bool)
 
     tempObj = list()
+    updateIndicator = False
 
 
 
@@ -1560,7 +1561,7 @@ class GraphicsViewHandler(QGraphicsView):
                 self.rendererWorker.absZoomFactor = self.rendererWorker.absZoomFactor * relZoomFactor
                 self.scale(relZoomFactor, relZoomFactor)
 
-                self.updateSuggested = True
+                self.updateIndicator = True
 
         if History.recentChanges == 1:
             self.changesMade.emit(True)
@@ -1599,7 +1600,7 @@ class GraphicsViewHandler(QGraphicsView):
             super(GraphicsViewHandler, self).wheelEvent(event)
 
         self.updateRenderedPages()
-        # self.updateSuggested = True
+        # self.updateIndicator = True
         # self.rendererWorker.enableBackgroundRenderer()
 
 
@@ -1618,12 +1619,18 @@ class GraphicsViewHandler(QGraphicsView):
         '''
         Overrides the default event
         '''
-        if event.button() == Qt.RightButton:
+
+        modifiers = QApplication.keyboardModifiers()
+
+        Mmodo = QApplication.mouseButtons()
+        if bool(modifiers == Qt.ControlModifier) and event.button() == Qt.RightButton:
             item = self.itemAt(event.pos())
             if type(item) == QPdfView:
                 rect = self.mapToScene(self.viewport().geometry()).boundingRect()
 
                 item.insertContent(event.pos(), self.rendererWorker.absZoomFactor, rect.x(), rect.y())
+
+                self.updateRenderedPages()
 
         self.rendererWorker.stopBackgroundRenderer()
 
@@ -1640,9 +1647,9 @@ class GraphicsViewHandler(QGraphicsView):
 
         super(GraphicsViewHandler, self).mouseMoveEvent(event)
 
-        if self.updateSuggested:
+        if self.updateIndicator:
             self.updateRenderedPages()
-            self.updateSuggested = False
+            self.updateIndicator = False
         # if self.touching:
         #     distance = self.touching - event.pos()
         #     deltaX = int(distance.x())
