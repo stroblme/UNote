@@ -229,8 +229,8 @@ class Receivers(QObject):
     def insertContent(self):
         mimeData = self.clipboard.mimeData()
 
-        self.ui.graphicsView.insertContent(mimeData)
-        
+        # self.ui.graphicsView.insertContent(mimeData)
+
     @Slot()
     def syncPages(self):
         print('syncing')

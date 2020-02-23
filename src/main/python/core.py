@@ -413,17 +413,17 @@ class QPdfView(QGraphicsPixmapItem):
 
         prevList = self.page.getImageList()
 
-        self.page.insertImage(rect, pixmap=fPixmap)
+        self.page.insertImage(rect, pixmap=fPixmap, overlay=True)
 
-        latestList = self.page.getImageList()
-        newImageEntry = [value for value in latestList if value not in prevList][0]
+        # latestList = self.page.getImageList()
+        # newImageEntry = [value for value in latestList if value not in prevList][0]
 
-        if newImageEntry[8] == '':
-            ref = newImageEntry[8]
-        else:
-            ref = newImageEntry[7]
+        # if newImageEntry[8] == '':
+        #     ref = newImageEntry[8]
+        # else:
+        #     ref = newImageEntry[7]
 
-        pass
+        # pass
 
     #-----------------------------------------------------------------------
     # Annot Editing
@@ -1029,8 +1029,9 @@ class QPdfView(QGraphicsPixmapItem):
         buffer.open(QIODevice.ReadWrite)
         qPixmap.save(buffer, "BMP")
 
-        cs = fitz.Colorspace(4)
+        cs = fitz.csRGB
         fPixmap = fitz.Pixmap(bArray.data())
+        fPixmap = fitz.Pixmap(cs, fPixmap)
 
         return fPixmap
         # fPixmap = fitz.Pixmap(cs, qPixmap.width(), qPixmap.height(), bArray.data())
@@ -1644,11 +1645,11 @@ class GraphicsViewHandler(QGraphicsView):
 
                 self.updateRenderedPages()
 
-        self.rendererWorker.stopBackgroundRenderer()
+        # self.rendererWorker.stopBackgroundRenderer()
 
         super(GraphicsViewHandler, self).mouseReleaseEvent(event)
 
-        self.rendererWorker.enableBackgroundRenderer()
+        # self.rendererWorker.enableBackgroundRenderer()
 
 
     def mouseMoveEvent(self, event):
