@@ -1231,6 +1231,8 @@ class Renderer(QObject):
         posY = float(0)
 
         width, height = self.getPageSize()
+        
+        self.start_time = time.time()
 
         for pIt in range(self.pdf.doc.pageCount):
 
@@ -1239,6 +1241,7 @@ class Renderer(QObject):
             # elif pIt <= self.startPage + 10 and pIt >= self.startPage - 10:
             #     self.loadPdfPageToCurrentView(pIt, posX, posY, self.LOWRESZOOM)
             #     self.pages[pIt].setAsDraft()
+                print("--- First Item rendered after %s seconds ---" % (time.time() - self.start_time))
             else:
                 self.loadBlankImageToCurrentView(pIt, posX, posY, height, width)
                 self.pages[pIt].setAsDraft()
@@ -1327,7 +1330,7 @@ class Renderer(QObject):
         This methods is used when instantiating the pdf and later, when performance optimzation and zooming is required
         '''
 
-        qImg = QImage(width, height, QImage.Format_Mono)
+        qImg = QImage(1, 1, QImage.Format_Mono)
         qImg.fill(0)
 
         if pdfViewInstance.pageNumber:
