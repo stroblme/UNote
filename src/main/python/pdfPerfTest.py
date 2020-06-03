@@ -99,7 +99,7 @@ class DocForm(QtWidgets.QWidget):
             self.timerWaiting.start(40)
 
     def playDoc(self):
-        self.timerSend.start(500)
+        self.timerSend.start(50)
 
     def stopPlay(self):
         self.timerSend.stop()

@@ -1232,6 +1232,7 @@ class Renderer(QObject):
 
         width, height = self.getPageSize()
         
+        print('Rendering PDF from page ' + str(self.startPage))
         self.start_time = time.time()
 
         for pIt in range(self.pdf.doc.pageCount):
@@ -1367,6 +1368,7 @@ class GraphicsViewHandler(QGraphicsView):
         QGraphicsView.__init__(self, parent)
 
         self.gotoScrollPos = 0
+        self.startPage = 0
 
         # self.pdf = pdfEngine()
         # self.imageHelper = imageHelper()
@@ -1492,17 +1494,23 @@ class GraphicsViewHandler(QGraphicsView):
 
         # In case of a slow pc or a large pdf. Make sure to call that again
         t = QTimer()
-        t.singleShot(300, self.scrollTo)
-        t.singleShot(400, self.updateRenderedPages)
+        # t.singleShot(300, self.scrollTo)
+        t.singleShot(500, self.pageGoto)
+        t.singleShot(600, self.updateRenderedPages)
 
     def scrollTo(self):
         if self.gotoScrollPos != 0:
             self.verticalScrollBar().setMaximum(self.verticalScrollBar().maximumHeight())
-            self.verticalScrollBar().setValue(self.gotoScrollPos)
+            predictedScrollPos = self.gotoScrollPos
+            print(predictedScrollPos)
+            self.verticalScrollBar().setValue(predictedScrollPos)
             self.update()
             self.gotoScrollPos = 0
 
+            self.updateRenderedPages()
+
     def renderPdfToCurrentView(self, startPage=0):
+        self.startPage = startPage
         self.renderPdf.emit(startPage)
 
     def updateRenderedPages(self):
@@ -1781,12 +1789,10 @@ class GraphicsViewHandler(QGraphicsView):
 
             self.setupScene()
 
-            self.loadPdfToCurrentView(self.rendererWorker.pdf.filename, renderedItem.pageNumber+1)
+            self.loadPdfToCurrentView(self.rendererWorker.pdf.filename, renderedItem.pageNumber+2)
             # self.updateRenderedPages()
 
-            self.gotoScrollPos = prevScroll
-
-
+            # self.gotoScrollPos = prevScroll/
 
             return
 
@@ -1813,11 +1819,7 @@ class GraphicsViewHandler(QGraphicsView):
 
                 self.setupScene()
 
-                self.loadPdfToCurrentView(self.rendererWorker.pdf.filename, renderedItem.pageNumber)
-                self.updateRenderedPages()
-                self.verticalScrollBar().setMaximum(self.verticalScrollBar().maximumHeight())
-                self.verticalScrollBar().setValue(prevScroll)
-                self.update()
+                self.loadPdfToCurrentView(self.rendererWorker.pdf.filename, renderedItem.pageNumber+1)
 
                 return True
             else:
@@ -1838,10 +1840,13 @@ class GraphicsViewHandler(QGraphicsView):
 
             return renderedItem.pageNumber
 
-    def pageGoto(self, pageNumber):
+    def pageGoto(self, pageNumber=-1):
+        print(pageNumber)
         if self.rendererWorker.pages and pageNumber in range(len(self.rendererWorker.pages)):
             if pageNumber >= 1:
-                self.verticalScrollBar().setValue(self.rendererWorker.pages[pageNumber - 1].yOrigin * self.rendererWorker.absZoomFactor)
+                predictedScrollPos = self.rendererWorker.pages[pageNumber - 1].yOrigin * self.rendererWorker.absZoomFactor
+                print(predictedScrollPos)
+                self.verticalScrollBar().setValue(predictedScrollPos)
             else:
                 self.verticalScrollBar().setValue(0)
 
@@ -1850,7 +1855,10 @@ class GraphicsViewHandler(QGraphicsView):
             self.updateRenderedPages()
 
         else:
-            print('No valid page entered')
+            if self.rendererWorker.pages and self.startPage in range(len(self.rendererWorker.pages)):
+                self.pageGoto(self.startPage)
+            else:
+                print('No valid page entered')
 
     def pageFind(self, findStr):
         firstPage = -1
