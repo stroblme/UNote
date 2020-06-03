@@ -1841,7 +1841,6 @@ class GraphicsViewHandler(QGraphicsView):
             return renderedItem.pageNumber
 
     def pageGoto(self, pageNumber=-1):
-        print(pageNumber)
         if self.rendererWorker.pages and pageNumber in range(len(self.rendererWorker.pages)):
             if pageNumber >= 1:
                 predictedScrollPos = self.rendererWorker.pages[pageNumber - 1].yOrigin * self.rendererWorker.absZoomFactor
