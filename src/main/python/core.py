@@ -1242,7 +1242,6 @@ class Renderer(QObject):
             # elif pIt <= self.startPage + 10 and pIt >= self.startPage - 10:
             #     self.loadPdfPageToCurrentView(pIt, posX, posY, self.LOWRESZOOM)
             #     self.pages[pIt].setAsDraft()
-                print("--- First Item rendered after %s seconds ---" % (time.time() - self.start_time))
             else:
                 self.loadBlankImageToCurrentView(pIt, posX, posY, height, width)
                 self.pages[pIt].setAsDraft()
