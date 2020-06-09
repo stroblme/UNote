@@ -308,7 +308,11 @@ class ToolBoxWidget(QWidget):
                 except ValueError as identifier:
                     color = rgb.black
 
-            size = pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/pdf_annots.freeHandScale)
+            try:
+                size = pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/pdf_annots.freeHandScale)
+            except ValueError as identifier:
+                size = pdf_annots.defaultPenSize
+
         elif self.editMode == editModes.marker:
             if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
                 try:
@@ -321,14 +325,28 @@ class ToolBoxWidget(QWidget):
                 except ValueError as identifier:
                     color = rgb.black
 
-            size = pdf_annots.defaultPenSize * (int(Preferences.data['markerSize'])/pdf_annots.freeHandScale)
-        # elif self.editMode == editModes.forms:
-        #     if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
-        #         color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['formColor']))
-        #     else:
-        #         color = tuple(map(lambda x: float(x)*255, Preferences.data['formColor']))
+            try:
+                size = pdf_annots.defaultPenSize * (int(Preferences.data['markerSize'])/pdf_annots.freeHandScale)
+            except ValueError as identifier:
+                size = pdf_annots.defaultPenSize
 
-        #     size = pdf_annots.defaultPenSize * (int(Preferences.data['formSize'])/pdf_annots.freeHandScale)
+        elif self.editMode == editModes.forms:
+            if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
+                try:
+                    color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['formColor']))
+                except ValueError as identifier:
+                    color = rgb.white
+            else:
+                try:
+                    color = tuple(map(lambda x: float(x)*255, Preferences.data['formColor']))
+                except ValueError as identifier:
+                    color = rgb.black
+
+            try:
+                size = pdf_annots.defaultPenSize * (int(Preferences.data['formSize'])/pdf_annots.freeHandScale)
+            except ValueError as identifier:
+                size = pdf_annots.defaultPenSize
+
         else:
             color = rgb.main
             size = 0.1
