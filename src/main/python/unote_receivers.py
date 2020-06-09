@@ -203,9 +203,9 @@ class Receivers(QObject):
 
             else:
                 self.ui.splitView = GraphicsViewHandler(self.ui.centralwidget)
-                self.ui.splitView.rendererWorker.pdfRenderFinished.connect(self.syncPages)
+                self.ui.splitView.rendererWorker.pdfRenderFinished.connect(self.zoomToFit)
 
-                self.ui.splitView.loadPdfInstanceToCurrentView(self.ui.graphicsView.rendererWorker.pdf)
+                self.ui.splitView.loadPdfInstanceToCurrentView(self.ui.graphicsView.rendererWorker.pdf, self.ui.graphicsView.getCurrentPageNumber()+2)
 
 
                 self.ui.seperator = QHLine()
