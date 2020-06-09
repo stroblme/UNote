@@ -4,7 +4,7 @@ from indexed import IndexedOrderedDict
 
 class History():
 
-    MAXTIMELINELENGTH = 20
+    MAXTIMELINELENGTH = 60
     timeline = list()
     pointer = -1 # Latest pointer
     recentChanges = 0
