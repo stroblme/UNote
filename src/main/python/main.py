@@ -195,10 +195,13 @@ class UNote(App):
         self.preferencesGui.terminate()
 
 
+        try:
+            # Cleanup the eventually mess
+            if Path.is_file(self.newPdf):
+                Path.unlink(self.newPdf)
+        except PermissionError as identifier:
+            print(identifier)
 
-        # Cleanup the eventually mess
-        if Path.is_file(self.newPdf):
-            Path.unlink(self.newPdf)
 
     def connectReceivers(self):
         '''
