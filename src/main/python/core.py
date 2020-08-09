@@ -15,7 +15,7 @@ from enum import Enum
 
 from PySide2.QtWidgets import QFrame, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGraphicsLineItem, QGraphicsEllipseItem, QScroller, QScrollerProperties
 from PySide2.QtCore import Qt, QRectF, QEvent, QThread, Signal, Slot, QObject, QPoint, QPointF, QTimer, QByteArray, QBuffer, QIODevice
-from PySide2.QtGui import QPixmap, QBrush, QColor, QImage, QTouchEvent, QPainter, QGuiApplication, QPen
+from PySide2.QtGui import QPixmap, QBrush, QColor, QImage, QTouchEvent, QPainter, QGuiApplication, QPen, QTabletEvent
 # from PySide2.QtWebEngineWidgets import QWebEngineView
 
 import fitz
@@ -1231,7 +1231,7 @@ class Renderer(QObject):
         posY = float(0)
 
         width, height = self.getPageSize()
-        
+
         print('Rendering PDF from page ' + str(self.startPage))
         self.start_time = time.time()
 
@@ -1355,7 +1355,7 @@ class GraphicsViewHandler(QGraphicsView):
     tempObj = list()
     updateIndicator = False
 
-
+    colorOverride = False
 
 
     def __init__(self, parent):
@@ -1716,18 +1716,16 @@ class GraphicsViewHandler(QGraphicsView):
 
         self.rendererWorker.enableBackgroundRenderer()
 
-
     def tabletEvent(self, event):
         self.rendererWorker.stopBackgroundRenderer()
 
         item = self.itemAt(event.pos())
         if type(item) == QPdfView:
-            Mmodo = QApplication.mouseButtons()
 
-            if Qt.MidButton == Mmodo:
-                print(event.pos())
-            if Qt.RightButton == Mmodo:
-                print(event.pos())
+
+            # elif event.buttons() == Qt.LeftButton:
+
+
             # get the rectable of the current viewport
             rect = self.mapToScene(self.viewport().geometry()).boundingRect()
             # Store those properties for easy access
@@ -1736,6 +1734,22 @@ class GraphicsViewHandler(QGraphicsView):
             if event.type() == QEvent.Type.TabletRelease:
                 self.updateRenderedPages()
                 item.RenderingFinished()
+
+                if self.colorOverride:
+                    self.colorOverride = False
+
+                    Preferences.updateKeyValue('freehandColor', tuple(map(lambda x: str(x), (0,0,0))))
+
+
+            else:
+                if event.buttons() == Qt.RightButton:
+                    self.colorOverride = True
+
+                    Preferences.updateKeyValue('freehandColor', tuple(map(lambda x: str(x), (1,0,0))))
+                # elif 8 == int(event.buttons()):
+                #     self.modeOverride = True
+
+                #     item.editMode = editModes.eraser
 
         self.rendererWorker.enableBackgroundRenderer()
 
