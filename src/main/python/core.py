@@ -1735,17 +1735,17 @@ class GraphicsViewHandler(QGraphicsView):
                 self.updateRenderedPages()
                 item.RenderingFinished()
 
-                if self.colorOverride:
-                    self.colorOverride = False
+            #     if self.colorOverride:
+            #         self.colorOverride = False
 
-                    Preferences.updateKeyValue('freehandColor', tuple(map(lambda x: str(x), (0,0,0))))
+            #         Preferences.updateKeyValue('freehandColor', tuple(map(lambda x: str(x), (0,0,0))))
 
 
-            else:
-                if event.buttons() == Qt.RightButton:
-                    self.colorOverride = True
+            # else:
+            #     if event.buttons() == Qt.RightButton:
+            #         self.colorOverride = True
 
-                    Preferences.updateKeyValue('freehandColor', tuple(map(lambda x: str(x), (1,0,0))))
+            #         Preferences.updateKeyValue('freehandColor', tuple(map(lambda x: str(x), (1,0,0))))
                 # elif 8 == int(event.buttons()):
                 #     self.modeOverride = True
 
