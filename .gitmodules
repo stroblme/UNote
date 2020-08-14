@@ -1,0 +1,3 @@
+[submodule ".\\src\\main\\python\\aii"]
+	path = .\\src\\main\\python\\aii
+	url = https://gitlab.com/stroblme/aii
