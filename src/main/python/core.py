@@ -53,7 +53,7 @@ class EventHelper(QObject):
     addIndicatorPoint = Signal(int, int)
     deleteLastIndicatorPoint = Signal()
 
-PRESSUREMULTIPLIER = 1
+PRESSUREMULTIPLIER = 1.2
 
 class QPdfView(QGraphicsPixmapItem):
 
@@ -101,7 +101,8 @@ class QPdfView(QGraphicsPixmapItem):
                         color = rgb.black
 
                 try:
-                    penSize = self.avPressure * PRESSUREMULTIPLIER * pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/pdf_annots.freeHandScale)
+
+                    penSize = self.avPressure / self.drawPoints.qsize() * PRESSUREMULTIPLIER * pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/pdf_annots.freeHandScale)
                 except ValueError:
                     penSize = pdf_annots.defaultPenSize
 
@@ -667,7 +668,8 @@ class QPdfView(QGraphicsPixmapItem):
         self.drawPoints.put(curPos)
         # self.drawIndicators.append(qpos)
 
-        # self.avPressure = (self.avPressure + pressure) / self.drawPoints.qsize()
+
+        self.avPressure += pressure
 
     def applyDrawPoints(self):
 
@@ -717,7 +719,7 @@ class QPdfView(QGraphicsPixmapItem):
             return
 
         try:
-            penSize = self.avPressure * PRESSUREMULTIPLIER * pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/pdf_annots.freeHandScale)
+            penSize = self.avPressure / len(pointList[0]) * PRESSUREMULTIPLIER * pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/pdf_annots.freeHandScale)
         except ValueError:
             penSize = pdf_annots.defaultPenSize
 
