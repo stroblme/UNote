@@ -698,7 +698,7 @@ class QPdfView(QGraphicsPixmapItem):
 
         annot = self.addInkAnnot(pointList, self.avPressure)
 
-        History.addToHistory(self.deleteInkAnnot, annot, self.addInkAnnot, [pointList, self.avPressure])
+        History.addToHistory(self.deleteInkAnnot, annot, self.addInkAnnot, (pointList, self.avPressure))
 
         self.avPressure = 1
 

@@ -30,7 +30,8 @@ class History():
 
         action = History.timeline[History.pointer]
 
-        if type(action["undoFuncHandle"]) == list:
+
+        if type(action["undoFuncHandle"]) == tuple:
             action["undoFuncHandle"](*action["undoFuncParam"])
         else:
             action["undoFuncHandle"](action["undoFuncParam"])
@@ -47,7 +48,7 @@ class History():
         # Go back in time
         History.pointer -= 1
 
-        if type(action["redoFuncParam"]) == list:
+        if type(action["redoFuncParam"]) == tuple:
             action["undoFuncParam"] = action["redoFuncHandle"](*action["redoFuncParam"])
         else:
             action["undoFuncParam"] = action["redoFuncHandle"](action["redoFuncParam"])
