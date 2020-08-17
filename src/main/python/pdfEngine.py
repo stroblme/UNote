@@ -31,6 +31,12 @@ class pdfEngine():
 
         self.savePdfAs(self.filename)
 
+    def resizePage(self, page, width, height):
+        r = page.rect
+        r = fitz.Rect(r.x0, r.y0, r.x0+r.width+width, r.y0+r.height+height)
+        page.setMediaBox(r)
+        return page
+
     def openPdf(self, filename):
         # import fitz
         self.filename = filename

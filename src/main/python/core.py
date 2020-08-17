@@ -1794,6 +1794,8 @@ class GraphicsViewHandler(QGraphicsView):
             if type(renderedItem) != QPdfView:
                 continue
 
+            # renderedItem.page = self.rendererWorker.pdf.resizePage(renderedItem.page, 10, 0)
+
             # Insert after current page
             newPage = self.rendererWorker.pdf.insertPage(renderedItem.pageNumber+1)
             fileName = self.saveCurrentPdf()
