@@ -30,7 +30,10 @@ class History():
 
         action = History.timeline[History.pointer]
 
-        action["undoFuncHandle"](action["undoFuncParam"])
+        if type(action["undoFuncHandle"]) == list:
+            action["undoFuncHandle"](*action["undoFuncParam"])
+        else:
+            action["undoFuncHandle"](action["undoFuncParam"])
 
         History.recentChanges -= 1
 
@@ -44,7 +47,10 @@ class History():
         # Go back in time
         History.pointer -= 1
 
-        action["undoFuncParam"] = action["redoFuncHandle"](action["redoFuncParam"])
+        if type(action["redoFuncParam"]) == list:
+            action["undoFuncParam"] = action["redoFuncHandle"](*action["redoFuncParam"])
+        else:
+            action["undoFuncParam"] = action["redoFuncHandle"](action["redoFuncParam"])
 
         History.recentChanges += 1
 
