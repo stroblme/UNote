@@ -65,8 +65,11 @@ class pdfEngine():
                 return (name + ext)
         except RuntimeError as identifier:
             print(str(identifier))
-            self.incremental = False
-            return self.savePdf(cleanup)
+            if self.incremental:
+                self.incremental = False
+    
+                return self.savePdf(cleanup)
+
         except ValueError as identifier:
             print(str(identifier))
             self.incremental = False

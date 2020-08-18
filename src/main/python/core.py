@@ -1824,9 +1824,11 @@ class GraphicsViewHandler(QGraphicsView):
 
             x1, y1 = renderedItem.getEndPos()
             height, width = renderedItem.getSize()
-            pIt = renderedItem.pageNumber+1
+            pIt = renderedItem.pageNumber
 
             self.rendererWorker.loadBlankImageToCurrentView(pIt, 0, y1, height, width)
+
+            self.saveCurrentPdf(cleanup=False)
 
             return
 
