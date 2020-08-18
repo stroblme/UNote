@@ -226,9 +226,9 @@ class QPdfView(QGraphicsPixmapItem):
 
         self.mdHelper = markdownHelper()
 
-        self.ppage = self.mdHelper.loadGetMarkdownPage(content)
+        self.page = self.mdHelper.loadGetMarkdownPage(content)
 
-        self.preview.setPage(self.ppage)
+        self.preview.setPage(self.page)
 
 
     #-----------------------------------------------------------------------
@@ -1804,18 +1804,19 @@ class GraphicsViewHandler(QGraphicsView):
             newPage = self.rendererWorker.pdf.insertPage(renderedItem.pageNumber+1)
 
             # Ok this needs to be reworked since there is to much overhead for just inserting a single page
-            fileName = self.saveCurrentPdf()
-            self.rendererWorker.pdf.closePdf()
-            os.replace(fileName, self.rendererWorker.pdf.filename)
+            # fileName = self.saveCurrentPdf()
+            # self.rendererWorker.pdf.closePdf()
+            # os.replace(fileName, self.rendererWorker.pdf.filename)
 
-            prevScroll = self.verticalScrollBar().value()
+            # prevScroll = self.verticalScrollBar().value()
 
-            self.setupScene()
+            # self.setupScene()
 
-            self.loadPdfToCurrentView(self.rendererWorker.pdf.filename, renderedItem.pageNumber+2)
-            # self.updateRenderedPages()
+            # self.loadPdfToCurrentView(self.rendererWorker.pdf.filename, renderedItem.pageNumber+2)
 
-            # self.gotoScrollPos = prevScroll/
+
+
+            self.retrieveRenderedItem(newPage, newX, newY)
 
             return
 
