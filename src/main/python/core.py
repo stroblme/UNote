@@ -1352,7 +1352,6 @@ class Renderer(QObject):
 
 class GraphicsViewHandler(QGraphicsView):
     # pages = IndexedOrderedDict()
-    DEFAULTPAGESPACE = 20
 
     updatePages = Signal()
     renderPdf = Signal(int)
@@ -1829,7 +1828,7 @@ class GraphicsViewHandler(QGraphicsView):
             # Insert after current page
             newPage = self.rendererWorker.pdf.insertPage(pIt)
 
-            self.rendererWorker.loadPdfPageToCurrentView(pIt, 0, y1 + self.DEFAULTPAGESPACE, self.rendererWorker.absZoomFactor)
+            self.rendererWorker.loadPdfPageToCurrentView(pIt, 0, y1 + self.rendererWorker.DEFAULTPAGESPACE, self.rendererWorker.absZoomFactor)
 
             self.saveCurrentPdf(cleanup=False)
 
@@ -1844,7 +1843,8 @@ class GraphicsViewHandler(QGraphicsView):
                     continue
 
                 item.pageNumber += 1
-
+                item.yOrigin = item.hOrigin + height + self.rendererWorker.DEFAULTPAGESPACE
+                item.setPos(item.x(), item.y() + (height+self.rendererWorker.DEFAULTPAGESPACE))
             return
 
     def pageDeleteActive(self):
