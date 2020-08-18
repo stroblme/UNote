@@ -1287,7 +1287,7 @@ class Renderer(QObject):
         self.itemRenderFinished.emit(self.pages[pageNumber], posX, posY)
 
 
-    def loadPdfPageToCurrentView(self, pageNumber, posX, posY, zoom = None):
+    def loadPdfPageToCurrentView(self, pageNumber, posX, posY, zoom):
         '''
         Creates a qpdfView instance from the desired page and renders it at the provided position with the zoomfactor.
         A lower zoomFactor will dramatically improve speed, as it always correlates to the dpi of the page
@@ -1500,6 +1500,7 @@ class GraphicsViewHandler(QGraphicsView):
         self.scene.addItem(renderedItem)
         renderedItem.setPos(posX, posY)
         renderedItem.setAsOrigin()
+        print("item added")
 
 
     @Slot()
@@ -1807,8 +1808,7 @@ class GraphicsViewHandler(QGraphicsView):
             if type(renderedItem) != QPdfView:
                 continue
 
-            # Insert after current page
-            newPage = self.rendererWorker.pdf.insertPage(renderedItem.pageNumber+1)
+            
 
             # Ok this needs to be reworked since there is to much overhead for just inserting a single page
 
@@ -1823,12 +1823,27 @@ class GraphicsViewHandler(QGraphicsView):
             # self.loadPdfToCurrentView(self.rendererWorker.pdf.filename, renderedItem.pageNumber+2)
 
             x1, y1 = renderedItem.getEndPos()
-            height, width = renderedItem.getSize()
+            width, height = renderedItem.getSize()
             pIt = renderedItem.pageNumber+1
 
-            self.rendererWorker.loadBlankImageToCurrentView(pIt, 0, y1, height, width)
+            # Insert after current page
+            newPage = self.rendererWorker.pdf.insertPage(pIt)
+
+            self.rendererWorker.loadPdfPageToCurrentView(pIt, 0, y1 + self.DEFAULTPAGESPACE, self.rendererWorker.absZoomFactor)
 
             self.saveCurrentPdf(cleanup=False)
+
+            items = self.scene.items()
+
+
+            for item in reversed(items):
+                if type(item) != QPdfView:
+                    continue
+
+                if item.pageNumber < pIt:
+                    continue
+
+                item.pageNumber += 1
 
             return
 
