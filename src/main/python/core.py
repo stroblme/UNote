@@ -1845,7 +1845,7 @@ class GraphicsViewHandler(QGraphicsView):
 
             # Delete after current page
             if self.rendererWorker.pdf.deletePage(renderedItem.pageNumber):
-                fileName = self.saveCurrentPdf()
+                fileName = self.saveCurrentPdf(cleanup=False)
                 self.rendererWorker.pdf.closePdf()
                 os.replace(fileName, self.rendererWorker.pdf.filename)
 
