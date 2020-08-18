@@ -1824,7 +1824,7 @@ class GraphicsViewHandler(QGraphicsView):
 
             x1, y1 = renderedItem.getEndPos()
             height, width = renderedItem.getSize()
-            pIt = renderedItem.pageNumber
+            pIt = renderedItem.pageNumber+1
 
             self.rendererWorker.loadBlankImageToCurrentView(pIt, 0, y1, height, width)
 
