@@ -66,7 +66,7 @@ class pdfEngine():
         except RuntimeError as identifier:
             print(str(identifier))
             self.incremental = False
-            return self.savePdf()
+            return self.savePdf(cleanup)
         except ValueError as identifier:
             print(str(identifier))
             self.incremental = False
