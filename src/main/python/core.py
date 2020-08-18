@@ -1508,7 +1508,6 @@ class GraphicsViewHandler(QGraphicsView):
         self.scene.addItem(renderedItem)
         renderedItem.setPos(posX, posY)
         renderedItem.setAsOrigin()
-        print("item added")
 
 
     @Slot()
@@ -1525,7 +1524,6 @@ class GraphicsViewHandler(QGraphicsView):
         if self.gotoScrollPos != 0:
             self.verticalScrollBar().setMaximum(self.verticalScrollBar().maximumHeight())
             predictedScrollPos = self.gotoScrollPos
-            print(predictedScrollPos)
             self.verticalScrollBar().setValue(predictedScrollPos)
             self.update()
             self.gotoScrollPos = 0
@@ -1816,7 +1814,7 @@ class GraphicsViewHandler(QGraphicsView):
             if type(renderedItem) != QPdfView:
                 continue
 
-            
+
 
             # Ok this needs to be reworked since there is to much overhead for just inserting a single page
 
@@ -1904,7 +1902,6 @@ class GraphicsViewHandler(QGraphicsView):
         if self.rendererWorker.pages and pageNumber in range(len(self.rendererWorker.pages)):
             if pageNumber >= 1:
                 predictedScrollPos = self.rendererWorker.pages[pageNumber - 1].yOrigin * self.rendererWorker.absZoomFactor
-                print(predictedScrollPos)
                 self.verticalScrollBar().setValue(predictedScrollPos)
             else:
                 self.verticalScrollBar().setValue(0)
@@ -2005,8 +2002,8 @@ class GraphicsViewHandler(QGraphicsView):
         except IndexError as ie:
             # Don't judge me, but this can happen
             pass
-        except Exception as e:
-            print(e.with_traceback())
+        except Exception as identifier:
+            print(str(identifier()))
 
     @Slot()
     def updateSuggested(self):
