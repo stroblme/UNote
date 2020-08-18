@@ -1439,12 +1439,12 @@ class GraphicsViewHandler(QGraphicsView):
 
         self.loadPdfToCurrentView(fileName)
 
-    def saveCurrentPdf(self):
+    def saveCurrentPdf(self, cleanup=True):
         '''
         Just handles saving the pdf
         '''
         if self.rendererWorker.pdf.filename:
-            if History.recentChanges != 0:
+            if History.recentChanges != 0 or cleanup == False:
                 return self.rendererWorker.pdf.savePdf()
             else:
                 print("Cleaning up pdf")
@@ -1798,13 +1798,11 @@ class GraphicsViewHandler(QGraphicsView):
             if type(renderedItem) != QPdfView:
                 continue
 
-            # renderedItem.page = self.rendererWorker.pdf.resizePage(renderedItem.page, 10, 0)
-
             # Insert after current page
             newPage = self.rendererWorker.pdf.insertPage(renderedItem.pageNumber+1)
 
             # Ok this needs to be reworked since there is to much overhead for just inserting a single page
-            fileName = self.saveCurrentPdf()
+            fileName = self.saveCurrentPdf(cleanup=False)
             self.rendererWorker.pdf.closePdf()
             os.replace(fileName, self.rendererWorker.pdf.filename)
 
