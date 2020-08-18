@@ -186,6 +186,15 @@ class QPdfView(QGraphicsPixmapItem):
         self.wOrigin = self.boundingRect().width()
         self.hOrigin = self.boundingRect().height()
 
+    def getStartPos(self):
+        return (self.xOrigin, self.yOrigin)
+
+    def getEndPos(self):
+        return (self.xOrigin + self.wOrigin, self.yOrigin + self.hOrigin)
+
+    def getSize(self):
+        return (self.wOrigin, self.hOrigin)
+
     def setPage(self, page, pageNumber):
         self.page = page
         self.pageNumber = pageNumber
@@ -226,9 +235,9 @@ class QPdfView(QGraphicsPixmapItem):
 
         self.mdHelper = markdownHelper()
 
-        self.ppage = self.mdHelper.loadGetMarkdownPage(content)
+        self.page = self.mdHelper.loadGetMarkdownPage(content)
 
-        self.preview.setPage(self.ppage)
+        self.preview.setPage(self.page)
 
 
     #-----------------------------------------------------------------------
@@ -1802,18 +1811,22 @@ class GraphicsViewHandler(QGraphicsView):
             newPage = self.rendererWorker.pdf.insertPage(renderedItem.pageNumber+1)
 
             # Ok this needs to be reworked since there is to much overhead for just inserting a single page
-            fileName = self.saveCurrentPdf(cleanup=False)
-            self.rendererWorker.pdf.closePdf()
-            os.replace(fileName, self.rendererWorker.pdf.filename)
 
-            prevScroll = self.verticalScrollBar().value()
+            # fileName = self.saveCurrentPdf()
+            # self.rendererWorker.pdf.closePdf()
+            # os.replace(fileName, self.rendererWorker.pdf.filename)
 
-            self.setupScene()
+            # prevScroll = self.verticalScrollBar().value()
 
-            self.loadPdfToCurrentView(self.rendererWorker.pdf.filename, renderedItem.pageNumber+2)
-            # self.updateRenderedPages()
+            # self.setupScene()
 
-            # self.gotoScrollPos = prevScroll/
+            # self.loadPdfToCurrentView(self.rendererWorker.pdf.filename, renderedItem.pageNumber+2)
+
+            x1, y1 = renderedItem.getEndPos()
+            height, width = renderedItem.getSize()
+            pIt = renderedItem.pageNumber+1
+
+            self.rendererWorker.loadBlankImageToCurrentView(pIt, 0, y1, height, width)
 
             return
 
