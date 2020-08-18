@@ -186,6 +186,15 @@ class QPdfView(QGraphicsPixmapItem):
         self.wOrigin = self.boundingRect().width()
         self.hOrigin = self.boundingRect().height()
 
+    def getStartPos(self):
+        return (self.xOrigin, self.yOrigin)
+
+    def getEndPos(self):
+        return (self.xOrigin + self.wOrigin, self.yOrigin + self.hOrigin)
+
+    def getSize(self):
+        return (self.wOrigin, self.hOrigin)
+
     def setPage(self, page, pageNumber):
         self.page = page
         self.pageNumber = pageNumber
@@ -1814,11 +1823,11 @@ class GraphicsViewHandler(QGraphicsView):
 
             # self.loadPdfToCurrentView(self.rendererWorker.pdf.filename, renderedItem.pageNumber+2)
 
-            width, height = self.getPageSize()
+            x1, y1 = renderedItem.getEndPos()
+            height, width = renderedItem.getSize()
+            pIt = renderedItem.pageNumber+1
 
-            renderedItem
-
-            self.retrieveRenderedItem(newPage, 0, newY)
+            self.rendererWorker.loadBlankImageToCurrentView(pIt, 0, y1, height, width)
 
             return
 
