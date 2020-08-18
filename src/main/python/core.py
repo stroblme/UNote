@@ -822,6 +822,7 @@ class QPdfView(QGraphicsPixmapItem):
 
         for annot in self.page.annots():
             for qpos in qposList:
+                #TODO: Change that here
                 if self.pointInArea(qpos, annot.rect):
                     annots.append(annot)
                     break
