@@ -1802,6 +1802,8 @@ class GraphicsViewHandler(QGraphicsView):
 
             # Insert after current page
             newPage = self.rendererWorker.pdf.insertPage(renderedItem.pageNumber+1)
+
+            # Ok this needs to be reworked since there is to much overhead for just inserting a single page
             fileName = self.saveCurrentPdf()
             self.rendererWorker.pdf.closePdf()
             os.replace(fileName, self.rendererWorker.pdf.filename)

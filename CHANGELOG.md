@@ -12,15 +12,15 @@
 - [ ] Implement database structure
 - [ ] Introduce multiprocessing https://pymupdf.readthedocs.io/en/latest/faq/#multiprocessing
 - [ ] Update functionality for unedited pdf pages
-- [ ] Implement unlimited space drawing and annotating for new pdfs
-- [ ] Set up testing environment
+- [o] Implement unlimited space drawing and annotating for new pdfs; Suspended, as annotates are anchored at the bottom left point and therefore get shifted once page height is increased
+- [x] Set up testing environment
 - [ ] Implement custom settings for shortcuts, annots etc
 - [x] Implement custom colors for annots and drawings
 - [ ] Drag&Drop PDF load
 - [ ] Custom file opening and saving dialog
 - [ ] Implement Page extraction
 - [ ] Implement Page moving
-- [ ] Implement picture insert
+- [x] Implement picture insert
 - [ ] Implement pdf drag&drop load
 - [ ] Implement print support https://doc.qt.io/qtforpython/PySide2/QtPrintSupport/QPrinter.html
 - [ ] Smooth scrolling using QTimeLine https://doc.qt.io/qt-5/qtimeline.html
@@ -36,7 +36,7 @@
 - [x] Touch zooming
 - [x] Touch paning
 - [x] Physics for scrolling https://github.com/fau-fablab/flickcharm-python
-- [ ] Search functionality
+- [x] Search functionality
 - [x] Custom colors for drawing
 - [x] Text Size for Text Boxes
 - [ ] Automatic text size from pdf text
@@ -50,7 +50,7 @@
 - [x] Implement Goto Page.. functionality
 - [x] Filename in title
 - [ ] Implement split view with overlay widget
-- [ ] Update to latest muPDF
+- [x] Update to latest muPDF
 - [ ] Smoothing to mouse draw
 - [ ] Improve saving mechanism
 - [ ] Implement object resizing
@@ -59,7 +59,7 @@
 - [ ] Reduced toolbar based on device mode
 - [ ] Use the circle at the toolbar to retrieve properties of an already existing line
 - [ ] Improve ui of small dialogs
-- [ ] Freehand draw per default
+- [x] Freehand draw per default
 
 ## Features for v2.x
 
