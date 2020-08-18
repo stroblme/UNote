@@ -1814,9 +1814,11 @@ class GraphicsViewHandler(QGraphicsView):
 
             # self.loadPdfToCurrentView(self.rendererWorker.pdf.filename, renderedItem.pageNumber+2)
 
+            width, height = self.getPageSize()
 
+            renderedItem
 
-            self.retrieveRenderedItem(newPage, newX, newY)
+            self.retrieveRenderedItem(newPage, 0, newY)
 
             return
 
