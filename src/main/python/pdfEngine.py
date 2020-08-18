@@ -31,9 +31,13 @@ class pdfEngine():
 
         self.savePdfAs(self.filename)
 
+    def rotatePage(self, page):
+        page.setRotation(180)
+        return page
+
     def resizePage(self, page, width, height):
         r = page.rect
-        r = fitz.Rect(r.x0, r.y0, r.x0+r.width+width, r.y0+r.height+height)
+        r = fitz.Rect(r.x0, r.y0-height, r.x1+width, r.y1+height)
         page.setMediaBox(r)
         return page
 

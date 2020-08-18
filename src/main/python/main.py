@@ -228,6 +228,9 @@ class UNote(App):
         # Insert PDF Page
         self.ui.actionPageInsertHere.triggered.connect(lambda: self.receiversInst.pageInsertHere())
 
+        # Insert PDF Page
+        self.ui.actionPageExtendActive.triggered.connect(lambda: self.receiversInst.pageExtendActive())
+
         # Remove PDF Paage
         self.ui.actionPageDeleteActive.triggered.connect(lambda: self.receiversInst.pageDeleteActive())
 

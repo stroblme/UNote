@@ -127,6 +127,9 @@ class Receivers(QObject):
     def pageInsertHere(self):
         self.ui.graphicsView.pageInsertHere()
 
+    def pageExtendActive(self):
+        self.ui.graphicsView.pageExtendActive()
+
     def pageDeleteActive(self):
         if self.guiHelper.confirmDialog("Warning", "Are you sure you want to delete the current page?"):
             self.ui.graphicsView.pageDeleteActive()

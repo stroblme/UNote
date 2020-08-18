@@ -75,6 +75,7 @@
     </widget>
     <addaction name="actionPageInsertHere"/>
     <addaction name="actionPageDeleteActive"/>
+    <addaction name="actionPageExtendActive"/>
     <addaction name="menuPageMove"/>
     <addaction name="separator"/>
     <addaction name="actionPageGoto"/>
@@ -276,6 +277,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+V</string>
+   </property>
+  </action>
+  <action name="actionPageExtendActive">
+   <property name="text">
+    <string>Extend Active Page</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+E</string>
    </property>
   </action>
  </widget>

@@ -1813,6 +1813,29 @@ class GraphicsViewHandler(QGraphicsView):
 
             return
 
+    def pageExtendActive(self):
+        # Get all visible pages
+        try:
+            renderedItems = self.scene.items(self.mapToScene(self.viewport().geometry()))
+        except Exception as e:
+            return
+
+        # Iterate all visible items (shouldn't be that much normally)
+        for renderedItem in reversed(renderedItems):
+            # Check if we have a pdf view here (visible could be anything)
+            if type(renderedItem) != QPdfView:
+                continue
+
+            renderedItem.page = self.rendererWorker.pdf.resizePage(renderedItem.page, 10, 10)
+
+
+            # self.updateRenderedPages()
+
+            # self.gotoScrollPos = prevScroll/
+
+            return
+
+
     def pageDeleteActive(self):
         # Get all visible pages
         try:
