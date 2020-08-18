@@ -1811,22 +1811,16 @@ class GraphicsViewHandler(QGraphicsView):
             newPage = self.rendererWorker.pdf.insertPage(renderedItem.pageNumber+1)
 
             # Ok this needs to be reworked since there is to much overhead for just inserting a single page
+            fileName = self.saveCurrentPdf(cleanup=False)
+            self.rendererWorker.pdf.closePdf()
+            os.replace(fileName, self.rendererWorker.pdf.filename)
 
-            # fileName = self.saveCurrentPdf()
-            # self.rendererWorker.pdf.closePdf()
-            # os.replace(fileName, self.rendererWorker.pdf.filename)
+            prevScroll = self.verticalScrollBar().value()
 
-            # prevScroll = self.verticalScrollBar().value()
+            self.setupScene()
 
-            # self.setupScene()
-
-            # self.loadPdfToCurrentView(self.rendererWorker.pdf.filename, renderedItem.pageNumber+2)
-
-            x1, y1 = renderedItem.getEndPos()
-            height, width = renderedItem.getSize()
-            pIt = renderedItem.pageNumber+1
-
-            self.rendererWorker.loadBlankImageToCurrentView(pIt, 0, y1, height, width)
+            self.loadPdfToCurrentView(self.rendererWorker.pdf.filename, renderedItem.pageNumber+2)
+            
 
             return
 
