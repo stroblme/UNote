@@ -938,7 +938,7 @@ class QPdfView(QGraphicsPixmapItem):
                     # Start moving this obj
                     self.startMoveObject(self.toPdfCoordinates(event.pos()), annot)
 
-        # super().mousePressEvent(event)
+        super().mousePressEvent(event)
 
 
     def mouseReleaseEvent(self, event):
@@ -1660,28 +1660,28 @@ class GraphicsViewHandler(QGraphicsView):
     #     self.rendererWorker.enableBackgroundRenderer()
 
 
-    # def mouseReleaseEvent(self, event):
-    #     '''
-    #     Overrides the default event
-    #     '''
+    def mouseReleaseEvent(self, event):
+        '''
+        Overrides the default event
+        '''
 
-    #     modifiers = QApplication.keyboardModifiers()
+        modifiers = QApplication.keyboardModifiers()
 
-    #     Mmodo = QApplication.mouseButtons()
-    #     if bool(modifiers == Qt.ControlModifier) and event.button() == Qt.RightButton:
-    #         item = self.itemAt(event.pos())
-    #         if type(item) == QPdfView:
-    #             rect = self.mapToScene(self.viewport().geometry()).boundingRect()
+        Mmodo = QApplication.mouseButtons()
+        if bool(modifiers == Qt.ControlModifier) and event.button() == Qt.RightButton:
+            item = self.itemAt(event.pos())
+            if type(item) == QPdfView:
+                rect = self.mapToScene(self.viewport().geometry()).boundingRect()
 
-    #             item.insertContent(event.pos(), self.rendererWorker.absZoomFactor, rect.x(), rect.y())
+                item.insertContent(event.pos(), self.rendererWorker.absZoomFactor, rect.x(), rect.y())
 
-    #             self.updateRenderedPages()
+                self.updateRenderedPages()
 
-    #     # self.rendererWorker.stopBackgroundRenderer()
+        # self.rendererWorker.stopBackgroundRenderer()
 
-    #     super(GraphicsViewHandler, self).mouseReleaseEvent(event)
+        super(GraphicsViewHandler, self).mouseReleaseEvent(event)
 
-        # self.rendererWorker.enableBackgroundRenderer()
+        self.rendererWorker.enableBackgroundRenderer()
 
 
     def mouseMoveEvent(self, event):
