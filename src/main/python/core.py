@@ -295,10 +295,17 @@ class QPdfView(QGraphicsPixmapItem):
             self.eh.deleteLastIndicatorPoint.emit()
 
             textAnnot.update()
+
+            History.addToHistory(self.deleteText, textAnnot, self.insertText, (qpos, content))
+
         else:
             # Only when there is a line
             if self.startPos != self.endPos:
                 self.eh.deleteLastIndicatorPoint.emit()
+
+    def deleteText(self, annot):
+        self.deleteAnnot(annot)
+
 
     def addArrow(self, fStart, fEnd, subj):
         cyan  = norm_rgb.main
@@ -931,7 +938,7 @@ class QPdfView(QGraphicsPixmapItem):
                     # Start moving this obj
                     self.startMoveObject(self.toPdfCoordinates(event.pos()), annot)
 
-        QGraphicsPixmapItem.mousePressEvent(self, event)
+        # super().mousePressEvent(event)
 
 
     def mouseReleaseEvent(self, event):
@@ -983,9 +990,9 @@ class QPdfView(QGraphicsPixmapItem):
                     # Start requesting edit text box
                     editMode = editModes.editTextBox
                     self.eh.requestTextInput.emit(relCorrdinates.x(), relCorrdinates.y(), self.pageNumber, curContent)
-                # There was no annot, so the user might want to insert something
-                else:
-                    self.insertContent()
+                # # There was no annot, so the user might want to insert something
+                # else:
+                #     self.insertContent()
 
                     # if mimeData.hasImage():
                     #     QImage = clipboard.image()
@@ -1197,6 +1204,8 @@ class Renderer(QObject):
 
         self.backgroundRenderTimer = QTimer()
 
+        self.parent = parent
+
     def updateReceiver(self, zoom):
         self.rendererWorker.absZoomFactor = zoom
 
@@ -1279,9 +1288,9 @@ class Renderer(QObject):
         self.pages[pageNumber] = pdfView
 
         # # Connect event handlers
-        # self.pages[pageNumber].eh.requestTextInput.connect(self.toolBoxTextInputRequestedEvent)
-        # self.pages[pageNumber].eh.addIndicatorPoint.connect(self.addIndicatorPoint)
-        # self.pages[pageNumber].eh.deleteLastIndicatorPoint.connect(self.deleteLastIndicatorPoint)
+        self.pages[pageNumber].eh.requestTextInput.connect(self.parent.toolBoxTextInputRequestedEvent)
+        self.pages[pageNumber].eh.addIndicatorPoint.connect(self.parent.addIndicatorPoint)
+        self.pages[pageNumber].eh.deleteLastIndicatorPoint.connect(self.parent.deleteLastIndicatorPoint)
 
         # add and arrange the new page in the scene
         self.itemRenderFinished.emit(self.pages[pageNumber], posX, posY)
@@ -1303,9 +1312,9 @@ class Renderer(QObject):
         self.pages[pageNumber] = pdfView
 
         # # Connect event handlers
-        # self.pages[pageNumber].eh.requestTextInput.connect(self.toolBoxTextInputRequestedEvent)
-        # self.pages[pageNumber].eh.addIndicatorPoint.connect(self.addIndicatorPoint)
-        # self.pages[pageNumber].eh.deleteLastIndicatorPoint.connect(self.deleteLastIndicatorPoint)
+        self.pages[pageNumber].eh.requestTextInput.connect(self.parent.toolBoxTextInputRequestedEvent)
+        self.pages[pageNumber].eh.addIndicatorPoint.connect(self.parent.addIndicatorPoint)
+        self.pages[pageNumber].eh.deleteLastIndicatorPoint.connect(self.parent.deleteLastIndicatorPoint)
 
         # add and arrange the new page in the scene
         self.itemRenderFinished.emit(self.pages[pageNumber], posX, posY)
@@ -1407,7 +1416,7 @@ class GraphicsViewHandler(QGraphicsView):
         self.scroller.setScrollerProperties(self.scrollerProperties)
 
         self.rendererThread = QThread(parent)
-        self.rendererWorker = Renderer(parent)
+        self.rendererWorker = Renderer(self)
 
         self.setupScene()
 
@@ -1653,26 +1662,26 @@ class GraphicsViewHandler(QGraphicsView):
     #     self.rendererWorker.enableBackgroundRenderer()
 
 
-    def mouseReleaseEvent(self, event):
-        '''
-        Overrides the default event
-        '''
+    # def mouseReleaseEvent(self, event):
+    #     '''
+    #     Overrides the default event
+    #     '''
 
-        modifiers = QApplication.keyboardModifiers()
+    #     modifiers = QApplication.keyboardModifiers()
 
-        Mmodo = QApplication.mouseButtons()
-        if bool(modifiers == Qt.ControlModifier) and event.button() == Qt.RightButton:
-            item = self.itemAt(event.pos())
-            if type(item) == QPdfView:
-                rect = self.mapToScene(self.viewport().geometry()).boundingRect()
+    #     Mmodo = QApplication.mouseButtons()
+    #     if bool(modifiers == Qt.ControlModifier) and event.button() == Qt.RightButton:
+    #         item = self.itemAt(event.pos())
+    #         if type(item) == QPdfView:
+    #             rect = self.mapToScene(self.viewport().geometry()).boundingRect()
 
-                item.insertContent(event.pos(), self.rendererWorker.absZoomFactor, rect.x(), rect.y())
+    #             item.insertContent(event.pos(), self.rendererWorker.absZoomFactor, rect.x(), rect.y())
 
-                self.updateRenderedPages()
+    #             self.updateRenderedPages()
 
-        # self.rendererWorker.stopBackgroundRenderer()
+    #     # self.rendererWorker.stopBackgroundRenderer()
 
-        super(GraphicsViewHandler, self).mouseReleaseEvent(event)
+    #     super(GraphicsViewHandler, self).mouseReleaseEvent(event)
 
         # self.rendererWorker.enableBackgroundRenderer()
 
