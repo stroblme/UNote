@@ -308,8 +308,8 @@ class QPdfView(QGraphicsPixmapItem):
 
         return lineAnnot
 
-    def addLine(self, line):
-        fStart, fEnd, subj = line
+    def addLine(self, fStart, fEnd, subj):
+        # fStart, fEnd, subj = line
 
         try:
             borderLine = {"width": pdf_annots.lineWidth * (int(Preferences.data['formSize'])/100)}
@@ -630,9 +630,9 @@ class QPdfView(QGraphicsPixmapItem):
     def applyFormPoints(self):
         fStart, fStop = self.formEstimator.estimateLine(self.formPoints[0], self.formPoints[-1])
 
-        annot = self.addLine((fStart, fStop, ""))
+        annot = self.addLine(fStart, fStop, "")
 
-        History.addToHistory(self.deleteLine, annot, self.addLine, {fStart, fStop, ""})
+        History.addToHistory(self.deleteLine, annot, self.addLine, (fStart, fStop, ""))
 
     #-----------------------------------------------------------------------
     # Draw
