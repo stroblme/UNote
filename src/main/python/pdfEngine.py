@@ -48,7 +48,7 @@ class pdfEngine():
         self.doc.close()
 
 
-    def savePdf(self):
+    def savePdf(self,cleanup=False):
         name, ext = os.path.splitext(self.filename)
         try:
             if self.incremental:
@@ -56,7 +56,10 @@ class pdfEngine():
                 return self.filename
             else:
                 name = name + '_m'
-                self.doc.save(name + ext, incremental = self.incremental)
+                if cleanup:
+                    self.doc.save(name + ext, incremental = self.incremental,garbage=1, deflate=1, clean=1)
+                else:
+                    self.doc.save(name + ext, incremental = self.incremental)
 
                 #Suggest new filename
                 return (name + ext)

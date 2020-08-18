@@ -1444,8 +1444,11 @@ class GraphicsViewHandler(QGraphicsView):
         Just handles saving the pdf
         '''
         if self.rendererWorker.pdf.filename:
-            print('PDF saved')
-            return self.rendererWorker.pdf.savePdf()
+            if History.recentChanges != 0:
+                return self.rendererWorker.pdf.savePdf()
+            else:
+                print("Cleaning up pdf")
+                return self.rendererWorker.pdf.savePdf(cleanup=True)
 
     def saveCurrentPdfAs(self, fileName):
         '''
