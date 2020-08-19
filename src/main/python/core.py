@@ -105,6 +105,9 @@ class QPdfView(QGraphicsPixmapItem):
                     penSize = self.avPressure / self.drawPoints.qsize() * PRESSUREMULTIPLIER * pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/pdf_annots.freeHandScale)
                 except ValueError:
                     penSize = pdf_annots.defaultPenSize
+                except ZeroDivisionError:
+                    penSize = pdf_annots.defaultPenSize
+
 
                 painter.setPen(QPen(QColor(*color), penSize))
                 painter.setRenderHint(QPainter.TextAntialiasing)
@@ -731,7 +734,6 @@ class QPdfView(QGraphicsPixmapItem):
             print(str(identifier))
             return
         except ValueError:
-            print(str(identifier))
             return
 
         try:
@@ -824,9 +826,14 @@ class QPdfView(QGraphicsPixmapItem):
         '''
         Return the annot of the current page which is the first at the desired position
         '''
-        for annot in self.page.annots():
-            if self.pointInArea(qpos, annot.rect):
-                return annot
+        try:
+            for annot in self.page.annots():
+                if self.pointInArea(qpos, annot.rect):
+                    return annot
+        except ValueError as identifier:
+            return None
+
+
 
         return None
 
@@ -1311,6 +1318,15 @@ class Renderer(QObject):
         # Render according to the parameters
         self.updatePage(pdfView, zoom = zoom)
 
+        if pageNumber in self.pages:
+            pagesCache = self.pages.copy()
+
+            for pageNumberIt in sorted(pagesCache.keys(), reverse=True):
+                if pageNumberIt >= pageNumber:
+                    self.pages[pageNumber+1] = pagesCache[pageNumberIt]
+                else:
+                    break
+
         # Store instance locally
         self.pages[pageNumber] = pdfView
 
@@ -1325,11 +1341,10 @@ class Renderer(QObject):
     def removePdfPageFromCurrentView(self, pdfView):
         pagesCache = self.pages.copy()
 
-        for pageNumber in sorted(pagesCache.keys(), reverse=True):
-            if pdfView.pageNumber < pageNumber:
-                self.pages[pageNumber-1] = pagesCache[pageNumber]
+        for pageNumberIt in sorted(pagesCache.keys(), reverse=True):
+            if pdfView.pageNumber < pageNumberIt:
+                self.pages[pageNumberIt-1] = pagesCache[pageNumberIt]
             else:
-                self.pages = pagesCache
                 break
 
         del self.pages[self.pages.keys()[-1]]
@@ -1868,8 +1883,7 @@ class GraphicsViewHandler(QGraphicsView):
                     item.pageNumber += 1
                     item.yOrigin = item.hOrigin + height + self.rendererWorker.DEFAULTPAGESPACE
                     item.setPos(item.x(), item.y() + (height+self.rendererWorker.DEFAULTPAGESPACE))
-                else:
-                    break
+
             return
 
     def pageDeleteActive(self):
@@ -1916,8 +1930,6 @@ class GraphicsViewHandler(QGraphicsView):
                         item.pageNumber -= 1
                         item.yOrigin = item.hOrigin - height - self.rendererWorker.DEFAULTPAGESPACE
                         item.setPos(item.x(), item.y() - (height-self.rendererWorker.DEFAULTPAGESPACE))
-                    else:
-                        break
 
                 self.rendererWorker.removePdfPageFromCurrentView(renderedItem)
 
