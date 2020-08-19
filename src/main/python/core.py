@@ -1842,16 +1842,17 @@ class GraphicsViewHandler(QGraphicsView):
             items = self.scene.items()
 
 
-            for item in reversed(items):
+            for item in items:
                 if type(item) != QPdfView:
                     continue
 
-                if item.pageNumber < pIt:
-                    continue
+                if item.pageNumber > pIt:
 
-                item.pageNumber += 1
-                item.yOrigin = item.hOrigin + height + self.rendererWorker.DEFAULTPAGESPACE
-                item.setPos(item.x(), item.y() + (height+self.rendererWorker.DEFAULTPAGESPACE))
+                    item.pageNumber += 1
+                    item.yOrigin = item.hOrigin + height + self.rendererWorker.DEFAULTPAGESPACE
+                    item.setPos(item.x(), item.y() + (height+self.rendererWorker.DEFAULTPAGESPACE))
+                else:
+                    break
             return
 
     def pageDeleteActive(self):
@@ -1867,8 +1868,13 @@ class GraphicsViewHandler(QGraphicsView):
             if type(renderedItem) != QPdfView:
                 continue
 
+            x1, y1 = renderedItem.getEndPos()
+            width, height = renderedItem.getSize()
+            pIt = renderedItem.pageNumber
+
             # Delete after current page
-            if self.rendererWorker.pdf.deletePage(renderedItem.pageNumber):
+            if self.rendererWorker.pdf.deletePage(pIt):
+
                 fileName = self.saveCurrentPdf(cleanup=False)
                 self.rendererWorker.pdf.closePdf()
                 os.replace(fileName, self.rendererWorker.pdf.filename)
@@ -1878,6 +1884,26 @@ class GraphicsViewHandler(QGraphicsView):
                 self.setupScene()
 
                 self.loadPdfToCurrentView(self.rendererWorker.pdf.filename, renderedItem.pageNumber+1)
+
+
+                self.rendererWorker.loadPdfPageToCurrentView(pIt, 0, y1 + self.rendererWorker.DEFAULTPAGESPACE, self.rendererWorker.absZoomFactor)
+
+                self.saveCurrentPdf(cleanup=False)
+
+                items = self.scene.items()
+
+
+                for item in reversed(items):
+                    if type(item) != QPdfView:
+                        continue
+
+                    if item.pageNumber < pIt:
+
+                        item.pageNumber += 1
+                        item.yOrigin = item.hOrigin + height + self.rendererWorker.DEFAULTPAGESPACE
+                        item.setPos(item.x(), item.y() + (height+self.rendererWorker.DEFAULTPAGESPACE))
+                    else:
+                        break
 
                 return True
             else:
