@@ -859,11 +859,14 @@ class QPdfView(QGraphicsPixmapItem):
         '''
         Return the content of the annot of the current page which is the first at the desired position
         '''
-        for annot in self.page.annots(types=(fitz.PDF_ANNOT_FREE_TEXT, fitz.PDF_ANNOT_TEXT)):
-            if self.pointInArea(qpos, annot.rect):
-                info = annot.info
+        try:
+            for annot in self.page.annots(types=(fitz.PDF_ANNOT_FREE_TEXT, fitz.PDF_ANNOT_TEXT)):
+                if self.pointInArea(qpos, annot.rect):
+                    info = annot.info
 
-                return info["content"]
+                    return info["content"]
+        except ValueError as identifier:
+            return None
 
         return None
 
@@ -1318,6 +1321,20 @@ class Renderer(QObject):
 
         # add and arrange the new page in the scene
         self.itemRenderFinished.emit(self.pages[pageNumber], posX, posY)
+
+    def removePdfPageFromCurrentView(self, pdfView):
+        pagesCache = self.pages.copy()
+
+        for pageNumber in sorted(pagesCache.keys(), reverse=True):
+            if pdfView.pageNumber < pageNumber:
+                self.pages[pageNumber-1] = pagesCache[pageNumber]
+            else:
+                self.pages = pagesCache
+                break
+
+        del self.pages[self.pages.keys()[-1]]
+
+
 
     def updatePage(self, pdfViewInstance, zoom, clip=None):
         '''
@@ -1846,7 +1863,7 @@ class GraphicsViewHandler(QGraphicsView):
                 if type(item) != QPdfView:
                     continue
 
-                if item.pageNumber > pIt:
+                if item.pageNumber >= pIt:
 
                     item.pageNumber += 1
                     item.yOrigin = item.hOrigin + height + self.rendererWorker.DEFAULTPAGESPACE
@@ -1875,35 +1892,38 @@ class GraphicsViewHandler(QGraphicsView):
             # Delete after current page
             if self.rendererWorker.pdf.deletePage(pIt):
 
-                fileName = self.saveCurrentPdf(cleanup=False)
-                self.rendererWorker.pdf.closePdf()
-                os.replace(fileName, self.rendererWorker.pdf.filename)
+                # fileName = self.saveCurrentPdf(cleanup=False)
+                # self.rendererWorker.pdf.closePdf()
+                # os.replace(fileName, self.rendererWorker.pdf.filename)
 
-                prevScroll = self.verticalScrollBar().value()
+                # prevScroll = self.verticalScrollBar().value()
 
-                self.setupScene()
+                # self.setupScene()
 
-                self.loadPdfToCurrentView(self.rendererWorker.pdf.filename, renderedItem.pageNumber+1)
+                # self.loadPdfToCurrentView(self.rendererWorker.pdf.filename, renderedItem.pageNumber+1)
 
 
-                self.rendererWorker.loadPdfPageToCurrentView(pIt, 0, y1 + self.rendererWorker.DEFAULTPAGESPACE, self.rendererWorker.absZoomFactor)
 
-                self.saveCurrentPdf(cleanup=False)
 
                 items = self.scene.items()
 
-
-                for item in reversed(items):
+                for item in items:
                     if type(item) != QPdfView:
                         continue
 
-                    if item.pageNumber < pIt:
+                    if item.pageNumber > pIt:
 
-                        item.pageNumber += 1
-                        item.yOrigin = item.hOrigin + height + self.rendererWorker.DEFAULTPAGESPACE
-                        item.setPos(item.x(), item.y() + (height+self.rendererWorker.DEFAULTPAGESPACE))
+                        item.pageNumber -= 1
+                        item.yOrigin = item.hOrigin - height - self.rendererWorker.DEFAULTPAGESPACE
+                        item.setPos(item.x(), item.y() - (height-self.rendererWorker.DEFAULTPAGESPACE))
                     else:
                         break
+
+                self.rendererWorker.removePdfPageFromCurrentView(renderedItem)
+
+                self.scene.removeItem(renderedItem)
+
+                self.saveCurrentPdf(cleanup=False)
 
                 return True
             else:
