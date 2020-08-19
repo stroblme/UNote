@@ -1344,10 +1344,13 @@ class Renderer(QObject):
         for pageNumberIt in sorted(pagesCache.keys(), reverse=True):
             if pdfView.pageNumber < pageNumberIt:
                 self.pages[pageNumberIt-1] = pagesCache[pageNumberIt]
-            else:
-                break
 
-        del self.pages[self.pages.keys()[-1]]
+            self.pages[pageNumberIt] = self.pdf.getPage(pageNumberIt)
+
+
+        # del self.pages[self.pages.keys()[-1]]
+
+
 
 
 
