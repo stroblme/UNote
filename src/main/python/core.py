@@ -200,6 +200,7 @@ class QPdfView(QGraphicsPixmapItem):
 
     def setPage(self, page, pageNumber):
         self.page = page
+        print(page.rotationMatrix)
         self.pageNumber = pageNumber
 
     def reloadQImg(self, zoomFactor):
