@@ -200,7 +200,7 @@ class QPdfView(QGraphicsPixmapItem):
 
     def setPage(self, page, pageNumber):
         self.page = page
-        print(page.rotationMatrix)
+        # print(page.rotationMatrix)
         self.pageNumber = pageNumber
 
     def reloadQImg(self, zoomFactor):
@@ -711,7 +711,13 @@ class QPdfView(QGraphicsPixmapItem):
         # self.estPoints = self.formEstimator.estimateLine(self.drawPoints)
 
         pointList = []
-        pointList.append(self.savgol.applySavgol(segment))
+        segmentT = list()
+        for point in segment:
+            fp = fitz.Point(point[0], point[1])
+            fpt = fp * self.page.derotationMatrix
+            segmentT.append((fpt.x, fpt.y, point[2]))
+
+        pointList.append(self.savgol.applySavgol(segmentT))
 
         # pressure = []
 
@@ -719,7 +725,6 @@ class QPdfView(QGraphicsPixmapItem):
         #     pressure.append(point[2])
 
         annot = self.addInkAnnot(pointList, self.avPressure)
-
         History.addToHistory(self.deleteInkAnnot, annot, self.addInkAnnot, (pointList, self.avPressure))
 
         self.avPressure = 1
