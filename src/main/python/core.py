@@ -1274,7 +1274,7 @@ class Renderer(QObject):
             #     self.loadPdfPageToCurrentView(pIt, posX, posY, self.LOWRESZOOM)
             #     self.pages[pIt].setAsDraft()
             else:
-                self.loadBlankImageToCurrentView(pIt, posX, posY, height, width)
+                self.loadBlankImageToCurrentView(pIt, posX, posY, width, height)
                 self.pages[pIt].setAsDraft()
 
             posY += height + self.DEFAULTPAGESPACE
