@@ -321,7 +321,7 @@ class QPdfView(QGraphicsPixmapItem):
         lineAnnot.setInfo(lineAnnotInfo)
 
         lineAnnot.setBorder(borderLine)
-        lineAnnot.setLineEnds(fitz.ANNOT_LE_Circle, fitz.ANNOT_LE_Circle)
+        lineAnnot.setLineEnds(fitz.PDF_ANNOT_LE_CIRCLE , fitz.PDF_ANNOT_LE_CIRCLE)
         lineAnnot.update(border_color=cyan, fill_color=cyan)
         lineAnnot.update()
 
@@ -501,7 +501,7 @@ class QPdfView(QGraphicsPixmapItem):
 
         # Catch in case curr annot is not defined yet
         try:
-            self.moveAnnotByDelta(self.startPos, self.endPos, self.currAnnot)
+            self.currAnnot = self.moveAnnotByDelta(self.startPos, self.endPos, self.currAnnot)
         except AttributeError as identifier:
             print(str(identifier))
 
@@ -543,6 +543,8 @@ class QPdfView(QGraphicsPixmapItem):
             textInfo["subject"] = str(nAnnot.xref)
             annot.setInfo(textInfo)
             annot.update()
+
+        return annot
 
     #-----------------------------------------------------------------------
     # Marker
@@ -947,8 +949,6 @@ class QPdfView(QGraphicsPixmapItem):
 
                     # Start moving this obj
                     self.startMoveObject(self.toPdfCoordinates(event.pos()), annot)
-
-        super().mousePressEvent(event)
 
 
     def mouseReleaseEvent(self, event):
