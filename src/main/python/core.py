@@ -710,14 +710,14 @@ class QPdfView(QGraphicsPixmapItem):
         # Line smoothing
         # self.estPoints = self.formEstimator.estimateLine(self.drawPoints)
 
-        pointList = []
-        segmentT = list()
+        pointList = list()
         for point in segment:
             fp = fitz.Point(point[0], point[1])
             fpt = fp * self.page.derotationMatrix
-            segmentT.append((fpt.x, fpt.y, point[2]))
+            pointList.append([fpt.x, fpt.y])
 
-        pointList.append(self.savgol.applySavgol(segmentT))
+
+        pointList = [pointList]
 
         # pressure = []
 

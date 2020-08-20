@@ -144,34 +144,34 @@ class Savgol(object):
         # Odd window length for Savgol
         # Use even Polynoms for better results!
 
-        if len(observedPoints) > 19:
-            WINDOW_LENGTH = 19 #odd!
-            POLYNOM_GRADE = 3
-        elif len(observedPoints) > 13:
-            WINDOW_LENGTH = 13 #odd!
-            POLYNOM_GRADE = 2
-        elif len(observedPoints) > 7:
-            WINDOW_LENGTH = 7 #odd!
-            POLYNOM_GRADE = 2
-        elif len(observedPoints) > 3:
-            WINDOW_LENGTH = 3 #odd!
-            POLYNOM_GRADE = 1
-        else:
-            xPoints, yPoints = tuplesToArrays(observedPoints)
+        # if len(observedPoints) > 19:
+        #     WINDOW_LENGTH = 19 #odd!
+        #     POLYNOM_GRADE = 3
+        # elif len(observedPoints) > 13:
+        #     WINDOW_LENGTH = 13 #odd!
+        #     POLYNOM_GRADE = 2
+        # elif len(observedPoints) > 7:
+        #     WINDOW_LENGTH = 7 #odd!
+        #     POLYNOM_GRADE = 2
+        # elif len(observedPoints) > 3:
+        #     WINDOW_LENGTH = 3 #odd!
+        #     POLYNOM_GRADE = 1
+        # else:
+        #     xPoints, yPoints = tuplesToArrays(observedPoints)
 
-            try:
-                xPoints.extend([xPoints[0] - 1])
+        #     try:
+        #         xPoints.extend([xPoints[0] - 1])
 
-                yPoints.extend([yPoints[0] - 1])
-            except IndexError as identifier:
-                print(identifier)
+        #         yPoints.extend([yPoints[0] - 1])
+        #     except IndexError as identifier:
+        #         print(identifier)
 
-                # Don't make lange rum, return the points
-                return observedPoints
+        #         # Don't make lange rum, return the points
+        #         return observedPoints
 
-            points = arraysToTuples(xPoints, yPoints)
+        #     points = arraysToTuples(xPoints, yPoints)
 
-            return points
+        #     return points
 
         xPoints, yPoints = tuplesToArrays(observedPoints)
 
