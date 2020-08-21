@@ -597,16 +597,17 @@ class QPdfView(QGraphicsPixmapItem):
         dy = yMax - yMin
 
         rect = fitz.Rect(xMin, yMin, xMax, yMax)
-        if dx < dy:
-            annot = self.addHighlightAnnot(rect)
-        else:
-            annot = self.addHighlightAnnot(rect)
+
+        # if dx < dy:
+        #     rect = fitz.Rect(xMin, yMax, xMax, yMin)
+
+        annot = self.addHighlightAnnot(rect)
 
         History.addToHistory(self.deleteHighlightAnnot, annot, self.addHighlightAnnot, rect)
 
 
     def addHighlightAnnot(self, rect):
-        annot = self.page.addHighlightAnnot(rect, start, stop)
+        annot = self.page.addHighlightAnnot(rect)
 
         try:
             markerColor = tuple(map(lambda x: float(x), Preferences.data['markerColor']))
