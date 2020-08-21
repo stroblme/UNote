@@ -86,6 +86,10 @@ class QPdfView(QGraphicsPixmapItem):
 
         self.avPressure = 1
 
+        # Trigger this before any paint events occur
+        self.settingsChangedReceiver()
+
+
     def paint(self, painter, option, widget):
         res = super().paint(painter, option, widget)
 
@@ -263,6 +267,7 @@ class QPdfView(QGraphicsPixmapItem):
         self.page = page
         # print(page.rotationMatrix)
         self.pageNumber = pageNumber
+
 
     def reloadQImg(self, zoomFactor):
         mat = fitz.Matrix(zoomFactor, zoomFactor)
