@@ -1225,6 +1225,23 @@ class QPdfView(QGraphicsPixmapItem):
         qPos.setY(abs(qPos.y())+yOff - self.yOrigin)
         return qPos
 
+    def rectFromSceneCoordinates(self, qRect, zoom):
+        tl = self.fromSceneCoordinates(qRect.topLeft(), 1, 0, 0)
+        br = self.fromSceneCoordinates(qRect.bottomRight(), 1, 0, 0)
+
+        qRect.setTopLeft(tl)
+        qRect.setBottomRight(br)
+
+        return qRect
+
+    def qRectToFRect(self, qRect):
+        tl = self.qPointToFPoint(qRect.topLeft())
+        br = self.qPointToFPoint(qRect.bottomRight())
+
+        fRect = fitz.Rect(tl, br)
+
+        return fRect
+
     def fPosToQPos(self, fPos):
         qPos = QPoint(fPos.x, fPos.y)
 
@@ -1406,14 +1423,15 @@ class Renderer(QObject):
         '''
 
         if clip:
-            qpos = QPoint(clip.x(), clip.y())
-            fpos = pdfViewInstance.fromSceneCoordinates(qpos, zoom, clip.x(), clip.y())
-            fClip = fitz.Rect(fpos.x(), fpos.y(), fpos.x() + clip.width(), fpos.y() + clip.height())
+            # qpos = QPoint(clip.x(), clip.y())
+            # fpos = pdfViewInstance.fromSceneCoordinates(qpos, zoom, clip.x(), clip.y())
+            qClip = pdfViewInstance.rectFromSceneCoordinates(clip, zoom)
+            fClip = pdfViewInstance.qRectToFRect(qClip)
             # fClip = None
 
         else:
             fClip = None
-            
+
 
         try:
             mat = fitz.Matrix(zoom, zoom)
