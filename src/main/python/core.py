@@ -598,9 +598,9 @@ class QPdfView(QGraphicsPixmapItem):
 
         rect = fitz.Rect(xMin, yMin, xMax, yMax)
 
-        rect = rect*self.page.derotationMatrix
-        # if dx < dy:
-        #     rect = fitz.Rect(xMin, yMax, xMax, yMin)
+        if dx < dy:
+            rect = rect.transform(self.page.derotationMatrix)
+            # rect = fitz.Rect(xMin, yMax, xMax, yMin)
 
         annot = self.addHighlightAnnot(rect)
 
