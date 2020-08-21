@@ -53,6 +53,8 @@ class EventHelper(QObject):
     addIndicatorPoint = Signal(int, int)
     deleteLastIndicatorPoint = Signal()
 
+    settingsChanged = Signal()
+
 PRESSUREMULTIPLIER = 1.6
 
 class QPdfView(QGraphicsPixmapItem):
@@ -159,6 +161,65 @@ class QPdfView(QGraphicsPixmapItem):
                 painter.drawLine(lst[0],lst[-1])
 
         return res
+
+    def settingsChangedReceiver(self):
+        if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
+            try:
+                self.freeHandColor = tuple(map(lambda x: (1-float(x))*255, Preferences.data['freehandColor']))
+            except ValueError as identifier:
+                self.freeHandColor = rgb.white
+        else:
+            try:
+                self.freeHandColor = tuple(map(lambda x: float(x)*255, Preferences.data['freehandColor']))
+            except ValueError as identifier:
+                self.freeHandColor = rgb.black
+
+        try:
+
+            self.freeHandSize = self.avPressure / self.drawPoints.qsize() * PRESSUREMULTIPLIER * pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/pdf_annots.freeHandScale)
+        except ValueError:
+            self.freeHandSize = pdf_annots.defaultPenSize
+        except ZeroDivisionError:
+            self.freeHandSize = pdf_annots.defaultPenSize
+
+        #------------------------------------------
+
+        if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
+            try:
+                self.markerColor = tuple(map(lambda x: (1-float(x))*255, Preferences.data['markerColor']))
+            except ValueError as identifier:
+                self.markerColor = rgb.white
+        else:
+            try:
+                self.markerColor = tuple(map(lambda x: float(x)*255, Preferences.data['markerColor']))
+            except ValueError as identifier:
+                self.markerColor = rgb.black
+
+        try:
+            self.markerSize = pdf_annots.defaultPenSize * (int(Preferences.data['markerSize'])/pdf_annots.freeHandScale)
+        except ValueError:
+            self.markerSize = pdf_annots.defaultPenSize
+
+        #------------------------------------------
+
+        if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
+            try:
+                self.formColor = tuple(map(lambda x: (1-float(x))*255, Preferences.data['formColor']))
+            except ValueError as identifier:
+                self.formColor = rgb.white
+        else:
+            try:
+                self.formColor = tuple(map(lambda x: float(x)*255, Preferences.data['formColor']))
+            except ValueError as identifier:
+                self.formColor = rgb.black
+
+        try:
+            self.formSize = pdf_annots.defaultPenSize * (int(Preferences.data['formSize'])/pdf_annots.freeHandScale)
+        except ValueError:
+            self.formSize = pdf_annots.defaultPenSize
+
+
+
 
     def setPixMap(self, qImg, pageNumber, newZoomFactor=1):
         self.pageNumber = pageNumber
@@ -1325,10 +1386,7 @@ class Renderer(QObject):
         # Store instance locally
         self.pages[pageNumber] = pdfView
 
-        # # Connect event handlers
-        self.pages[pageNumber].eh.requestTextInput.connect(self.parent.toolBoxTextInputRequestedEvent)
-        self.pages[pageNumber].eh.addIndicatorPoint.connect(self.parent.addIndicatorPoint)
-        self.pages[pageNumber].eh.deleteLastIndicatorPoint.connect(self.parent.deleteLastIndicatorPoint)
+        self.connectPageSignals(self.pages[pageNumber])
 
         # add and arrange the new page in the scene
         self.itemRenderFinished.emit(self.pages[pageNumber], posX, posY)
@@ -1358,13 +1416,18 @@ class Renderer(QObject):
         # Store instance locally
         self.pages[pageNumber] = pdfView
 
-        # # Connect event handlers
-        self.pages[pageNumber].eh.requestTextInput.connect(self.parent.toolBoxTextInputRequestedEvent)
-        self.pages[pageNumber].eh.addIndicatorPoint.connect(self.parent.addIndicatorPoint)
-        self.pages[pageNumber].eh.deleteLastIndicatorPoint.connect(self.parent.deleteLastIndicatorPoint)
+        self.connectPageSignals(self.pages[pageNumber])
 
         # add and arrange the new page in the scene
         self.itemRenderFinished.emit(self.pages[pageNumber], posX, posY)
+
+    def connectPageSignals(self, page):
+        # # Connect event handlers
+        page.eh.requestTextInput.connect(self.parent.toolBoxTextInputRequestedEvent)
+        page.eh.addIndicatorPoint.connect(self.parent.addIndicatorPoint)
+        page.eh.deleteLastIndicatorPoint.connect(self.parent.deleteLastIndicatorPoint)
+
+        self.parent.settingsChanged.connect(page.settingsChangedReceiver)
 
     def removePdfPageFromCurrentView(self, pdfView):
         pagesCache = self.pages.copy()
@@ -1434,6 +1497,8 @@ class GraphicsViewHandler(QGraphicsView):
     # x, y, pageNumber, currentContent
     requestTextInput = Signal(int, int, int, str)
     changesMade = Signal(bool)
+
+    settingsChanged = Signal()
 
     tempObj = list()
     updateIndicator = False
@@ -1582,6 +1647,7 @@ class GraphicsViewHandler(QGraphicsView):
         # t.singleShot(300, self.scrollTo)
         t.singleShot(500, self.pageGoto)
         t.singleShot(600, self.updateRenderedPages)
+
 
     def scrollTo(self):
         if self.gotoScrollPos != 0:
@@ -2097,3 +2163,7 @@ class GraphicsViewHandler(QGraphicsView):
     @Slot()
     def updateSuggested(self):
         self.updateRenderedPages()
+
+    @Slot()
+    def settingsUpdateSuggested(self):
+        self.settingsChanged.emit()

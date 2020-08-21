@@ -56,6 +56,8 @@ class ToolBoxWidget(QWidget):
     editModeChange = Signal(str)
 
     suggestUpdate = Signal()
+    
+    settingsChanged = Signal()
 
     editTextBox = False
 
@@ -732,6 +734,9 @@ class ToolBoxWidget(QWidget):
                 Preferences.updateKeyValue('freehandColor', tuple(map(lambda x: str(x), normRGB)))
             elif self.editMode == editModes.forms:
                 Preferences.updateKeyValue('formColor', tuple(map(lambda x: str(x), normRGB)))
+
+        self.settingsChanged.emit()
+            
 
     def handleSizeButton(self):
         '''
