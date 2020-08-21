@@ -257,7 +257,9 @@ class UNote(App):
 
         # Suggest update signal
         self.ui.floatingToolBox.suggestUpdate.connect(self.ui.graphicsView.updateSuggested)
+        
         self.ui.floatingToolBox.settingsChanged.connect(self.ui.graphicsView.settingsUpdateSuggested)
+        self.preferencesGui.finished.connect(self.ui.graphicsView.settingsUpdateSuggested)
 
         # Toolboxspecific events
         self.ui.floatingToolBox.textInputFinished.connect(self.ui.graphicsView.toolBoxTextInputEvent)
