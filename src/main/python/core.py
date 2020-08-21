@@ -450,6 +450,12 @@ class QPdfView(QGraphicsPixmapItem):
     # Annot Editing
     #-----------------------------------------------------------------------
 
+    def addAnnot(self, annot):
+        try:
+            self.page.addAnnot(annot)
+        except Exception as identifier:
+            print("Unable to add annot")
+
     def deleteAnnot(self, annot):
         '''
         Deletes the desired annot and the corresponding line if one is found
@@ -629,7 +635,9 @@ class QPdfView(QGraphicsPixmapItem):
         annots = self.getAnnotsAtPoints(self.eraserPoints)
 
         for annot in annots:
+            # History.addToHistory(self.addAnnot, annot, self.deleteAnnot, annot)
             self.deleteAnnot(annot)
+
 
     #-----------------------------------------------------------------------
     # Draw
