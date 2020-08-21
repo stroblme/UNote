@@ -559,11 +559,13 @@ class QPdfView(QGraphicsPixmapItem):
 
     def startMarkText(self, qpos):
         self.ongoingEdit = True
-        self.startPos = qpos
+        self.startPos = self.qPointToFPoint(qpos)
+        # self.startPos = qpos
 
     def stopMarkText(self, qpos):
         self.ongoingEdit = False
-        self.endPos = qpos
+        self.endPos = self.qPointToFPoint(qpos)
+        # self.endPos = qpos
 
         self.updateMarkText()
 
@@ -571,8 +573,11 @@ class QPdfView(QGraphicsPixmapItem):
         '''
         Called updates the currently ongoing marking to match the latest, provided position
         '''
-        yMin = min(self.startPos.y(), self.endPos.y())
-        yMax = max(self.startPos.y(), self.endPos.y())
+        self.startPos = self.startPos * self.page.derotationMatrix
+        self.endPos = self.endPos * self.page.derotationMatrix
+
+        yMin = min(self.startPos.y, self.endPos.y)
+        yMax = max(self.startPos.y, self.endPos.y)
 
         try:
             minWidth = pdf_annots.defaultMarkerSize * (int(Preferences.data['markerSize'])/pdf_annots.markerScale)
@@ -584,17 +589,24 @@ class QPdfView(QGraphicsPixmapItem):
             yMin = yMin - minWidth/2
             yMax = yMax + minWidth/2
 
-        xMin = min(self.startPos.x(), self.endPos.x())
-        xMax = max(self.startPos.x(), self.endPos.x())
+        xMin = min(self.startPos.x, self.endPos.x)
+        xMax = max(self.startPos.x, self.endPos.x)
+
+
+        dx = xMax - xMin
+        dy = yMax - yMin
 
         rect = fitz.Rect(xMin, yMin, xMax, yMax)
+        if dx < dy:
+            annot = self.addHighlightAnnot(rect)
+        else:
+            annot = self.addHighlightAnnot(rect)
 
-        annot = self.addHighlightAnnot(rect)
         History.addToHistory(self.deleteHighlightAnnot, annot, self.addHighlightAnnot, rect)
 
 
     def addHighlightAnnot(self, rect):
-        annot = self.page.addHighlightAnnot(rect)
+        annot = self.page.addHighlightAnnot(rect, start, stop)
 
         try:
             markerColor = tuple(map(lambda x: float(x), Preferences.data['markerColor']))
@@ -654,7 +666,7 @@ class QPdfView(QGraphicsPixmapItem):
         self.ongoingEdit = False
 
     def updateFormPoints(self, qpos):
-        self.formPoints.append(self.qPointToFPoint(qpos))
+        self.formPoints.append(self.qPointToFPoint(qpos)*self.page.derotationMatrix)
 
 
     def applyFormPoints(self):

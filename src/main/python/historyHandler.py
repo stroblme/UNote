@@ -72,6 +72,3 @@ class History():
     @staticmethod
     def removeFromHistory():
         pass
-
-    @staticmethod
-    def findAnnotInHistory(annot):
