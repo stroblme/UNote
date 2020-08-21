@@ -116,7 +116,7 @@ class QPdfView(QGraphicsPixmapItem):
 
 
                 painter.setPen(QPen(QColor(*self.freeHandColor), penSize))
-                painter.setRenderHint(QPainter.TextAntialiasing)
+                painter.setRenderHint(QPainter.SmoothPixmapTransform)
                 painter.drawPolyline(list(self.tempPoints.queue))
 
             elif editMode == editModes.marker:
@@ -138,7 +138,7 @@ class QPdfView(QGraphicsPixmapItem):
 
 
                 painter.setPen(QPen(QColor(*self.markerColor), self.markerSize))
-                painter.setRenderHint(QPainter.TextAntialiasing)
+                painter.setRenderHint(QPainter.SmoothPixmapTransform)
                 painter.drawPolyline(list(self.tempPoints.queue))
 
             elif editMode == editModes.forms:
@@ -160,7 +160,7 @@ class QPdfView(QGraphicsPixmapItem):
 
 
                 painter.setPen(QPen(QColor(*self.formColor), self.formSize))
-                painter.setRenderHint(QPainter.TextAntialiasing)
+                painter.setRenderHint(QPainter.SmoothPixmapTransform)
                 lst = list(self.tempPoints.queue)
                 painter.drawLine(lst[0],lst[-1])
 
