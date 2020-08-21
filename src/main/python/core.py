@@ -91,71 +91,71 @@ class QPdfView(QGraphicsPixmapItem):
 
         if self.tempPoints.qsize() > 0:
             if editMode == editModes.freehand or editMode == editModes.none:
-                if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
-                    try:
-                        color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['freehandColor']))
-                    except ValueError as identifier:
-                        color = rgb.white
-                else:
-                    try:
-                        color = tuple(map(lambda x: float(x)*255, Preferences.data['freehandColor']))
-                    except ValueError as identifier:
-                        color = rgb.black
+                # if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
+                #     try:
+                #         color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['freehandColor']))
+                #     except ValueError as identifier:
+                #         color = rgb.white
+                # else:
+                #     try:
+                #         color = tuple(map(lambda x: float(x)*255, Preferences.data['freehandColor']))
+                #     except ValueError as identifier:
+                #         color = rgb.black
 
-                try:
+                # try:
 
-                    penSize = self.avPressure / self.drawPoints.qsize() * PRESSUREMULTIPLIER * pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/pdf_annots.freeHandScale)
-                except ValueError:
-                    penSize = pdf_annots.defaultPenSize
-                except ZeroDivisionError:
-                    penSize = pdf_annots.defaultPenSize
+                #     penSize = self.avPressure / self.drawPoints.qsize() * PRESSUREMULTIPLIER * pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/pdf_annots.freeHandScale)
+                # except ValueError:
+                #     penSize = pdf_annots.defaultPenSize
+                # except ZeroDivisionError:
+                #     penSize = pdf_annots.defaultPenSize
 
 
-                painter.setPen(QPen(QColor(*color), penSize))
+                painter.setPen(QPen(QColor(*self.freeHandColor), self.freeHandSize))
                 painter.setRenderHint(QPainter.TextAntialiasing)
                 painter.drawPolyline(list(self.tempPoints.queue))
 
             elif editMode == editModes.marker:
-                if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
-                    try:
-                        color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['markerColor']))
-                    except ValueError as identifier:
-                        color = rgb.white
-                else:
-                    try:
-                        color = tuple(map(lambda x: float(x)*255, Preferences.data['markerColor']))
-                    except ValueError as identifier:
-                        color = rgb.black
+                # if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
+                #     try:
+                #         color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['markerColor']))
+                #     except ValueError as identifier:
+                #         color = rgb.white
+                # else:
+                #     try:
+                #         color = tuple(map(lambda x: float(x)*255, Preferences.data['markerColor']))
+                #     except ValueError as identifier:
+                #         color = rgb.black
 
-                try:
-                    penSize = pdf_annots.defaultPenSize * (int(Preferences.data['markerSize'])/pdf_annots.freeHandScale)
-                except ValueError:
-                    penSize = pdf_annots.defaultPenSize
+                # try:
+                #     penSize = pdf_annots.defaultPenSize * (int(Preferences.data['markerSize'])/pdf_annots.freeHandScale)
+                # except ValueError:
+                #     penSize = pdf_annots.defaultPenSize
 
 
-                painter.setPen(QPen(QColor(*color), penSize))
+                painter.setPen(QPen(QColor(*self.markerColor), self.markerSize))
                 painter.setRenderHint(QPainter.TextAntialiasing)
                 painter.drawPolyline(list(self.tempPoints.queue))
 
             elif editMode == editModes.forms:
-                if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
-                    try:
-                        color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['formColor']))
-                    except ValueError as identifier:
-                        color = rgb.white
-                else:
-                    try:
-                        color = tuple(map(lambda x: float(x)*255, Preferences.data['formColor']))
-                    except ValueError as identifier:
-                        color = rgb.black
+                # if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
+                #     try:
+                #         color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['formColor']))
+                #     except ValueError as identifier:
+                #         color = rgb.white
+                # else:
+                #     try:
+                #         color = tuple(map(lambda x: float(x)*255, Preferences.data['formColor']))
+                #     except ValueError as identifier:
+                #         color = rgb.black
 
-                try:
-                    penSize = pdf_annots.defaultPenSize * (int(Preferences.data['formSize'])/pdf_annots.freeHandScale)
-                except ValueError:
-                    penSize = pdf_annots.defaultPenSize
+                # try:
+                #     penSize = pdf_annots.defaultPenSize * (int(Preferences.data['formSize'])/pdf_annots.freeHandScale)
+                # except ValueError:
+                #     penSize = pdf_annots.defaultPenSize
 
 
-                painter.setPen(QPen(QColor(*color), penSize))
+                painter.setPen(QPen(QColor(*self.formColor), self.formSize))
                 painter.setRenderHint(QPainter.TextAntialiasing)
                 lst = list(self.tempPoints.queue)
                 painter.drawLine(lst[0],lst[-1])
