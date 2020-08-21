@@ -573,8 +573,8 @@ class QPdfView(QGraphicsPixmapItem):
         '''
         Called updates the currently ongoing marking to match the latest, provided position
         '''
-        self.startPos = self.startPos * self.page.derotationMatrix
-        self.endPos = self.endPos * self.page.derotationMatrix
+        # self.startPos = self.startPos * self.page.derotationMatrix
+        # self.endPos = self.endPos * self.page.derotationMatrix
 
         yMin = min(self.startPos.y, self.endPos.y)
         yMax = max(self.startPos.y, self.endPos.y)
@@ -598,6 +598,7 @@ class QPdfView(QGraphicsPixmapItem):
 
         rect = fitz.Rect(xMin, yMin, xMax, yMax)
 
+        rect = rect*self.page.derotationMatrix
         # if dx < dy:
         #     rect = fitz.Rect(xMin, yMax, xMax, yMin)
 
