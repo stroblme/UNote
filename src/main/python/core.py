@@ -95,69 +95,18 @@ class QPdfView(QGraphicsPixmapItem):
 
         if self.tempPoints.qsize() > 0:
             if editMode == editModes.freehand or editMode == editModes.none:
-                # if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
-                #     try:
-                #         color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['freehandColor']))
-                #     except ValueError as identifier:
-                #         color = rgb.white
-                # else:
-                #     try:
-                #         color = tuple(map(lambda x: float(x)*255, Preferences.data['freehandColor']))
-                #     except ValueError as identifier:
-                #         color = rgb.black
-
-                # try:
-
-                #     penSize = self.avPressure / self.drawPoints.qsize() * PRESSUREMULTIPLIER * pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/pdf_annots.freeHandScale)
-                # except ValueError:
-                #     penSize = pdf_annots.defaultPenSize
-                # except ZeroDivisionError:
-                #     penSize = pdf_annots.defaultPenSize
-
 
                 painter.setPen(QPen(QColor(*self.freeHandColor), self.freeHandSize))
                 painter.setRenderHint(QPainter.TextAntialiasing)
                 painter.drawPolyline(list(self.tempPoints.queue))
 
             elif editMode == editModes.marker:
-                # if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
-                #     try:
-                #         color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['markerColor']))
-                #     except ValueError as identifier:
-                #         color = rgb.white
-                # else:
-                #     try:
-                #         color = tuple(map(lambda x: float(x)*255, Preferences.data['markerColor']))
-                #     except ValueError as identifier:
-                #         color = rgb.black
-
-                # try:
-                #     penSize = pdf_annots.defaultPenSize * (int(Preferences.data['markerSize'])/pdf_annots.freeHandScale)
-                # except ValueError:
-                #     penSize = pdf_annots.defaultPenSize
-
 
                 painter.setPen(QPen(QColor(*self.markerColor), self.markerSize))
                 painter.setRenderHint(QPainter.TextAntialiasing)
                 painter.drawPolyline(list(self.tempPoints.queue))
 
             elif editMode == editModes.forms:
-                # if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
-                #     try:
-                #         color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['formColor']))
-                #     except ValueError as identifier:
-                #         color = rgb.white
-                # else:
-                #     try:
-                #         color = tuple(map(lambda x: float(x)*255, Preferences.data['formColor']))
-                #     except ValueError as identifier:
-                #         color = rgb.black
-
-                # try:
-                #     penSize = pdf_annots.defaultPenSize * (int(Preferences.data['formSize'])/pdf_annots.freeHandScale)
-                # except ValueError:
-                #     penSize = pdf_annots.defaultPenSize
-
 
                 painter.setPen(QPen(QColor(*self.formColor), self.formSize))
                 painter.setRenderHint(QPainter.TextAntialiasing)
@@ -1456,9 +1405,15 @@ class Renderer(QObject):
         This methods is used when instantiating the pdf and later, when performance optimzation and zooming is required
         '''
 
-        fClip = None
         if clip:
-            fClip = fitz.Rect(clip.x(), clip.y(), clip.x() + clip.width(), clip.y() + clip.height())
+            qpos = QPoint(clip.x(), clip.y())
+            fpos = pdfViewInstance.fromSceneCoordinates(qpos, zoom, clip.x(), clip.y())
+            fClip = fitz.Rect(fpos.x(), fpos.y(), fpos.x() + clip.width(), fpos.y() + clip.height())
+            # fClip = None
+
+        else:
+            fClip = None
+            
 
         try:
             mat = fitz.Matrix(zoom, zoom)
@@ -1675,7 +1630,8 @@ class GraphicsViewHandler(QGraphicsView):
         # Get all visible pages
         try:
             renderedItems = self.scene.items(self.mapToScene(self.viewport().geometry()))
-        except Exception as e:
+        except Exception as identifier:
+            print(str(identifier))
             return
 
         hIdx = 1
@@ -1692,7 +1648,7 @@ class GraphicsViewHandler(QGraphicsView):
             if renderedItem.pageNumber < lIdx:
                 lIdx = renderedItem.pageNumber
 
-            self.rendererWorker.updatePage(renderedItem, zoom = self.rendererWorker.absZoomFactor)
+            self.rendererWorker.updatePage(renderedItem, zoom = self.rendererWorker.absZoomFactor, clip=self.mapToScene(self.viewport().geometry()).boundingRect())
 
 
 
@@ -1700,7 +1656,7 @@ class GraphicsViewHandler(QGraphicsView):
             if pIt > -1 and pIt < len(self.rendererWorker.pages):
                 if self.rendererWorker.pages[pIt].isDraft:
                     # print("Post rendering page " + str(pIt))
-                    self.rendererWorker.updatePage(self.rendererWorker.pages[pIt], zoom = self.rendererWorker.absZoomFactor)
+                    self.rendererWorker.updatePage(self.rendererWorker.pages[pIt], zoom = self.rendererWorker.absZoomFactor, clip=self.mapToScene(self.viewport().geometry()).boundingRect())
                     self.rendererWorker.pages[pIt].isDraft = False
 
 
