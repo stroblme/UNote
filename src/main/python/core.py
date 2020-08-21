@@ -106,16 +106,16 @@ class QPdfView(QGraphicsPixmapItem):
                 #     except ValueError as identifier:
                 #         color = rgb.black
 
-                # try:
+                try:
 
-                #     penSize = self.avPressure / self.drawPoints.qsize() * PRESSUREMULTIPLIER * pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/pdf_annots.freeHandScale)
-                # except ValueError:
-                #     penSize = pdf_annots.defaultPenSize
-                # except ZeroDivisionError:
-                #     penSize = pdf_annots.defaultPenSize
+                    penSize = self.avPressure / self.drawPoints.qsize() * PRESSUREMULTIPLIER * self.freeHandSize
+                except ValueError:
+                    penSize = pdf_annots.defaultPenSize
+                except ZeroDivisionError:
+                    penSize = pdf_annots.defaultPenSize
 
 
-                painter.setPen(QPen(QColor(*self.freeHandColor), self.freeHandSize))
+                painter.setPen(QPen(QColor(*self.freeHandColor), penSize))
                 painter.setRenderHint(QPainter.TextAntialiasing)
                 painter.drawPolyline(list(self.tempPoints.queue))
 
@@ -180,7 +180,7 @@ class QPdfView(QGraphicsPixmapItem):
 
         try:
 
-            self.freeHandSize = self.avPressure / self.drawPoints.qsize() * PRESSUREMULTIPLIER * pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/pdf_annots.freeHandScale)
+            self.freeHandSize = pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/pdf_annots.freeHandScale)
         except ValueError:
             self.freeHandSize = pdf_annots.defaultPenSize
         except ZeroDivisionError:
