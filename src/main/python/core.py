@@ -829,9 +829,9 @@ class QPdfView(QGraphicsPixmapItem):
 
 
         for line in content.split('\n'):
-                delta = len(line) * fontwidth - suggestedWidth
-                if delta > 0:
-                    suggestedHeight += (delta / suggestedWidth) * pdf_annots.defaultBoxHeight
+            delta = len(line) * fontwidth - suggestedWidth
+            if delta > 0:
+                suggestedHeight += (delta / suggestedWidth) * pdf_annots.defaultBoxHeight
 
         # for line in content.split('\n'):
         #         delta = len(line) * fontwidth / suggestedWidth
@@ -1226,8 +1226,8 @@ class QPdfView(QGraphicsPixmapItem):
         return qPos
 
     def rectFromSceneCoordinates(self, qRect, zoom, qRectOff):
-        tl = self.toWidgetCoordinates(qRect.topLeft(), zoom, qRectOff.topLeft().x(), qRectOff.topLeft().y())
-        br = self.toWidgetCoordinates(qRect.bottomRight(), zoom, qRectOff.bottomRight().x(), qRectOff.bottomRight().y())
+        tl = self.fromSceneCoordinates(qRect.topLeft(), zoom, qRectOff.topLeft().x(), qRectOff.topLeft().y())
+        br = self.fromSceneCoordinates(qRect.bottomRight(), zoom, qRectOff.bottomRight().x(), qRectOff.bottomRight().y())
 
         qRect.setTopLeft(tl)
         qRect.setBottomRight(br)
