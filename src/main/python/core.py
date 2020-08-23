@@ -1225,9 +1225,9 @@ class QPdfView(QGraphicsPixmapItem):
         qPos.setY(abs(qPos.y())+yOff - self.yOrigin)
         return qPos
 
-    def rectFromSceneCoordinates(self, qRect, zoom):
-        tl = self.fromSceneCoordinates(qRect.topLeft(), 1, 0, 0)
-        br = self.fromSceneCoordinates(qRect.bottomRight(), 1, 0, 0)
+    def rectFromSceneCoordinates(self, qRect, zoom, qRectOff):
+        tl = self.toWidgetCoordinates(qRect.topLeft(), zoom, qRect.topLeft().x(), qRect.topLeft().y())
+        br = self.toWidgetCoordinates(qRect.bottomRight(), zoom, qRect.bottomRight().x(), qRect.bottomRight().y())
 
         qRect.setTopLeft(tl)
         qRect.setBottomRight(br)
@@ -1416,7 +1416,7 @@ class Renderer(QObject):
 
 
 
-    def updatePage(self, pdfViewInstance, zoom, clip=None):
+    def updatePage(self, pdfViewInstance, zoom, clip=None, off=None):
         '''
         Update the provided pdf file at the desired page to render only the zoom and clip
         This methods is used when instantiating the pdf and later, when performance optimzation and zooming is required
@@ -1425,7 +1425,7 @@ class Renderer(QObject):
         if clip:
             # qpos = QPoint(clip.x(), clip.y())
             # fpos = pdfViewInstance.fromSceneCoordinates(qpos, zoom, clip.x(), clip.y())
-            qClip = pdfViewInstance.rectFromSceneCoordinates(clip, zoom)
+            qClip = pdfViewInstance.rectFromSceneCoordinates(clip, zoom, off)
             fClip = pdfViewInstance.qRectToFRect(qClip)
             # fClip = None
 
@@ -1440,7 +1440,11 @@ class Renderer(QObject):
             print(str(identifier))
             return
 
-        qImg = self.pdf.getQImage(pixmap)
+        try:
+            qImg = self.pdf.getQImage(pixmap)
+
+        except ValueError as identifier:
+            return
         qImg.setDevicePixelRatio(zoom)
         qImg = self.imageHelper.applyTheme(qImg)
 
@@ -1666,7 +1670,7 @@ class GraphicsViewHandler(QGraphicsView):
             if renderedItem.pageNumber < lIdx:
                 lIdx = renderedItem.pageNumber
 
-            self.rendererWorker.updatePage(renderedItem, zoom = self.rendererWorker.absZoomFactor, clip=self.mapToScene(self.viewport().geometry()).boundingRect())
+            self.rendererWorker.updatePage(renderedItem, zoom = self.rendererWorker.absZoomFactor, clip=self.viewport().geometry(), off=self.mapToScene(self.viewport().geometry()).boundingRect())
 
 
 
@@ -1674,7 +1678,7 @@ class GraphicsViewHandler(QGraphicsView):
             if pIt > -1 and pIt < len(self.rendererWorker.pages):
                 if self.rendererWorker.pages[pIt].isDraft:
                     # print("Post rendering page " + str(pIt))
-                    self.rendererWorker.updatePage(self.rendererWorker.pages[pIt], zoom = self.rendererWorker.absZoomFactor, clip=self.mapToScene(self.viewport().geometry()).boundingRect())
+                    self.rendererWorker.updatePage(self.rendererWorker.pages[pIt], zoom = self.rendererWorker.absZoomFactor, clip=self.viewport().geometry(), off=self.mapToScene(self.viewport().geometry()).boundingRect())
                     self.rendererWorker.pages[pIt].isDraft = False
 
 
@@ -1898,16 +1902,34 @@ class GraphicsViewHandler(QGraphicsView):
         return highResLocalQPos
 
     def mapToItem(self, pos, item):
-        rect = self.mapToScene(self.viewport().geometry()).boundingRect()
+        '''
+        Scene pos to item coordinates
+        '''
+        sRect = self.mapToScene(self.viewport().geometry()).boundingRect()
         # Store those properties for easy access
-        viewportHeight = rect.height()
-        viewportWidth = rect.width()
-        viewportX = rect.x()
-        viewportY = rect.y()
+        viewportHeight = sRect.height()
+        viewportWidth = sRect.width()
+        viewportX = sRect.x()
+        viewportY = sRect.y()
 
         newPos = QPoint(pos.x() + viewportX - item.x(), pos.y() - viewportY - item.y())
 
         return newPos
+
+    def mapRectToItem(self, rect, item):
+        '''
+        Scene rect to item coordinates
+        '''
+        sRect = self.mapToScene(self.viewport().geometry()).boundingRect()
+        # Store those properties for easy access
+        viewportHeight = sRect.height()
+        viewportWidth = sRect.width()
+        viewportX = sRect.x()
+        viewportY = sRect.y()
+
+        newRect = QRectF(rect.topLef() + sRect - item, rect.y() - viewportY - item.y())
+
+        return newRect
 
     def pageInsertHere(self):
         # Get all visible pages
