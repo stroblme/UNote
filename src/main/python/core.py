@@ -1226,8 +1226,8 @@ class QPdfView(QGraphicsPixmapItem):
         return qPos
 
     def rectFromSceneCoordinates(self, qRect, zoom, qRectOff):
-        tl = self.toWidgetCoordinates(qRect.topLeft(), zoom, qRect.topLeft().x(), qRect.topLeft().y())
-        br = self.toWidgetCoordinates(qRect.bottomRight(), zoom, qRect.bottomRight().x(), qRect.bottomRight().y())
+        tl = self.toWidgetCoordinates(qRect.topLeft(), zoom, qRectOff.topLeft().x(), qRectOff.topLeft().y())
+        br = self.toWidgetCoordinates(qRect.bottomRight(), zoom, qRectOff.bottomRight().x(), qRectOff.bottomRight().y())
 
         qRect.setTopLeft(tl)
         qRect.setBottomRight(br)
@@ -1435,7 +1435,7 @@ class Renderer(QObject):
 
         try:
             mat = fitz.Matrix(zoom, zoom)
-            pixmap = self.pdf.renderPixmap(pdfViewInstance.pageNumber, mat = mat, clip = fClip)
+            pixmap = self.pdf.renderPixmap(pdfViewInstance.pageNumber, mat=mat, clip=fClip)
         except RuntimeError as identifier:
             print(str(identifier))
             return
@@ -1670,15 +1670,13 @@ class GraphicsViewHandler(QGraphicsView):
             if renderedItem.pageNumber < lIdx:
                 lIdx = renderedItem.pageNumber
 
-            self.rendererWorker.updatePage(renderedItem, zoom = self.rendererWorker.absZoomFactor, clip=self.viewport().geometry(), off=self.mapToScene(self.viewport().geometry()).boundingRect())
-
-
+            self.rendererWorker.updatePage(renderedItem, zoom=self.rendererWorker.absZoomFactor, clip=self.viewport().geometry(), off=self.mapToScene(self.viewport().geometry()).boundingRect())
 
         for pIt in [lIdx-3,lIdx-2,lIdx-1,hIdx+1,hIdx+2,hIdx+3]:
             if pIt > -1 and pIt < len(self.rendererWorker.pages):
                 if self.rendererWorker.pages[pIt].isDraft:
-                    # print("Post rendering page " + str(pIt))
-                    self.rendererWorker.updatePage(self.rendererWorker.pages[pIt], zoom = self.rendererWorker.absZoomFactor, clip=self.viewport().geometry(), off=self.mapToScene(self.viewport().geometry()).boundingRect())
+                    self.rendererWorker.updatePage(self.rendererWorker.pages[pIt], zoom=self.rendererWorker.absZoomFactor, clip=self.viewport().geometry(), off=self.mapToScene(self.viewport().geometry()).boundingRect())
+
                     self.rendererWorker.pages[pIt].isDraft = False
 
 
