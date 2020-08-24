@@ -1225,9 +1225,21 @@ class QPdfView(QGraphicsPixmapItem):
         qPos.setY(abs(qPos.y())+yOff - self.yOrigin)
         return qPos
 
+    def nfromSceneCoordinates(self, qPos, zoom, xOff, yOff):
+        # pPos = self.mapFromParent(qPos)
+        qPos = qPos / zoom
+
+        xSug = abs(qPos.x())+xOff - self.xOrigin
+        ySug = abs(qPos.y())+yOff - self.yOrigin
+
+        qPos.setX(min(max(xSug, 0), self.wOrigin))
+        qPos.setY(min(max(ySug, 0), self.hOrigin))
+        return qPos
+
     def rectFromSceneCoordinates(self, qRect, zoom, qRectOff):
-        tl = self.fromSceneCoordinates(qRect.topLeft(), zoom, qRectOff.topLeft().x(), qRectOff.topLeft().y())
-        br = self.fromSceneCoordinates(qRect.bottomRight(), zoom, qRectOff.bottomRight().x(), qRectOff.bottomRight().y())
+        tl = self.nfromSceneCoordinates(qRect.topLeft(), zoom, qRectOff.topLeft().x(), qRectOff.topLeft().y())
+        br = self.nfromSceneCoordinates(qRect.bottomRight(), zoom, qRectOff.bottomRight().x(), qRectOff.bottomRight().y())
+        print(f"{self.pageNumber}: {tl} - {br} - {zoom}")
 
         qRect.setTopLeft(tl)
         qRect.setBottomRight(br)
@@ -1427,11 +1439,10 @@ class Renderer(QObject):
             # fpos = pdfViewInstance.fromSceneCoordinates(qpos, zoom, clip.x(), clip.y())
             qClip = pdfViewInstance.rectFromSceneCoordinates(clip, zoom, off)
             fClip = pdfViewInstance.qRectToFRect(qClip)
-            # fClip = None
+            fClip = None
 
         else:
             fClip = None
-
 
         try:
             mat = fitz.Matrix(zoom, zoom)
@@ -1442,9 +1453,9 @@ class Renderer(QObject):
 
         try:
             qImg = self.pdf.getQImage(pixmap)
-
         except ValueError as identifier:
             return
+
         qImg.setDevicePixelRatio(zoom)
         qImg = self.imageHelper.applyTheme(qImg)
 
