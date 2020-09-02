@@ -1234,6 +1234,16 @@ class QPdfView(QGraphicsPixmapItem):
 
         return qRect
 
+    def cropAndAlign(self, clip, zoom, off):
+        qClip = self.rectFromSceneCoordinates(clip, zoom, off)
+
+        dx = self.wOrigin - clip.width()
+        dy = self.hOrigin - clip.height()
+
+        print(f"{dx} - {df}")
+
+        return qClip
+
     def qRectToFRect(self, qRect):
         tl = self.qPointToFPoint(qRect.topLeft())
         br = self.qPointToFPoint(qRect.bottomRight())
@@ -1423,11 +1433,16 @@ class Renderer(QObject):
         '''
 
         if clip:
-            # qpos = QPoint(clip.x(), clip.y())
-            # fpos = pdfViewInstance.fromSceneCoordinates(qpos, zoom, clip.x(), clip.y())
-            qClip = pdfViewInstance.rectFromSceneCoordinates(clip, zoom, off)
-            fClip = pdfViewInstance.qRectToFRect(qClip)
-            # fClip = None
+            try:
+                # qpos = QPoint(clip.x(), clip.y())
+                # fpos = pdfViewInstance.fromSceneCoordinates(qpos, zoom, clip.x(), clip.y())
+                qClip = pdfViewInstance.cropAndAlign(clip, zoom, off)
+                fClip = pdfViewInstance.qRectToFRect(qClip)
+                # fClip = None
+            except Exception as identifier:
+                fClip = None
+
+
 
         else:
             fClip = None
