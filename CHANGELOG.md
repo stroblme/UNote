@@ -9,6 +9,7 @@
 
 ## Features for v3.x
 
+- [ ] Fix initial preferences throwing exceptions when writing
 - [ ] Implement database structure
 - [ ] Introduce multiprocessing https://pymupdf.readthedocs.io/en/latest/faq/#multiprocessing
 - [ ] Update functionality for unedited pdf pages
