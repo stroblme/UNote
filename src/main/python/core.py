@@ -1229,11 +1229,10 @@ class QPdfView(QGraphicsPixmapItem):
         # pPos = self.mapFromParent(qPos)
         qPos = qPos / zoom
 
-        xSug = abs(qPos.x())+xOff - self.xOrigin
-        ySug = abs(qPos.y())+yOff - self.yOrigin
+        xSug = abs(xOff - self.xOrigin) * zoom
+        ySug = abs(yOff - self.yOrigin) * zoom
 
-        qPos.setX(min(max(xSug, 0), self.wOrigin))
-        qPos.setY(min(max(ySug, 0), self.hOrigin))
+        qPos = QPoint(xSug, ySug)
         return qPos
 
     def rectFromSceneCoordinates(self, qRect, zoom, qRectOff):
@@ -1439,7 +1438,6 @@ class Renderer(QObject):
             # fpos = pdfViewInstance.fromSceneCoordinates(qpos, zoom, clip.x(), clip.y())
             qClip = pdfViewInstance.rectFromSceneCoordinates(clip, zoom, off)
             fClip = pdfViewInstance.qRectToFRect(qClip)
-            fClip = None
 
         else:
             fClip = None
@@ -1463,6 +1461,12 @@ class Renderer(QObject):
             pdfViewInstance.setPixMap(qImg, pdfViewInstance.pageNumber, zoom)
         else:
             pdfViewInstance.updatePixMap(qImg, zoom)
+
+        if fClip != None:
+            xCorr = pdfViewInstance.xOrigin + off.x()
+            yCorr = pdfViewInstance.yOrigin + off.y()
+
+            pdfViewInstance.setPos(xCorr, yCorr)
 
     def updateEmptyPdf(self, pdfViewInstance, width, height):
         '''
