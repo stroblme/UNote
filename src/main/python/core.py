@@ -1303,7 +1303,7 @@ class Renderer(QObject):
     def updatePage(self, pdfViewInstance, zoom, clip=None):
         '''
         Update the provided pdf file at the desired page to render only the zoom and clip
-        This methods is used when instantiating the pdf and later, when performance optimzation and zooming is required
+        This methods is used when instantiating the pdf and later, when performance optimization and zooming is required
         '''
 
         fClip = None
@@ -1329,7 +1329,7 @@ class Renderer(QObject):
     def updateEmptyPdf(self, pdfViewInstance, width, height):
         '''
         Update the provided pdf file at the desired page to render only the zoom and clip
-        This methods is used when instantiating the pdf and later, when performance optimzation and zooming is required
+        This methods is used when instantiating the pdf and later, when performance optimization and zooming is required
         '''
 
         qImg = QImage(1, 1, QImage.Format_Mono)
@@ -1358,7 +1358,6 @@ class GraphicsViewHandler(QGraphicsView):
     updateIndicator = False
 
     colorOverride = False
-
 
     def __init__(self, parent):
         '''
