@@ -120,44 +120,12 @@ class QPdfView(QGraphicsPixmapItem):
                 painter.drawPolyline(list(self.tempPoints.queue))
 
             elif editMode == editModes.marker:
-                # if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
-                #     try:
-                #         color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['markerColor']))
-                #     except ValueError as identifier:
-                #         color = rgb.white
-                # else:
-                #     try:
-                #         color = tuple(map(lambda x: float(x)*255, Preferences.data['markerColor']))
-                #     except ValueError as identifier:
-                #         color = rgb.black
-
-                # try:
-                #     penSize = pdf_annots.defaultPenSize * (int(Preferences.data['markerSize'])/pdf_annots.freeHandScale)
-                # except ValueError:
-                #     penSize = pdf_annots.defaultPenSize
-
 
                 painter.setPen(QPen(QColor(*self.markerColor), self.markerSize))
                 painter.setRenderHint(QPainter.SmoothPixmapTransform)
                 painter.drawPolyline(list(self.tempPoints.queue))
 
             elif editMode == editModes.forms:
-                # if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
-                #     try:
-                #         color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['formColor']))
-                #     except ValueError as identifier:
-                #         color = rgb.white
-                # else:
-                #     try:
-                #         color = tuple(map(lambda x: float(x)*255, Preferences.data['formColor']))
-                #     except ValueError as identifier:
-                #         color = rgb.black
-
-                # try:
-                #     penSize = pdf_annots.defaultPenSize * (int(Preferences.data['formSize'])/pdf_annots.freeHandScale)
-                # except ValueError:
-                #     penSize = pdf_annots.defaultPenSize
-
 
                 painter.setPen(QPen(QColor(*self.formColor), self.formSize))
                 painter.setRenderHint(QPainter.SmoothPixmapTransform)
@@ -880,9 +848,9 @@ class QPdfView(QGraphicsPixmapItem):
 
 
         for line in content.split('\n'):
-                delta = len(line) * fontwidth - suggestedWidth
-                if delta > 0:
-                    suggestedHeight += (delta / suggestedWidth) * pdf_annots.defaultBoxHeight
+            delta = len(line) * fontwidth - suggestedWidth
+            if delta > 0:
+                suggestedHeight += (delta / suggestedWidth) * pdf_annots.defaultBoxHeight
 
         # for line in content.split('\n'):
         #         delta = len(line) * fontwidth / suggestedWidth
@@ -1276,6 +1244,33 @@ class QPdfView(QGraphicsPixmapItem):
         qPos.setY(abs(qPos.y())+yOff - self.yOrigin)
         return qPos
 
+    def rectFromSceneCoordinates(self, qRect, zoom, qRectOff):
+        tl = self.fromSceneCoordinates(qRect.topLeft(), zoom, qRectOff.topLeft().x(), qRectOff.topLeft().y())
+        br = self.fromSceneCoordinates(qRect.bottomRight(), zoom, qRectOff.bottomRight().x(), qRectOff.bottomRight().y())
+
+        qRect.setTopLeft(tl)
+        qRect.setBottomRight(br)
+
+        return qRect
+
+    def cropAndAlign(self, clip, zoom, off):
+        qClip = self.rectFromSceneCoordinates(clip, zoom, off)
+
+        dx = self.wOrigin - clip.width()
+        dy = self.hOrigin - clip.height()
+
+        print(f"{dx} - {df}")
+
+        return qClip
+
+    def qRectToFRect(self, qRect):
+        tl = self.qPointToFPoint(qRect.topLeft())
+        br = self.qPointToFPoint(qRect.bottomRight())
+
+        fRect = fitz.Rect(tl, br)
+
+        return fRect
+
     def fPosToQPos(self, fPos):
         qPos = QPoint(fPos.x, fPos.y)
 
@@ -1450,24 +1445,40 @@ class Renderer(QObject):
 
 
 
-    def updatePage(self, pdfViewInstance, zoom, clip=None):
+    def updatePage(self, pdfViewInstance, zoom, clip=None, off=None):
         '''
         Update the provided pdf file at the desired page to render only the zoom and clip
         This methods is used when instantiating the pdf and later, when performance optimization and zooming is required
         '''
 
-        fClip = None
         if clip:
-            fClip = fitz.Rect(clip.x(), clip.y(), clip.x() + clip.width(), clip.y() + clip.height())
+            try:
+                # qpos = QPoint(clip.x(), clip.y())
+                # fpos = pdfViewInstance.fromSceneCoordinates(qpos, zoom, clip.x(), clip.y())
+                qClip = pdfViewInstance.cropAndAlign(clip, zoom, off)
+                fClip = pdfViewInstance.qRectToFRect(qClip)
+                # fClip = None
+            except Exception as identifier:
+                fClip = None
+
+
+
+        else:
+            fClip = None
+
 
         try:
             mat = fitz.Matrix(zoom, zoom)
-            pixmap = self.pdf.renderPixmap(pdfViewInstance.pageNumber, mat = mat, clip = fClip)
+            pixmap = self.pdf.renderPixmap(pdfViewInstance.pageNumber, mat=mat, clip=fClip)
         except RuntimeError as identifier:
             print(str(identifier))
             return
 
-        qImg = self.pdf.getQImage(pixmap)
+        try:
+            qImg = self.pdf.getQImage(pixmap)
+
+        except ValueError as identifier:
+            return
         qImg.setDevicePixelRatio(zoom)
         qImg = self.imageHelper.applyTheme(qImg)
 
@@ -1674,7 +1685,8 @@ class GraphicsViewHandler(QGraphicsView):
         # Get all visible pages
         try:
             renderedItems = self.scene.items(self.mapToScene(self.viewport().geometry()))
-        except Exception as e:
+        except Exception as identifier:
+            print(str(identifier))
             return
 
         hIdx = 1
@@ -1691,15 +1703,13 @@ class GraphicsViewHandler(QGraphicsView):
             if renderedItem.pageNumber < lIdx:
                 lIdx = renderedItem.pageNumber
 
-            self.rendererWorker.updatePage(renderedItem, zoom = self.rendererWorker.absZoomFactor)
-
-
+            self.rendererWorker.updatePage(renderedItem, zoom=self.rendererWorker.absZoomFactor, clip=self.viewport().geometry(), off=self.mapToScene(self.viewport().geometry()).boundingRect())
 
         for pIt in [lIdx-3,lIdx-2,lIdx-1,hIdx+1,hIdx+2,hIdx+3]:
             if pIt > -1 and pIt < len(self.rendererWorker.pages):
                 if self.rendererWorker.pages[pIt].isDraft:
-                    # print("Post rendering page " + str(pIt))
-                    self.rendererWorker.updatePage(self.rendererWorker.pages[pIt], zoom = self.rendererWorker.absZoomFactor)
+                    self.rendererWorker.updatePage(self.rendererWorker.pages[pIt], zoom=self.rendererWorker.absZoomFactor, clip=self.viewport().geometry(), off=self.mapToScene(self.viewport().geometry()).boundingRect())
+
                     self.rendererWorker.pages[pIt].isDraft = False
 
 
@@ -1923,16 +1933,34 @@ class GraphicsViewHandler(QGraphicsView):
         return highResLocalQPos
 
     def mapToItem(self, pos, item):
-        rect = self.mapToScene(self.viewport().geometry()).boundingRect()
+        '''
+        Scene pos to item coordinates
+        '''
+        sRect = self.mapToScene(self.viewport().geometry()).boundingRect()
         # Store those properties for easy access
-        viewportHeight = rect.height()
-        viewportWidth = rect.width()
-        viewportX = rect.x()
-        viewportY = rect.y()
+        viewportHeight = sRect.height()
+        viewportWidth = sRect.width()
+        viewportX = sRect.x()
+        viewportY = sRect.y()
 
         newPos = QPoint(pos.x() + viewportX - item.x(), pos.y() - viewportY - item.y())
 
         return newPos
+
+    def mapRectToItem(self, rect, item):
+        '''
+        Scene rect to item coordinates
+        '''
+        sRect = self.mapToScene(self.viewport().geometry()).boundingRect()
+        # Store those properties for easy access
+        viewportHeight = sRect.height()
+        viewportWidth = sRect.width()
+        viewportX = sRect.x()
+        viewportY = sRect.y()
+
+        newRect = QRectF(rect.topLef() + sRect - item, rect.y() - viewportY - item.y())
+
+        return newRect
 
     def pageInsertHere(self):
         # Get all visible pages
