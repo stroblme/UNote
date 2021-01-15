@@ -53,6 +53,8 @@ class EventHelper(QObject):
     addIndicatorPoint = Signal(int, int)
     deleteLastIndicatorPoint = Signal()
 
+    settingsChanged = Signal()
+
 PRESSUREMULTIPLIER = 1.6
 
 class QPdfView(QGraphicsPixmapItem):
@@ -84,78 +86,144 @@ class QPdfView(QGraphicsPixmapItem):
 
         self.avPressure = 1
 
+        # Trigger this before any paint events occur
+        self.settingsChangedReceiver()
+
+
     def paint(self, painter, option, widget):
         res = super().paint(painter, option, widget)
 
         if self.tempPoints.qsize() > 0:
             if editMode == editModes.freehand or editMode == editModes.none:
-                if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
-                    try:
-                        color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['freehandColor']))
-                    except ValueError as identifier:
-                        color = rgb.white
-                else:
-                    try:
-                        color = tuple(map(lambda x: float(x)*255, Preferences.data['freehandColor']))
-                    except ValueError as identifier:
-                        color = rgb.black
+                # if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
+                #     try:
+                #         color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['freehandColor']))
+                #     except ValueError as identifier:
+                #         color = rgb.white
+                # else:
+                #     try:
+                #         color = tuple(map(lambda x: float(x)*255, Preferences.data['freehandColor']))
+                #     except ValueError as identifier:
+                #         color = rgb.black
 
                 try:
 
-                    penSize = self.avPressure / self.drawPoints.qsize() * PRESSUREMULTIPLIER * pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/pdf_annots.freeHandScale)
+                    penSize = self.avPressure / self.drawPoints.qsize() * PRESSUREMULTIPLIER * self.freeHandSize
                 except ValueError:
                     penSize = pdf_annots.defaultPenSize
+                except ZeroDivisionError:
+                    penSize = pdf_annots.defaultPenSize
 
-                painter.setPen(QPen(QColor(*color), penSize))
-                painter.setRenderHint(QPainter.TextAntialiasing)
+
+                painter.setPen(QPen(QColor(*self.freeHandColor), penSize))
+                painter.setRenderHint(QPainter.SmoothPixmapTransform)
                 painter.drawPolyline(list(self.tempPoints.queue))
 
             elif editMode == editModes.marker:
-                if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
-                    try:
-                        color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['markerColor']))
-                    except ValueError as identifier:
-                        color = rgb.white
-                else:
-                    try:
-                        color = tuple(map(lambda x: float(x)*255, Preferences.data['markerColor']))
-                    except ValueError as identifier:
-                        color = rgb.black
+                # if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
+                #     try:
+                #         color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['markerColor']))
+                #     except ValueError as identifier:
+                #         color = rgb.white
+                # else:
+                #     try:
+                #         color = tuple(map(lambda x: float(x)*255, Preferences.data['markerColor']))
+                #     except ValueError as identifier:
+                #         color = rgb.black
 
-                try:
-                    penSize = pdf_annots.defaultPenSize * (int(Preferences.data['markerSize'])/pdf_annots.freeHandScale)
-                except ValueError:
-                    penSize = pdf_annots.defaultPenSize
+                # try:
+                #     penSize = pdf_annots.defaultPenSize * (int(Preferences.data['markerSize'])/pdf_annots.freeHandScale)
+                # except ValueError:
+                #     penSize = pdf_annots.defaultPenSize
 
 
-                painter.setPen(QPen(QColor(*color), penSize))
-                painter.setRenderHint(QPainter.TextAntialiasing)
+                painter.setPen(QPen(QColor(*self.markerColor), self.markerSize))
+                painter.setRenderHint(QPainter.SmoothPixmapTransform)
                 painter.drawPolyline(list(self.tempPoints.queue))
 
             elif editMode == editModes.forms:
-                if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
-                    try:
-                        color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['formColor']))
-                    except ValueError as identifier:
-                        color = rgb.white
-                else:
-                    try:
-                        color = tuple(map(lambda x: float(x)*255, Preferences.data['formColor']))
-                    except ValueError as identifier:
-                        color = rgb.black
+                # if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
+                #     try:
+                #         color = tuple(map(lambda x: (1-float(x))*255, Preferences.data['formColor']))
+                #     except ValueError as identifier:
+                #         color = rgb.white
+                # else:
+                #     try:
+                #         color = tuple(map(lambda x: float(x)*255, Preferences.data['formColor']))
+                #     except ValueError as identifier:
+                #         color = rgb.black
 
-                try:
-                    penSize = pdf_annots.defaultPenSize * (int(Preferences.data['formSize'])/pdf_annots.freeHandScale)
-                except ValueError:
-                    penSize = pdf_annots.defaultPenSize
+                # try:
+                #     penSize = pdf_annots.defaultPenSize * (int(Preferences.data['formSize'])/pdf_annots.freeHandScale)
+                # except ValueError:
+                #     penSize = pdf_annots.defaultPenSize
 
 
-                painter.setPen(QPen(QColor(*color), penSize))
-                painter.setRenderHint(QPainter.TextAntialiasing)
+                painter.setPen(QPen(QColor(*self.formColor), self.formSize))
+                painter.setRenderHint(QPainter.SmoothPixmapTransform)
                 lst = list(self.tempPoints.queue)
                 painter.drawLine(lst[0],lst[-1])
 
         return res
+
+    def settingsChangedReceiver(self):
+        if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
+            try:
+                self.freeHandColor = tuple(map(lambda x: (1-float(x))*255, Preferences.data['freehandColor']))
+            except ValueError as identifier:
+                self.freeHandColor = rgb.white
+        else:
+            try:
+                self.freeHandColor = tuple(map(lambda x: float(x)*255, Preferences.data['freehandColor']))
+            except ValueError as identifier:
+                self.freeHandColor = rgb.black
+
+        try:
+
+            self.freeHandSize = pdf_annots.defaultPenSize * (int(Preferences.data['freehandSize'])/pdf_annots.freeHandScale)
+        except ValueError:
+            self.freeHandSize = pdf_annots.defaultPenSize
+        except ZeroDivisionError:
+            self.freeHandSize = pdf_annots.defaultPenSize
+
+        #------------------------------------------
+
+        if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
+            try:
+                self.markerColor = tuple(map(lambda x: (1-float(x))*255, Preferences.data['markerColor']))
+            except ValueError as identifier:
+                self.markerColor = rgb.white
+        else:
+            try:
+                self.markerColor = tuple(map(lambda x: float(x)*255, Preferences.data['markerColor']))
+            except ValueError as identifier:
+                self.markerColor = rgb.black
+
+        try:
+            self.markerSize = pdf_annots.defaultPenSize * (int(Preferences.data['markerSize'])/pdf_annots.freeHandScale)
+        except ValueError:
+            self.markerSize = pdf_annots.defaultPenSize
+
+        #------------------------------------------
+
+        if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
+            try:
+                self.formColor = tuple(map(lambda x: (1-float(x))*255, Preferences.data['formColor']))
+            except ValueError as identifier:
+                self.formColor = rgb.white
+        else:
+            try:
+                self.formColor = tuple(map(lambda x: float(x)*255, Preferences.data['formColor']))
+            except ValueError as identifier:
+                self.formColor = rgb.black
+
+        try:
+            self.formSize = pdf_annots.defaultPenSize * (int(Preferences.data['formSize'])/pdf_annots.freeHandScale)
+        except ValueError:
+            self.formSize = pdf_annots.defaultPenSize
+
+
+
 
     def setPixMap(self, qImg, pageNumber, newZoomFactor=1):
         self.pageNumber = pageNumber
@@ -186,9 +254,20 @@ class QPdfView(QGraphicsPixmapItem):
         self.wOrigin = self.boundingRect().width()
         self.hOrigin = self.boundingRect().height()
 
+    def getStartPos(self):
+        return (self.xOrigin, self.yOrigin)
+
+    def getEndPos(self):
+        return (self.xOrigin + self.wOrigin, self.yOrigin + self.hOrigin)
+
+    def getSize(self):
+        return (self.wOrigin, self.hOrigin)
+
     def setPage(self, page, pageNumber):
         self.page = page
+        # print(page.rotationMatrix)
         self.pageNumber = pageNumber
+
 
     def reloadQImg(self, zoomFactor):
         mat = fitz.Matrix(zoomFactor, zoomFactor)
@@ -226,9 +305,9 @@ class QPdfView(QGraphicsPixmapItem):
 
         self.mdHelper = markdownHelper()
 
-        self.ppage = self.mdHelper.loadGetMarkdownPage(content)
+        self.page = self.mdHelper.loadGetMarkdownPage(content)
 
-        self.preview.setPage(self.ppage)
+        self.preview.setPage(self.page)
 
 
     #-----------------------------------------------------------------------
@@ -286,10 +365,17 @@ class QPdfView(QGraphicsPixmapItem):
             self.eh.deleteLastIndicatorPoint.emit()
 
             textAnnot.update()
+
+            History.addToHistory(self.deleteText, textAnnot, self.insertText, (qpos, content))
+
         else:
             # Only when there is a line
             if self.startPos != self.endPos:
                 self.eh.deleteLastIndicatorPoint.emit()
+
+    def deleteText(self, annot):
+        self.deleteAnnot(annot)
+
 
     def addArrow(self, fStart, fEnd, subj):
         cyan  = norm_rgb.main
@@ -302,14 +388,14 @@ class QPdfView(QGraphicsPixmapItem):
         lineAnnot.setInfo(lineAnnotInfo)
 
         lineAnnot.setBorder(borderLine)
-        lineAnnot.setLineEnds(fitz.ANNOT_LE_Circle, fitz.ANNOT_LE_Circle)
+        lineAnnot.setLineEnds(fitz.PDF_ANNOT_LE_CIRCLE , fitz.PDF_ANNOT_LE_CIRCLE)
         lineAnnot.update(border_color=cyan, fill_color=cyan)
         lineAnnot.update()
 
         return lineAnnot
 
-    def addLine(self, line):
-        fStart, fEnd, subj = line
+    def addLine(self, fStart, fEnd, subj):
+        # fStart, fEnd, subj = line
 
         try:
             borderLine = {"width": pdf_annots.lineWidth * (int(Preferences.data['formSize'])/100)}
@@ -430,6 +516,12 @@ class QPdfView(QGraphicsPixmapItem):
     # Annot Editing
     #-----------------------------------------------------------------------
 
+    def addAnnot(self, annot):
+        try:
+            self.page.addAnnot(annot)
+        except Exception as identifier:
+            print("Unable to add annot")
+
     def deleteAnnot(self, annot):
         '''
         Deletes the desired annot and the corresponding line if one is found
@@ -482,7 +574,7 @@ class QPdfView(QGraphicsPixmapItem):
 
         # Catch in case curr annot is not defined yet
         try:
-            self.moveAnnotByDelta(self.startPos, self.endPos, self.currAnnot)
+            self.currAnnot = self.moveAnnotByDelta(self.startPos, self.endPos, self.currAnnot)
         except AttributeError as identifier:
             print(str(identifier))
 
@@ -525,17 +617,21 @@ class QPdfView(QGraphicsPixmapItem):
             annot.setInfo(textInfo)
             annot.update()
 
+        return annot
+
     #-----------------------------------------------------------------------
     # Marker
     #-----------------------------------------------------------------------
 
     def startMarkText(self, qpos):
         self.ongoingEdit = True
-        self.startPos = qpos
+        self.startPos = self.qPointToFPoint(qpos)
+        # self.startPos = qpos
 
     def stopMarkText(self, qpos):
         self.ongoingEdit = False
-        self.endPos = qpos
+        self.endPos = self.qPointToFPoint(qpos)
+        # self.endPos = qpos
 
         self.updateMarkText()
 
@@ -543,8 +639,11 @@ class QPdfView(QGraphicsPixmapItem):
         '''
         Called updates the currently ongoing marking to match the latest, provided position
         '''
-        yMin = min(self.startPos.y(), self.endPos.y())
-        yMax = max(self.startPos.y(), self.endPos.y())
+        # self.startPos = self.startPos * self.page.derotationMatrix
+        # self.endPos = self.endPos * self.page.derotationMatrix
+
+        yMin = min(self.startPos.y, self.endPos.y)
+        yMax = max(self.startPos.y, self.endPos.y)
 
         try:
             minWidth = pdf_annots.defaultMarkerSize * (int(Preferences.data['markerSize'])/pdf_annots.markerScale)
@@ -556,12 +655,21 @@ class QPdfView(QGraphicsPixmapItem):
             yMin = yMin - minWidth/2
             yMax = yMax + minWidth/2
 
-        xMin = min(self.startPos.x(), self.endPos.x())
-        xMax = max(self.startPos.x(), self.endPos.x())
+        xMin = min(self.startPos.x, self.endPos.x)
+        xMax = max(self.startPos.x, self.endPos.x)
+
+
+        dx = xMax - xMin
+        dy = yMax - yMin
 
         rect = fitz.Rect(xMin, yMin, xMax, yMax)
 
+        if dx < dy:
+            rect = rect.transform(self.page.derotationMatrix)
+            # rect = fitz.Rect(xMin, yMax, xMax, yMin)
+
         annot = self.addHighlightAnnot(rect)
+
         History.addToHistory(self.deleteHighlightAnnot, annot, self.addHighlightAnnot, rect)
 
 
@@ -607,7 +715,9 @@ class QPdfView(QGraphicsPixmapItem):
         annots = self.getAnnotsAtPoints(self.eraserPoints)
 
         for annot in annots:
+            # History.addToHistory(self.addAnnot, annot, self.deleteAnnot, annot)
             self.deleteAnnot(annot)
+
 
     #-----------------------------------------------------------------------
     # Draw
@@ -624,15 +734,15 @@ class QPdfView(QGraphicsPixmapItem):
         self.ongoingEdit = False
 
     def updateFormPoints(self, qpos):
-        self.formPoints.append(self.qPointToFPoint(qpos))
+        self.formPoints.append(self.qPointToFPoint(qpos)*self.page.derotationMatrix)
 
 
     def applyFormPoints(self):
         fStart, fStop = self.formEstimator.estimateLine(self.formPoints[0], self.formPoints[-1])
 
-        annot = self.addLine((fStart, fStop, ""))
+        annot = self.addLine(fStart, fStop, "")
 
-        History.addToHistory(self.deleteLine, annot, self.addLine, {fStart, fStop, ""})
+        History.addToHistory(self.deleteLine, annot, self.addLine, (fStart, fStop, ""))
 
     #-----------------------------------------------------------------------
     # Draw
@@ -688,8 +798,14 @@ class QPdfView(QGraphicsPixmapItem):
         # Line smoothing
         # self.estPoints = self.formEstimator.estimateLine(self.drawPoints)
 
-        pointList = []
-        pointList.append(self.savgol.applySavgol(segment))
+        pointList = list()
+        for point in segment:
+            fp = fitz.Point(point[0], point[1])
+            fpt = fp * self.page.derotationMatrix
+            pointList.append([fpt.x, fpt.y])
+
+
+        pointList = [pointList]
 
         # pressure = []
 
@@ -697,7 +813,6 @@ class QPdfView(QGraphicsPixmapItem):
         #     pressure.append(point[2])
 
         annot = self.addInkAnnot(pointList, self.avPressure)
-
         History.addToHistory(self.deleteInkAnnot, annot, self.addInkAnnot, (pointList, self.avPressure))
 
         self.avPressure = 1
@@ -715,7 +830,6 @@ class QPdfView(QGraphicsPixmapItem):
             print(str(identifier))
             return
         except ValueError:
-            print(str(identifier))
             return
 
         try:
@@ -808,9 +922,14 @@ class QPdfView(QGraphicsPixmapItem):
         '''
         Return the annot of the current page which is the first at the desired position
         '''
-        for annot in self.page.annots():
-            if self.pointInArea(qpos, annot.rect):
-                return annot
+        try:
+            for annot in self.page.annots():
+                if self.pointInArea(qpos, annot.rect):
+                    return annot
+        except ValueError as identifier:
+            return None
+
+
 
         return None
 
@@ -822,6 +941,7 @@ class QPdfView(QGraphicsPixmapItem):
 
         for annot in self.page.annots():
             for qpos in qposList:
+                #TODO: Change that here
                 if self.pointInArea(qpos, annot.rect):
                     annots.append(annot)
                     break
@@ -842,11 +962,14 @@ class QPdfView(QGraphicsPixmapItem):
         '''
         Return the content of the annot of the current page which is the first at the desired position
         '''
-        for annot in self.page.annots(types=(fitz.PDF_ANNOT_FREE_TEXT, fitz.PDF_ANNOT_TEXT)):
-            if self.pointInArea(qpos, annot.rect):
-                info = annot.info
+        try:
+            for annot in self.page.annots(types=(fitz.PDF_ANNOT_FREE_TEXT, fitz.PDF_ANNOT_TEXT)):
+                if self.pointInArea(qpos, annot.rect):
+                    info = annot.info
 
-                return info["content"]
+                    return info["content"]
+        except ValueError as identifier:
+            return None
 
         return None
 
@@ -921,8 +1044,6 @@ class QPdfView(QGraphicsPixmapItem):
                     # Start moving this obj
                     self.startMoveObject(self.toPdfCoordinates(event.pos()), annot)
 
-        QGraphicsPixmapItem.mousePressEvent(self, event)
-
 
     def mouseReleaseEvent(self, event):
         '''
@@ -973,9 +1094,9 @@ class QPdfView(QGraphicsPixmapItem):
                     # Start requesting edit text box
                     editMode = editModes.editTextBox
                     self.eh.requestTextInput.emit(relCorrdinates.x(), relCorrdinates.y(), self.pageNumber, curContent)
-                # There was no annot, so the user might want to insert something
-                else:
-                    self.insertContent()
+                # # There was no annot, so the user might want to insert something
+                # else:
+                #     self.insertContent()
 
                     # if mimeData.hasImage():
                     #     QImage = clipboard.image()
@@ -1187,6 +1308,8 @@ class Renderer(QObject):
 
         self.backgroundRenderTimer = QTimer()
 
+        self.parent = parent
+
     def updateReceiver(self, zoom):
         self.rendererWorker.absZoomFactor = zoom
 
@@ -1245,7 +1368,7 @@ class Renderer(QObject):
             #     self.loadPdfPageToCurrentView(pIt, posX, posY, self.LOWRESZOOM)
             #     self.pages[pIt].setAsDraft()
             else:
-                self.loadBlankImageToCurrentView(pIt, posX, posY, height, width)
+                self.loadBlankImageToCurrentView(pIt, posX, posY, width, height)
                 self.pages[pIt].setAsDraft()
 
             posY += height + self.DEFAULTPAGESPACE
@@ -1268,16 +1391,13 @@ class Renderer(QObject):
         # Store instance locally
         self.pages[pageNumber] = pdfView
 
-        # # Connect event handlers
-        # self.pages[pageNumber].eh.requestTextInput.connect(self.toolBoxTextInputRequestedEvent)
-        # self.pages[pageNumber].eh.addIndicatorPoint.connect(self.addIndicatorPoint)
-        # self.pages[pageNumber].eh.deleteLastIndicatorPoint.connect(self.deleteLastIndicatorPoint)
+        self.connectPageSignals(self.pages[pageNumber])
 
         # add and arrange the new page in the scene
         self.itemRenderFinished.emit(self.pages[pageNumber], posX, posY)
 
 
-    def loadPdfPageToCurrentView(self, pageNumber, posX, posY, zoom = None):
+    def loadPdfPageToCurrentView(self, pageNumber, posX, posY, zoom):
         '''
         Creates a qpdfView instance from the desired page and renders it at the provided position with the zoomfactor.
         A lower zoomFactor will dramatically improve speed, as it always correlates to the dpi of the page
@@ -1289,16 +1409,46 @@ class Renderer(QObject):
         # Render according to the parameters
         self.updatePage(pdfView, zoom = zoom)
 
+        if pageNumber in self.pages:
+            pagesCache = self.pages.copy()
+
+            for pageNumberIt in sorted(pagesCache.keys(), reverse=True):
+                if pageNumberIt >= pageNumber:
+                    self.pages[pageNumber+1] = pagesCache[pageNumberIt]
+                else:
+                    break
+
         # Store instance locally
         self.pages[pageNumber] = pdfView
 
-        # # Connect event handlers
-        # self.pages[pageNumber].eh.requestTextInput.connect(self.toolBoxTextInputRequestedEvent)
-        # self.pages[pageNumber].eh.addIndicatorPoint.connect(self.addIndicatorPoint)
-        # self.pages[pageNumber].eh.deleteLastIndicatorPoint.connect(self.deleteLastIndicatorPoint)
+        self.connectPageSignals(self.pages[pageNumber])
 
         # add and arrange the new page in the scene
         self.itemRenderFinished.emit(self.pages[pageNumber], posX, posY)
+
+    def connectPageSignals(self, page):
+        # # Connect event handlers
+        page.eh.requestTextInput.connect(self.parent.toolBoxTextInputRequestedEvent)
+        page.eh.addIndicatorPoint.connect(self.parent.addIndicatorPoint)
+        page.eh.deleteLastIndicatorPoint.connect(self.parent.deleteLastIndicatorPoint)
+
+        self.parent.settingsChanged.connect(page.settingsChangedReceiver)
+
+    def removePdfPageFromCurrentView(self, pdfView):
+        pagesCache = self.pages.copy()
+
+        for pageNumberIt in sorted(pagesCache.keys(), reverse=True):
+            if pdfView.pageNumber < pageNumberIt:
+                self.pages[pageNumberIt-1] = pagesCache[pageNumberIt]
+
+            self.pages[pageNumberIt] = self.pdf.getPage(pageNumberIt)
+
+
+        # del self.pages[self.pages.keys()[-1]]
+
+
+
+
 
     def updatePage(self, pdfViewInstance, zoom, clip=None):
         '''
@@ -1342,7 +1492,6 @@ class Renderer(QObject):
 
 class GraphicsViewHandler(QGraphicsView):
     # pages = IndexedOrderedDict()
-    DEFAULTPAGESPACE = 20
 
     updatePages = Signal()
     renderPdf = Signal(int)
@@ -1353,6 +1502,8 @@ class GraphicsViewHandler(QGraphicsView):
     # x, y, pageNumber, currentContent
     requestTextInput = Signal(int, int, int, str)
     changesMade = Signal(bool)
+
+    settingsChanged = Signal()
 
     tempObj = list()
     updateIndicator = False
@@ -1397,7 +1548,7 @@ class GraphicsViewHandler(QGraphicsView):
         self.scroller.setScrollerProperties(self.scrollerProperties)
 
         self.rendererThread = QThread(parent)
-        self.rendererWorker = Renderer(parent)
+        self.rendererWorker = Renderer(self)
 
         self.setupScene()
 
@@ -1437,13 +1588,16 @@ class GraphicsViewHandler(QGraphicsView):
 
         self.loadPdfToCurrentView(fileName)
 
-    def saveCurrentPdf(self):
+    def saveCurrentPdf(self, cleanup=True):
         '''
         Just handles saving the pdf
         '''
         if self.rendererWorker.pdf.filename:
-            print('PDF saved')
-            return self.rendererWorker.pdf.savePdf()
+            if History.recentChanges != 0 or cleanup == False:
+                return self.rendererWorker.pdf.savePdf()
+            else:
+                print("Cleaning up pdf")
+                return self.rendererWorker.pdf.savePdf(cleanup=True)
 
     def saveCurrentPdfAs(self, fileName):
         '''
@@ -1498,11 +1652,11 @@ class GraphicsViewHandler(QGraphicsView):
         t.singleShot(500, self.pageGoto)
         t.singleShot(600, self.updateRenderedPages)
 
+
     def scrollTo(self):
         if self.gotoScrollPos != 0:
             self.verticalScrollBar().setMaximum(self.verticalScrollBar().maximumHeight())
             predictedScrollPos = self.gotoScrollPos
-            print(predictedScrollPos)
             self.verticalScrollBar().setValue(predictedScrollPos)
             self.update()
             self.gotoScrollPos = 0
@@ -1660,7 +1814,7 @@ class GraphicsViewHandler(QGraphicsView):
 
         super(GraphicsViewHandler, self).mouseReleaseEvent(event)
 
-        # self.rendererWorker.enableBackgroundRenderer()
+        self.rendererWorker.enableBackgroundRenderer()
 
 
     def mouseMoveEvent(self, event):
@@ -1793,22 +1947,43 @@ class GraphicsViewHandler(QGraphicsView):
             if type(renderedItem) != QPdfView:
                 continue
 
-            # renderedItem.page = self.rendererWorker.pdf.resizePage(renderedItem.page, 10, 0)
+
+
+            # Ok this needs to be reworked since there is to much overhead for just inserting a single page
+
+            # fileName = self.saveCurrentPdf()
+            # self.rendererWorker.pdf.closePdf()
+            # os.replace(fileName, self.rendererWorker.pdf.filename)
+
+            # prevScroll = self.verticalScrollBar().value()
+
+            # self.setupScene()
+
+            # self.loadPdfToCurrentView(self.rendererWorker.pdf.filename, renderedItem.pageNumber+2)
+
+            x1, y1 = renderedItem.getEndPos()
+            width, height = renderedItem.getSize()
+            pIt = renderedItem.pageNumber+1
 
             # Insert after current page
-            newPage = self.rendererWorker.pdf.insertPage(renderedItem.pageNumber+1)
-            fileName = self.saveCurrentPdf()
-            self.rendererWorker.pdf.closePdf()
-            os.replace(fileName, self.rendererWorker.pdf.filename)
+            newPage = self.rendererWorker.pdf.insertPage(pIt)
 
-            prevScroll = self.verticalScrollBar().value()
+            self.rendererWorker.loadPdfPageToCurrentView(pIt, 0, y1 + self.rendererWorker.DEFAULTPAGESPACE, self.rendererWorker.absZoomFactor)
 
-            self.setupScene()
+            self.saveCurrentPdf(cleanup=False)
 
-            self.loadPdfToCurrentView(self.rendererWorker.pdf.filename, renderedItem.pageNumber+2)
-            # self.updateRenderedPages()
+            items = self.scene.items()
 
-            # self.gotoScrollPos = prevScroll/
+
+            for item in items:
+                if type(item) != QPdfView:
+                    continue
+
+                if item.pageNumber >= pIt:
+
+                    item.pageNumber += 1
+                    item.yOrigin = item.hOrigin + height + self.rendererWorker.DEFAULTPAGESPACE
+                    item.setPos(item.x(), item.y() + (height+self.rendererWorker.DEFAULTPAGESPACE))
 
             return
 
@@ -1848,17 +2023,43 @@ class GraphicsViewHandler(QGraphicsView):
             if type(renderedItem) != QPdfView:
                 continue
 
+            x1, y1 = renderedItem.getEndPos()
+            width, height = renderedItem.getSize()
+            pIt = renderedItem.pageNumber
+
             # Delete after current page
-            if self.rendererWorker.pdf.deletePage(renderedItem.pageNumber):
-                fileName = self.saveCurrentPdf()
-                self.rendererWorker.pdf.closePdf()
-                os.replace(fileName, self.rendererWorker.pdf.filename)
+            if self.rendererWorker.pdf.deletePage(pIt):
 
-                prevScroll = self.verticalScrollBar().value()
+                # fileName = self.saveCurrentPdf(cleanup=False)
+                # self.rendererWorker.pdf.closePdf()
+                # os.replace(fileName, self.rendererWorker.pdf.filename)
 
-                self.setupScene()
+                # prevScroll = self.verticalScrollBar().value()
 
-                self.loadPdfToCurrentView(self.rendererWorker.pdf.filename, renderedItem.pageNumber+1)
+                # self.setupScene()
+
+                # self.loadPdfToCurrentView(self.rendererWorker.pdf.filename, renderedItem.pageNumber+1)
+
+
+
+
+                items = self.scene.items()
+
+                for item in items:
+                    if type(item) != QPdfView:
+                        continue
+
+                    if item.pageNumber > pIt:
+
+                        item.pageNumber -= 1
+                        item.yOrigin = item.hOrigin - height - self.rendererWorker.DEFAULTPAGESPACE
+                        item.setPos(item.x(), item.y() - (height-self.rendererWorker.DEFAULTPAGESPACE))
+
+                self.rendererWorker.removePdfPageFromCurrentView(renderedItem)
+
+                self.scene.removeItem(renderedItem)
+
+                self.saveCurrentPdf(cleanup=False)
 
                 return True
             else:
@@ -1883,7 +2084,6 @@ class GraphicsViewHandler(QGraphicsView):
         if self.rendererWorker.pages and pageNumber in range(len(self.rendererWorker.pages)):
             if pageNumber >= 1:
                 predictedScrollPos = self.rendererWorker.pages[pageNumber - 1].yOrigin * self.rendererWorker.absZoomFactor
-                print(predictedScrollPos)
                 self.verticalScrollBar().setValue(predictedScrollPos)
             else:
                 self.verticalScrollBar().setValue(0)
@@ -1984,9 +2184,13 @@ class GraphicsViewHandler(QGraphicsView):
         except IndexError as ie:
             # Don't judge me, but this can happen
             pass
-        except Exception as e:
-            print(e.with_traceback())
+        except Exception as identifier:
+            print(str(identifier()))
 
     @Slot()
     def updateSuggested(self):
         self.updateRenderedPages()
+
+    @Slot()
+    def settingsUpdateSuggested(self):
+        self.settingsChanged.emit()

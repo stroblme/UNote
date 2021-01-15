@@ -57,6 +57,8 @@ class ToolBoxWidget(QWidget):
 
     suggestUpdate = Signal()
 
+    settingsChanged = Signal()
+
     editTextBox = False
 
     buttons = IndexedOrderedDict()
@@ -264,6 +266,9 @@ class ToolBoxWidget(QWidget):
         Preferences.updateKeyValue('freehandColor', tuple(map(lambda x: str(x), black)))
         Preferences.updateKeyValue('markerColor', tuple(map(lambda x: str(x), yellow)))
         Preferences.updateKeyValue('formColor', tuple(map(lambda x: str(x), black)))
+
+        self.settingsChanged.emit()
+
 
     def paintEvent(self, event):
         '''
@@ -732,6 +737,9 @@ class ToolBoxWidget(QWidget):
                 Preferences.updateKeyValue('freehandColor', tuple(map(lambda x: str(x), normRGB)))
             elif self.editMode == editModes.forms:
                 Preferences.updateKeyValue('formColor', tuple(map(lambda x: str(x), normRGB)))
+
+        self.settingsChanged.emit()
+
 
     def handleSizeButton(self):
         '''

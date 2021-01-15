@@ -134,7 +134,9 @@ class UNote(App):
         self.ui.floatingToolBox.show()
         # self.ui.floatingToolBox.setStyleSheet("background-color:black")
 
-        from PySide2.QtCore import QPoint
+        # Initialize a snippet container
+
+        # from PySide2.QtCore import QPoint
 
         # self.ui.snippetContainer = TContainer(self.MainWindow, QPoint(100,100))
 
@@ -260,6 +262,9 @@ class UNote(App):
 
         # Suggest update signal
         self.ui.floatingToolBox.suggestUpdate.connect(self.ui.graphicsView.updateSuggested)
+
+        self.ui.floatingToolBox.settingsChanged.connect(self.ui.graphicsView.settingsUpdateSuggested)
+        self.preferencesGui.finished.connect(self.ui.graphicsView.settingsUpdateSuggested)
 
         # Toolboxspecific events
         self.ui.floatingToolBox.textInputFinished.connect(self.ui.graphicsView.toolBoxTextInputEvent)
