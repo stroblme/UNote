@@ -1441,10 +1441,6 @@ class Renderer(QObject):
 
         # del self.pages[self.pages.keys()[-1]]
 
-
-
-
-
     def updatePage(self, pdfViewInstance, zoom, clip=None, off=None):
         '''
         Update the provided pdf file at the desired page to render only the zoom and clip
