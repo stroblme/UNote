@@ -1,10 +1,8 @@
 # UNote
 
-**Latest release: v1.8**
-
 Fills the lack of an open-source PDF Editor with the capability to draw and add notes not only to the PDF pages but, in future, to a virtually unlimited space.
 
-The executable can be downloaded from [here](https://unote.stroblme.tech/).
+<!-- The executable can be downloaded from [here](https://unote.stroblme.tech/). -->
 
 ## Features
 
@@ -24,8 +22,9 @@ The executable can be downloaded from [here](https://unote.stroblme.tech/).
     - Fast PDF Loading
     - Split View
 
+See [CHANGELOG.md](https://github.com/stroblme/unote/blob/master/CHANGELOG.md) for a complete list of latest features in the current release
 
-See [CHANGELOG.md](https://gitlab.com/stroblme/unote/blob/master/CHANGELOG.md) for a complete list of latest features in the current release
+*Right now I'm focussing on the Pen Support. Features like Text Boxes are not maintained at the moment*
 
 ## Shortcuts
 
