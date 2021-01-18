@@ -1674,16 +1674,24 @@ class GraphicsViewHandler(QGraphicsView):
         self.startPage = startPage
         self.renderPdf.emit(startPage)
 
-    def updateRenderedPages(self):
+    def updateRenderedPages(self, onlyPage=-1):
         '''
         Intended to be called repetitively on every ui change to redraw all visible pdf pages
         '''
+        
+
         # Get all visible pages
         try:
             renderedItems = self.scene.items(self.mapToScene(self.viewport().geometry()))
         except Exception as identifier:
             print(str(identifier))
             return
+
+        if onlyPage != -1:
+            for renderedItem in renderedItems:
+                if renderedItem.pageNumber == onlyPage:
+                    self.rendererWorker.updatePage(renderedItem, zoom=self.rendererWorker.absZoomFactor, clip=self.viewport().geometry(), off=self.mapToScene(self.viewport().geometry()).boundingRect())
+                    return
 
         hIdx = 1
         lIdx = len(self.rendererWorker.pages)
@@ -1893,7 +1901,7 @@ class GraphicsViewHandler(QGraphicsView):
             item.tabletEvent(event.type(), event.pressure(), self.mapFromGlobalHighRes(event.pos(), event.globalPos(), event.hiResGlobalX(), event.hiResGlobalY()), self.rendererWorker.absZoomFactor, rect.x(), rect.y())
 
             if event.type() == QEvent.Type.TabletRelease:
-                self.updateRenderedPages()
+                self.updateRenderedPages(item.pageNumber)
                 item.RenderingFinished()
 
             #     if self.colorOverride:
