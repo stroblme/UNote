@@ -1259,7 +1259,7 @@ class QPdfView(QGraphicsPixmapItem):
         dx = self.wOrigin - clip.width()
         dy = self.hOrigin - clip.height()
 
-        print(f"{dx} - {df}")
+        print(f"{dx} - {dy}")
 
         return qClip
 
