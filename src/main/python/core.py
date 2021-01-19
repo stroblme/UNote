@@ -1458,11 +1458,8 @@ class Renderer(QObject):
             except Exception as identifier:
                 fClip = None
 
-
-
         else:
             fClip = None
-
 
         try:
             mat = fitz.Matrix(zoom, zoom)
