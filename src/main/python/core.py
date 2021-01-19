@@ -196,19 +196,16 @@ class QPdfView(QGraphicsPixmapItem):
     def setPixMap(self, qImg, pageNumber, newZoomFactor=1):
         self.pageNumber = pageNumber
 
-        self.updatePixMap(qImg)
-
-        self.lastZoomFactor = newZoomFactor
+        self.updatePixMap(qImg, newZoomFactor)
 
     def updatePixMap(self, qImg, newZoomFactor=1):
         self.qImg = qImg
 
-        self.pixImg = QPixmap()
-        self.draftImg = QPixmap()
+        pixImg = QPixmap()
 
-        self.pixImg.convertFromImage(self.qImg)
+        pixImg.convertFromImage(self.qImg)
 
-        self.setPixmap(self.pixImg)
+        self.setPixmap(pixImg)
 
         self.lastZoomFactor = newZoomFactor
 
@@ -237,9 +234,9 @@ class QPdfView(QGraphicsPixmapItem):
         self.pageNumber = pageNumber
 
 
-    def reloadQImg(self, zoomFactor):
-        mat = fitz.Matrix(zoomFactor, zoomFactor)
-        self.pixImg.convertFromImage(self.qImg)
+    # def reloadQImg(self, zoomFactor):
+    #     mat = fitz.Matrix(zoomFactor, zoomFactor)
+    #     self.pixImg.convertFromImage(self.qImg)
 
     def qPointToFPoint(self, qPoint):
         return fitz.Point(qPoint.x(), qPoint.y())
@@ -1244,9 +1241,20 @@ class QPdfView(QGraphicsPixmapItem):
         qPos.setY(abs(qPos.y())+yOff - self.yOrigin)
         return qPos
 
+    def nfromSceneCoordinates(self, qPos, zoom, xOff, yOff):
+        # pPos = self.mapFromParent(qPos)
+        qPos = qPos / zoom
+
+        xSug = abs(xOff - self.xOrigin) * zoom
+        ySug = abs(yOff - self.yOrigin) * zoom
+
+        qPos = QPoint(xSug, ySug)
+        return qPos
+
     def rectFromSceneCoordinates(self, qRect, zoom, qRectOff):
-        tl = self.fromSceneCoordinates(qRect.topLeft(), zoom, qRectOff.topLeft().x(), qRectOff.topLeft().y())
-        br = self.fromSceneCoordinates(qRect.bottomRight(), zoom, qRectOff.bottomRight().x(), qRectOff.bottomRight().y())
+        tl = self.nfromSceneCoordinates(qRect.topLeft(), zoom, qRectOff.topLeft().x(), qRectOff.topLeft().y())
+        br = self.nfromSceneCoordinates(qRect.bottomRight(), zoom, qRectOff.bottomRight().x(), qRectOff.bottomRight().y())
+        print(f"{self.pageNumber}: {tl} - {br} - {zoom}")
 
         qRect.setTopLeft(tl)
         qRect.setBottomRight(br)
@@ -1447,7 +1455,7 @@ class Renderer(QObject):
         This methods is used when instantiating the pdf and later, when performance optimization and zooming is required
         '''
 
-        clip = None
+        # clip = None
         if clip:
             try:
                 # qpos = QPoint(clip.x(), clip.y())
@@ -1470,9 +1478,9 @@ class Renderer(QObject):
 
         try:
             qImg = self.pdf.getQImage(pixmap)
-
         except ValueError as identifier:
             return
+
         qImg.setDevicePixelRatio(zoom)
         qImg = self.imageHelper.applyTheme(qImg)
 
@@ -1480,6 +1488,12 @@ class Renderer(QObject):
             pdfViewInstance.setPixMap(qImg, pdfViewInstance.pageNumber, zoom)
         else:
             pdfViewInstance.updatePixMap(qImg, zoom)
+
+        if fClip != None:
+            xCorr = pdfViewInstance.xOrigin + off.x()
+            yCorr = pdfViewInstance.yOrigin + off.y()
+
+            pdfViewInstance.setPos(xCorr, yCorr)
 
     def updateEmptyPdf(self, pdfViewInstance, width, height):
         '''
