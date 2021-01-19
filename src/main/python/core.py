@@ -204,7 +204,7 @@ class QPdfView(QGraphicsPixmapItem):
         self.qImg = qImg
 
         self.pixImg = QPixmap()
-        self.draftImg = QPixmap()
+        # self.draftImg = QPixmap()
 
         self.pixImg.convertFromImage(self.qImg)
 
@@ -1458,7 +1458,7 @@ class Renderer(QObject):
         This methods is used when instantiating the pdf and later, when performance optimization and zooming is required
         '''
 
-        clip = None
+        # clip = None
         if clip:
             try:
                 # qpos = QPoint(clip.x(), clip.y())
