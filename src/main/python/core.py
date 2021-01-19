@@ -1254,7 +1254,7 @@ class QPdfView(QGraphicsPixmapItem):
     def rectFromSceneCoordinates(self, qRect, zoom, qRectOff):
         tl = self.nfromSceneCoordinates(qRect.topLeft(), zoom, qRectOff.topLeft().x(), qRectOff.topLeft().y())
         br = self.nfromSceneCoordinates(qRect.bottomRight(), zoom, qRectOff.bottomRight().x(), qRectOff.bottomRight().y())
-        print(f"{self.pageNumber}: {tl} - {br} - {zoom}")
+        # print(f"{self.pageNumber}: {tl} - {br} - {zoom}")
 
         qRect.setTopLeft(tl)
         qRect.setBottomRight(br)
@@ -1267,7 +1267,7 @@ class QPdfView(QGraphicsPixmapItem):
         dx = self.wOrigin - clip.width()
         dy = self.hOrigin - clip.height()
 
-        print(f"{dx} - {dy}")
+        # print(f"{dx} - {dy}")
 
         return qClip
 
@@ -1454,8 +1454,12 @@ class Renderer(QObject):
         Update the provided pdf file at the desired page to render only the zoom and clip
         This methods is used when instantiating the pdf and later, when performance optimization and zooming is required
         '''
+        start = time.time()
 
-        # clip = None
+        if pdfViewInstance.lastZoomFactor == zoom:
+            return
+            
+        clip = None
         if clip:
             try:
                 # qpos = QPoint(clip.x(), clip.y())
@@ -1463,6 +1467,8 @@ class Renderer(QObject):
                 qClip = pdfViewInstance.cropAndAlign(clip, zoom, off)
                 fClip = pdfViewInstance.qRectToFRect(qClip)
                 # fClip = None
+
+                
             except Exception as identifier:
                 fClip = None
 
@@ -1470,8 +1476,7 @@ class Renderer(QObject):
             fClip = None
 
         try:
-            mat = fitz.Matrix(zoom, zoom)
-            pixmap = self.pdf.renderPixmap(pdfViewInstance.pageNumber, mat=mat, clip=fClip)
+            pixmap = self.pdf.renderPixmap(pdfViewInstance.pageNumber, mat=fitz.Matrix(zoom, zoom), clip=fClip)
         except RuntimeError as identifier:
             print(str(identifier))
             return
@@ -1489,11 +1494,13 @@ class Renderer(QObject):
         else:
             pdfViewInstance.updatePixMap(qImg, zoom)
 
-        if fClip != None:
-            xCorr = pdfViewInstance.xOrigin + off.x()
-            yCorr = pdfViewInstance.yOrigin + off.y()
+        # if fClip != None:
+        #     xCorr = pdfViewInstance.xOrigin + off.x()
+        #     yCorr = pdfViewInstance.yOrigin + off.y()
 
-            pdfViewInstance.setPos(xCorr, yCorr)
+        #     pdfViewInstance.setPos(xCorr, yCorr)
+
+        print(time.time()-start)
 
     def updateEmptyPdf(self, pdfViewInstance, width, height):
         '''
