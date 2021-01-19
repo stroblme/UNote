@@ -196,9 +196,7 @@ class QPdfView(QGraphicsPixmapItem):
     def setPixMap(self, qImg, pageNumber, newZoomFactor=1):
         self.pageNumber = pageNumber
 
-        self.updatePixMap(qImg)
-
-        self.lastZoomFactor = newZoomFactor
+        self.updatePixMap(qImg, newZoomFactor)
 
     def updatePixMap(self, qImg, newZoomFactor=1):
         self.qImg = qImg
