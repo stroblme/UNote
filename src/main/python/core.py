@@ -203,12 +203,11 @@ class QPdfView(QGraphicsPixmapItem):
     def updatePixMap(self, qImg, newZoomFactor=1):
         self.qImg = qImg
 
-        self.pixImg = QPixmap()
-        # self.draftImg = QPixmap()
+        pixImg = QPixmap()
 
-        self.pixImg.convertFromImage(self.qImg)
+        pixImg.convertFromImage(self.qImg)
 
-        self.setPixmap(self.pixImg)
+        self.setPixmap(pixImg)
 
         self.lastZoomFactor = newZoomFactor
 
@@ -237,9 +236,9 @@ class QPdfView(QGraphicsPixmapItem):
         self.pageNumber = pageNumber
 
 
-    def reloadQImg(self, zoomFactor):
-        mat = fitz.Matrix(zoomFactor, zoomFactor)
-        self.pixImg.convertFromImage(self.qImg)
+    # def reloadQImg(self, zoomFactor):
+    #     mat = fitz.Matrix(zoomFactor, zoomFactor)
+    #     self.pixImg.convertFromImage(self.qImg)
 
     def qPointToFPoint(self, qPoint):
         return fitz.Point(qPoint.x(), qPoint.y())
