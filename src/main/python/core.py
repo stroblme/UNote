@@ -1297,6 +1297,8 @@ class Renderer(QObject):
     itemRenderFinished = Signal(QPdfView, int, int)
     pdfRenderFinished = Signal()
 
+    pageRenderStart = Signal(QPdfView, float)
+
     nextRenderingPage = 0
     enableBackgroundRendering = False
 
@@ -1312,6 +1314,8 @@ class Renderer(QObject):
         self.backgroundRenderTimer = QTimer()
 
         self.parent = parent
+
+        self.pageRenderStart.connect(self.updatePageAsync)
 
     def updateReceiver(self, zoom):
         self.rendererWorker.absZoomFactor = zoom
@@ -1410,7 +1414,7 @@ class Renderer(QObject):
         pdfView.setPage(self.pdf.getPage(pageNumber), pageNumber)
 
         # Render according to the parameters
-        self.updatePage(pdfView, zoom = zoom)
+        self.updatePage(pdfView, zoom = zoom, thread=False)
 
         if pageNumber in self.pages:
             pagesCache = self.pages.copy()
@@ -1449,15 +1453,29 @@ class Renderer(QObject):
 
         # del self.pages[self.pages.keys()[-1]]
 
-    def updatePage(self, pdfViewInstance, zoom, clip=None, off=None):
+    def updatePage(self, pdfViewInstance, zoom, clip=None, off=None, thread=True):
         '''
         Update the provided pdf file at the desired page to render only the zoom and clip
         This methods is used when instantiating the pdf and later, when performance optimization and zooming is required
         '''
-        # start = time.time()
 
-        
-            
+        if thread:
+            # print(time.time())
+            self.pdfViewInst = pdfViewInstance
+            self.zoomFactor = zoom
+
+            t = QTimer()
+            # t.singleShot(300, self.scrollTo)
+            t.singleShot(0, self.dirtyThread)
+        else:
+            self.pageRenderStart.emit(pdfViewInstance, zoom)
+
+
+    def dirtyThread(self):
+        self.pageRenderStart.emit(self.pdfViewInst, self.zoomFactor)
+    
+    @Slot(QPdfView, int)
+    def updatePageAsync(self, pdfViewInstance, zoom, clip=None, off=None):
         clip = None
         if clip:
             try:
