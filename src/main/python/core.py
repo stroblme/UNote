@@ -1454,10 +1454,9 @@ class Renderer(QObject):
         Update the provided pdf file at the desired page to render only the zoom and clip
         This methods is used when instantiating the pdf and later, when performance optimization and zooming is required
         '''
-        start = time.time()
+        # start = time.time()
 
-        if pdfViewInstance.lastZoomFactor == zoom:
-            return
+        
             
         clip = None
         if clip:
@@ -1500,7 +1499,7 @@ class Renderer(QObject):
 
         #     pdfViewInstance.setPos(xCorr, yCorr)
 
-        print(time.time()-start)
+        # print(time.time()-start)
 
     def updateEmptyPdf(self, pdfViewInstance, width, height):
         '''
@@ -1693,7 +1692,7 @@ class GraphicsViewHandler(QGraphicsView):
         self.startPage = startPage
         self.renderPdf.emit(startPage)
 
-    def updateRenderedPages(self, onlyPage=-1):
+    def updateRenderedPages(self, onlyPage=-1, force=False):
         '''
         Intended to be called repetitively on every ui change to redraw all visible pdf pages
         '''
@@ -1720,6 +1719,9 @@ class GraphicsViewHandler(QGraphicsView):
             # Check if we have a pdf view here (visible could be anything)
             if type(renderedItem) != QPdfView:
                 continue
+
+            if renderedItem.lastZoomFactor == self.rendererWorker.absZoomFactor and not force:
+                return
 
             if renderedItem.pageNumber > hIdx:
                 hIdx = renderedItem.pageNumber
@@ -1841,7 +1843,7 @@ class GraphicsViewHandler(QGraphicsView):
 
                 item.insertContent(event.pos(), self.rendererWorker.absZoomFactor, rect.x(), rect.y())
 
-                self.updateRenderedPages()
+                self.updateRenderedPages(force=True)
 
         # self.rendererWorker.stopBackgroundRenderer()
 
@@ -1898,7 +1900,7 @@ class GraphicsViewHandler(QGraphicsView):
         '''
         self.rendererWorker.stopBackgroundRenderer()
 
-        self.updateRenderedPages()
+        self.updateRenderedPages(force=True)
 
         super(GraphicsViewHandler, self).keyReleaseEvent(event)
 
@@ -1920,7 +1922,7 @@ class GraphicsViewHandler(QGraphicsView):
             item.tabletEvent(event.type(), event.pressure(), self.mapFromGlobalHighRes(event.pos(), event.globalPos(), event.hiResGlobalX(), event.hiResGlobalY()), self.rendererWorker.absZoomFactor, rect.x(), rect.y())
 
             if event.type() == QEvent.Type.TabletRelease:
-                self.updateRenderedPages(item.pageNumber)
+                self.updateRenderedPages(item.pageNumber, force=True)
                 item.RenderingFinished()
 
             #     if self.colorOverride:
@@ -2240,7 +2242,7 @@ class GraphicsViewHandler(QGraphicsView):
 
     @Slot()
     def updateSuggested(self):
-        self.updateRenderedPages()
+        self.updateRenderedPages(force=True)
 
     @Slot()
     def settingsUpdateSuggested(self):
