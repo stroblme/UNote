@@ -2247,3 +2247,4 @@ class GraphicsViewHandler(QGraphicsView):
     @Slot()
     def settingsUpdateSuggested(self):
         self.settingsChanged.emit()
+        self.updateRenderedPages(force=True)
