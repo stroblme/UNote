@@ -1553,6 +1553,8 @@ class GraphicsViewHandler(QGraphicsView):
 
     colorOverride = False
 
+    lastZoomTime = 0.0
+
     def __init__(self, parent):
         '''
         Creates the graphic view handler instance, which is a main feature of the unote application
@@ -1592,6 +1594,8 @@ class GraphicsViewHandler(QGraphicsView):
 
         self.rendererThread = QThread(parent)
         self.rendererWorker = Renderer(self)
+
+        self.userFinishedTimer = QTimer()
 
         self.setupScene()
 
@@ -1714,7 +1718,12 @@ class GraphicsViewHandler(QGraphicsView):
         '''
         Intended to be called repetitively on every ui change to redraw all visible pdf pages
         '''
-        
+        if time.time() - self.lastZoomTime < 0.2 or time.time() - self.lastZoomTime > 2 and self.lastZoomTime != 0:
+            print(time.time()-self.lastZoomTime)
+            return
+        # else:
+        #     self.lastZoomTime = time.time()
+
 
         # Get all visible pages
         try:
@@ -1755,6 +1764,7 @@ class GraphicsViewHandler(QGraphicsView):
 
                     self.rendererWorker.pages[pIt].isDraft = False
 
+        self.lastZoomTime = time.time()
 
     def getPageSize(self, page=0):
         return self.rendererWorker.pdf.getPageSize(0)
@@ -1827,10 +1837,28 @@ class GraphicsViewHandler(QGraphicsView):
             self.rendererWorker.absZoomFactor = self.rendererWorker.absZoomFactor * relZoomFactor
             self.scale(relZoomFactor, relZoomFactor)
 
+            # if time.time() - lastZoomTime > 1
+
+
+            # if time.time() - self.lastZoomTime < 0.1 or time.time() - self.lastZoomTime > 2:
+            #     self.userFinishedTimer.stop()
+            #     print(time.time() - self.lastZoomTime)
+
+
+            # self.userFinishedTimer.singleShot(120, self.updateRenderedPages)
+            
+            
+            
+            # t.singleShot(300, self.scrollTo)
+
         else:
             super(GraphicsViewHandler, self).wheelEvent(event)
 
+            # if not self.userFinishedTimer.isActive():
+
+
         self.updateRenderedPages()
+
         # self.updateIndicator = True
         # self.rendererWorker.enableBackgroundRenderer()
 
