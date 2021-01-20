@@ -1718,9 +1718,9 @@ class GraphicsViewHandler(QGraphicsView):
         '''
         Intended to be called repetitively on every ui change to redraw all visible pdf pages
         '''
-        if time.time() - self.lastZoomTime < 0.2 or time.time() - self.lastZoomTime > 2 and self.lastZoomTime != 0:
-            print(time.time()-self.lastZoomTime)
-            return
+        # if time.time() - self.lastZoomTime < 0.2 or time.time() - self.lastZoomTime > 2 and self.lastZoomTime != 0:
+        #     print(time.time()-self.lastZoomTime)
+        #     return
         # else:
         #     self.lastZoomTime = time.time()
 
