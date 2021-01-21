@@ -1,6 +1,8 @@
 <img src="./src/main/icons/base/1024.png"
      alt="UNote Icon"
-     width="100px" /> **UNote**
+     width="100px" />
+
+# **UNote**
 
 Fills the lack of an open-source PDF Editor with the capability to draw and add notes not only to the PDF pages but, in future, to a virtually unlimited space.
 
