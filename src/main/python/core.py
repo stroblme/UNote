@@ -1254,7 +1254,7 @@ class QPdfView(QGraphicsPixmapItem):
     def rectFromSceneCoordinates(self, qRect, zoom, qRectOff):
         tl = self.nfromSceneCoordinates(qRect.topLeft(), zoom, qRectOff.topLeft().x(), qRectOff.topLeft().y())
         br = self.nfromSceneCoordinates(qRect.bottomRight(), zoom, qRectOff.bottomRight().x(), qRectOff.bottomRight().y())
-        print(f"{self.pageNumber}: {tl} - {br} - {zoom}")
+        # print(f"{self.pageNumber}: {tl} - {br} - {zoom}")
 
         qRect.setTopLeft(tl)
         qRect.setBottomRight(br)
@@ -1267,7 +1267,7 @@ class QPdfView(QGraphicsPixmapItem):
         dx = self.wOrigin - clip.width()
         dy = self.hOrigin - clip.height()
 
-        print(f"{dx} - {dy}")
+        # print(f"{dx} - {dy}")
 
         return qClip
 
@@ -1297,6 +1297,8 @@ class Renderer(QObject):
     itemRenderFinished = Signal(QPdfView, int, int)
     pdfRenderFinished = Signal()
 
+    pageRenderStart = Signal(QPdfView, float)
+
     nextRenderingPage = 0
     enableBackgroundRendering = False
 
@@ -1312,6 +1314,8 @@ class Renderer(QObject):
         self.backgroundRenderTimer = QTimer()
 
         self.parent = parent
+
+        self.pageRenderStart.connect(self.updatePageAsync)
 
     def updateReceiver(self, zoom):
         self.rendererWorker.absZoomFactor = zoom
@@ -1410,7 +1414,7 @@ class Renderer(QObject):
         pdfView.setPage(self.pdf.getPage(pageNumber), pageNumber)
 
         # Render according to the parameters
-        self.updatePage(pdfView, zoom = zoom)
+        self.updatePage(pdfView, zoom = zoom, thread=False)
 
         if pageNumber in self.pages:
             pagesCache = self.pages.copy()
@@ -1449,13 +1453,30 @@ class Renderer(QObject):
 
         # del self.pages[self.pages.keys()[-1]]
 
-    def updatePage(self, pdfViewInstance, zoom, clip=None, off=None):
+    def updatePage(self, pdfViewInstance, zoom, clip=None, off=None, thread=True):
         '''
         Update the provided pdf file at the desired page to render only the zoom and clip
         This methods is used when instantiating the pdf and later, when performance optimization and zooming is required
         '''
 
-        # clip = None
+        if thread:
+            # print(time.time())
+            self.pdfViewInst = pdfViewInstance
+            self.zoomFactor = zoom
+
+            t = QTimer()
+            # t.singleShot(300, self.scrollTo)
+            t.singleShot(0, self.dirtyThread)
+        else:
+            self.pageRenderStart.emit(pdfViewInstance, zoom)
+
+
+    def dirtyThread(self):
+        self.pageRenderStart.emit(self.pdfViewInst, self.zoomFactor)
+    
+    @Slot(QPdfView, int)
+    def updatePageAsync(self, pdfViewInstance, zoom, clip=None, off=None):
+        clip = None
         if clip:
             try:
                 # qpos = QPoint(clip.x(), clip.y())
@@ -1463,17 +1484,16 @@ class Renderer(QObject):
                 qClip = pdfViewInstance.cropAndAlign(clip, zoom, off)
                 fClip = pdfViewInstance.qRectToFRect(qClip)
                 # fClip = None
+
+                
             except Exception as identifier:
                 fClip = None
-
-
 
         else:
             fClip = None
 
         try:
-            mat = fitz.Matrix(zoom, zoom)
-            pixmap = self.pdf.renderPixmap(pdfViewInstance.pageNumber, mat=mat, clip=fClip)
+            pixmap = self.pdf.renderPixmap(pdfViewInstance.pageNumber, mat=fitz.Matrix(zoom, zoom), clip=fClip)
         except RuntimeError as identifier:
             print(str(identifier))
             return
@@ -1491,11 +1511,13 @@ class Renderer(QObject):
         else:
             pdfViewInstance.updatePixMap(qImg, zoom)
 
-        if fClip != None:
-            xCorr = pdfViewInstance.xOrigin + off.x()
-            yCorr = pdfViewInstance.yOrigin + off.y()
+        # if fClip != None:
+        #     xCorr = pdfViewInstance.xOrigin + off.x()
+        #     yCorr = pdfViewInstance.yOrigin + off.y()
 
-            pdfViewInstance.setPos(xCorr, yCorr)
+        #     pdfViewInstance.setPos(xCorr, yCorr)
+
+        # print(time.time()-start)
 
     def updateEmptyPdf(self, pdfViewInstance, width, height):
         '''
@@ -1530,6 +1552,8 @@ class GraphicsViewHandler(QGraphicsView):
     updateIndicator = False
 
     colorOverride = False
+
+    lastZoomTime = 0.0
 
     def __init__(self, parent):
         '''
@@ -1570,6 +1594,8 @@ class GraphicsViewHandler(QGraphicsView):
 
         self.rendererThread = QThread(parent)
         self.rendererWorker = Renderer(self)
+
+        self.userFinishedTimer = QTimer()
 
         self.setupScene()
 
@@ -1688,11 +1714,16 @@ class GraphicsViewHandler(QGraphicsView):
         self.startPage = startPage
         self.renderPdf.emit(startPage)
 
-    def updateRenderedPages(self, onlyPage=-1):
+    def updateRenderedPages(self, onlyPage=-1, force=False):
         '''
         Intended to be called repetitively on every ui change to redraw all visible pdf pages
         '''
-        
+        # if time.time() - self.lastZoomTime < 0.2 or time.time() - self.lastZoomTime > 2 and self.lastZoomTime != 0:
+        #     print(time.time()-self.lastZoomTime)
+        #     return
+        # else:
+        #     self.lastZoomTime = time.time()
+
 
         # Get all visible pages
         try:
@@ -1716,6 +1747,9 @@ class GraphicsViewHandler(QGraphicsView):
             if type(renderedItem) != QPdfView:
                 continue
 
+            if renderedItem.lastZoomFactor == self.rendererWorker.absZoomFactor and not force:
+                return
+
             if renderedItem.pageNumber > hIdx:
                 hIdx = renderedItem.pageNumber
             if renderedItem.pageNumber < lIdx:
@@ -1730,6 +1764,7 @@ class GraphicsViewHandler(QGraphicsView):
 
                     self.rendererWorker.pages[pIt].isDraft = False
 
+        self.lastZoomTime = time.time()
 
     def getPageSize(self, page=0):
         return self.rendererWorker.pdf.getPageSize(0)
@@ -1802,10 +1837,28 @@ class GraphicsViewHandler(QGraphicsView):
             self.rendererWorker.absZoomFactor = self.rendererWorker.absZoomFactor * relZoomFactor
             self.scale(relZoomFactor, relZoomFactor)
 
+            # if time.time() - lastZoomTime > 1
+
+
+            # if time.time() - self.lastZoomTime < 0.1 or time.time() - self.lastZoomTime > 2:
+            #     self.userFinishedTimer.stop()
+            #     print(time.time() - self.lastZoomTime)
+
+
+            # self.userFinishedTimer.singleShot(120, self.updateRenderedPages)
+            
+            
+            
+            # t.singleShot(300, self.scrollTo)
+
         else:
             super(GraphicsViewHandler, self).wheelEvent(event)
 
+            # if not self.userFinishedTimer.isActive():
+
+
         self.updateRenderedPages()
+
         # self.updateIndicator = True
         # self.rendererWorker.enableBackgroundRenderer()
 
@@ -1836,7 +1889,7 @@ class GraphicsViewHandler(QGraphicsView):
 
                 item.insertContent(event.pos(), self.rendererWorker.absZoomFactor, rect.x(), rect.y())
 
-                self.updateRenderedPages()
+                self.updateRenderedPages(force=True)
 
         # self.rendererWorker.stopBackgroundRenderer()
 
@@ -1893,7 +1946,7 @@ class GraphicsViewHandler(QGraphicsView):
         '''
         self.rendererWorker.stopBackgroundRenderer()
 
-        self.updateRenderedPages()
+        self.updateRenderedPages(force=True)
 
         super(GraphicsViewHandler, self).keyReleaseEvent(event)
 
@@ -1915,7 +1968,7 @@ class GraphicsViewHandler(QGraphicsView):
             item.tabletEvent(event.type(), event.pressure(), self.mapFromGlobalHighRes(event.pos(), event.globalPos(), event.hiResGlobalX(), event.hiResGlobalY()), self.rendererWorker.absZoomFactor, rect.x(), rect.y())
 
             if event.type() == QEvent.Type.TabletRelease:
-                self.updateRenderedPages(item.pageNumber)
+                self.updateRenderedPages(item.pageNumber, force=True)
                 item.RenderingFinished()
 
             #     if self.colorOverride:
@@ -2235,8 +2288,9 @@ class GraphicsViewHandler(QGraphicsView):
 
     @Slot()
     def updateSuggested(self):
-        self.updateRenderedPages()
+        self.updateRenderedPages(force=True)
 
     @Slot()
     def settingsUpdateSuggested(self):
         self.settingsChanged.emit()
+        self.updateRenderedPages(force=True)
