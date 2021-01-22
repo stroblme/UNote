@@ -193,12 +193,12 @@ class QPdfView(QGraphicsPixmapItem):
 
 
 
-    def setPixMap(self, qImg, pageNumber, newZoomFactor=1):
+    def setQImage(self, qImg, pageNumber, newZoomFactor=1):
         self.pageNumber = pageNumber
 
-        self.updatePixMap(qImg, newZoomFactor)
+        self.updateQImage(qImg, newZoomFactor)
 
-    def updatePixMap(self, qImg, newZoomFactor=1):
+    def updateQImage(self, qImg, newZoomFactor=1):
         self.qImg = qImg
 
         pixImg = QPixmap()
@@ -1460,6 +1460,8 @@ class Renderer(QObject):
         '''
 
         if thread:
+            # self.updatePageAsync(pdfViewInstance, zoom, clip, off)
+            # return
             # print(time.time())
             self.pdfViewInst = pdfViewInstance
             self.zoomFactor = zoom
@@ -1506,10 +1508,21 @@ class Renderer(QObject):
         qImg.setDevicePixelRatio(zoom)
         qImg = self.imageHelper.applyTheme(qImg)
 
-        if pdfViewInstance.pageNumber:
-            pdfViewInstance.setPixMap(qImg, pdfViewInstance.pageNumber, zoom)
-        else:
-            pdfViewInstance.updatePixMap(qImg, zoom)
+        
+
+        # if pdfViewInstance.pageNumber:
+        if fClip:
+            self.qp = QPainter(pdfViewInstance.qImg)
+            self.qp.drawImage(fClip.x0, fClip.y0, qImg)
+            self.qp.end()
+
+        pdfViewInstance.setQImage(qImg, pdfViewInstance.pageNumber, zoom)
+        # else:
+        #     if fClip:
+        #         qp = QPainter(pdfViewInstance.qImg)
+        #         qp.drawImage(fClip.x, fClip.y, qImg)
+
+        #     pdfViewInstance.updateQImage(qImg, zoom)
 
         # if fClip != None:
         #     xCorr = pdfViewInstance.xOrigin + off.x()
@@ -1529,9 +1542,9 @@ class Renderer(QObject):
         qImg.fill(0)
 
         if pdfViewInstance.pageNumber:
-            pdfViewInstance.setPixMap(qImg, pdfViewInstance.pageNumber)
+            pdfViewInstance.setQImage(qImg, pdfViewInstance.pageNumber)
         else:
-            pdfViewInstance.updatePixMap(qImg)
+            pdfViewInstance.updateQImage(qImg)
 
 class GraphicsViewHandler(QGraphicsView):
     # pages = IndexedOrderedDict()
