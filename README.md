@@ -10,6 +10,12 @@ The executable can be downloaded from [here](https://stroblme.de/unote/) or dire
 
 ## Features
 
+Here a quick demonstration of only a few features:
+
+![A short demonstration](./unote.gif)
+
+A more detailled (and constantly extended) list of features:
+
 - PDF Annotating
     - Text Boxes (with and without pointers)
     - Highlighting
