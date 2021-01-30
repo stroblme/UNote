@@ -34,7 +34,7 @@ A more detailled (and constantly extended) list of features:
 
 See [CHANGELOG.md](https://github.com/stroblme/unote/blob/master/CHANGELOG.md) for a complete list of latest features in the current release
 
-*Right now I'm focussing on the Pen Support. Features like Text Boxes are not maintained at the moment*
+*Right now I'm focussing on the Pen Support. Features like Text Boxes are currently not maintained*
 
 ## Shortcuts
 
