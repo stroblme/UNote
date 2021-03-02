@@ -28,7 +28,7 @@ from markdownHelper import markdownHelper
 
 from util import toBool
 from editHelper import editModes
-from filters import Savgol, FormEstimator
+from filters import smoothLine, estimateLine
 from historyHandler import History
 
 # sys.path.append('./style')
@@ -66,9 +66,6 @@ class QPdfView(QGraphicsPixmapItem):
 
         self.eh = EventHelper()
 
-        self.savgol = Savgol()
-        self.formEstimator = FormEstimator()
-
         self.drawPoints = Queue()
         self.tempPoints = Queue()
 
@@ -83,6 +80,8 @@ class QPdfView(QGraphicsPixmapItem):
         self.lastZoomFactor = -1
 
         self.isDraft = False
+
+        self.smooth = False
 
         self.avPressure = 1
 
@@ -114,6 +113,15 @@ class QPdfView(QGraphicsPixmapItem):
                 except ZeroDivisionError:
                     penSize = pdf_annots.defaultPenSize
 
+                if self.smooth:
+                    segment = smoothLine(list(self.tempPoints.queue))
+                else:
+                    segment = list(self.tempPoints.queue)
+                    
+                self.updateDrawPoints(segment[-1])
+
+
+                
 
                 painter.setPen(QPen(QColor(*self.freeHandColor), penSize))
                 painter.setRenderHint(QPainter.SmoothPixmapTransform)
@@ -703,7 +711,7 @@ class QPdfView(QGraphicsPixmapItem):
 
 
     def applyFormPoints(self):
-        fStart, fStop = self.formEstimator.estimateLine(self.formPoints[0], self.formPoints[-1])
+        fStart, fStop = estimateLine(self.formPoints[0], self.formPoints[-1])
 
         annot = self.addLine(fStart, fStop, "")
 
@@ -741,6 +749,9 @@ class QPdfView(QGraphicsPixmapItem):
         #         self.drawPoints.queue.clear()
 
         self.drawPoints.put(curPos)
+
+        
+
         # self.drawIndicators.append(qpos)
 
 
@@ -748,9 +759,7 @@ class QPdfView(QGraphicsPixmapItem):
 
     def applyDrawPoints(self):
 
-        # self.kalman.initKalman(self.qPointToFloatParirs(self.startPos))
 
-        # self.drawPoints = self.kalman.applyKalman(self.drawPoints)
         segment = list(self.drawPoints.queue)
 
         with self.drawPoints.mutex:
@@ -761,7 +770,7 @@ class QPdfView(QGraphicsPixmapItem):
 
 
         # Line smoothing
-        # self.estPoints = self.formEstimator.estimateLine(self.drawPoints)
+        # self.estPoints = estimateLine(self.drawPoints)
 
         pointList = list()
         for point in segment:
@@ -991,6 +1000,7 @@ class QPdfView(QGraphicsPixmapItem):
                 if editMode == editModes.marker:
                     self.startMarkText(self.toPdfCoordinates(event.pos()))
                 elif editMode == editModes.freehand:
+                    self.smooth = True
                     self.startDraw(self.toPdfCoordinates(event.pos()))
                 elif editMode == editModes.eraser:
                     self.startEraser(self.toPdfCoordinates(event.pos()))
@@ -1034,6 +1044,7 @@ class QPdfView(QGraphicsPixmapItem):
                     self.stopMarkText(self.toPdfCoordinates(event.pos()))
                 elif editMode == editModes.freehand:
                     self.stopDraw(self.toPdfCoordinates(event.pos()))
+                    self.smooth = False
                 elif editMode == editModes.eraser:
                     self.stopEraser(self.toPdfCoordinates(event.pos()))
                 elif editMode == editModes.forms:
@@ -1094,7 +1105,7 @@ class QPdfView(QGraphicsPixmapItem):
 
         if self.ongoingEdit and not toBool(Preferences.data['radioButtonPenDrawOnly']):
             if editMode == editModes.freehand:
-                self.updateDrawPoints(self.toPdfCoordinates(event.pos()))
+                # self.updateDrawPoints(self.toPdfCoordinates(event.pos()))
                 self.tempPoints.put(self.toPdfCoordinates(event.pos()))
                 self.update()
             elif editMode == editModes.eraser:

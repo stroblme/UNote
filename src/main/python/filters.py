@@ -1,17 +1,20 @@
 # import numpy as np
-# from scipySavgol import savgol_filter
+from scipy.signal import savgol_filter
 # from scipy.linalg import lstsq
 # from scipy import dot
 from math import sqrt, tan, pi
+from PySide2.QtCore import QPointF
+
 rad_to_deg = lambda x: 180.0/pi * x
+
 
 def tuplesToArrays(points):
     xPoints = []
     yPoints = []
 
     for point in points:
-        xPoints.append(point[0])
-        yPoints.append(point[1])
+        xPoints.append(point.x())
+        yPoints.append(point.y())
 
     return xPoints, yPoints
 
@@ -19,7 +22,7 @@ def arraysToTuples(xPoints, yPoints):
     points = []
 
     for xPoint, yPoint in zip(xPoints, yPoints):
-        points.append([xPoint, yPoint])
+        points.append(QPointF(xPoint, yPoint))
 
     return points
 
@@ -27,27 +30,27 @@ class FormEstimator(object):
     def __init__(self):
         super().__init__()
 
-    def estimateLine(self, fStart, fStop):
-        MAXYDELTA = 0.1
-        MAXXDELTA = 0.1
+def estimateLine(self, fStart, fStop):
+    MAXYDELTA = 0.1
+    MAXXDELTA = 0.1
 
-        distance = sqrt(pow(fStart.y - fStop.y, 2) + pow(fStart.x - fStop.x, 2))
+    distance = sqrt(pow(fStart.y - fStop.y, 2) + pow(fStart.x - fStop.x, 2))
 
-        if abs(fStart.y - fStop.y) != 0 and abs(fStart.x - fStop.x) != 0:
-            angle = rad_to_deg(tan(abs(fStart.y - fStop.y)/abs(fStart.x - fStop.x)))
-        elif abs(fStart.x - fStop.x) == 0:
-            angle = 90
-        else: # abs(fStart.y - fStop.y) == 0:
-            angle = 0
+    if abs(fStart.y - fStop.y) != 0 and abs(fStart.x - fStop.x) != 0:
+        angle = rad_to_deg(tan(abs(fStart.y - fStop.y)/abs(fStart.x - fStop.x)))
+    elif abs(fStart.x - fStop.x) == 0:
+        angle = 90
+    else: # abs(fStart.y - fStop.y) == 0:
+        angle = 0
 
-        if abs(fStart.y - fStop.y)/distance < MAXYDELTA:
-            fStop.y = fStart.y
-        if abs(fStart.x - fStop.x)/distance < MAXXDELTA:
-            fStop.x = fStart.x
+    if abs(fStart.y - fStop.y)/distance < MAXYDELTA:
+        fStop.y = fStart.y
+    if abs(fStart.x - fStop.x)/distance < MAXXDELTA:
+        fStop.x = fStart.x
 
-        print(angle)
+    print(angle)
 
-        return fStart, fStop
+    return fStart, fStop
 
 
 # class Kalman(object):
@@ -135,51 +138,49 @@ class FormEstimator(object):
 #         points = list(zip(kalman_x_flat_list, kalman_y_flat_list))
 #         return points
 
-class Savgol(object):
+class Savgol():
 
-    def __init__(self):
-        super().__init__()
-
+    @staticmethod
     def applySavgol(self, observedPoints):
         # Odd window length for Savgol
         # Use even Polynoms for better results!
 
-        # if len(observedPoints) > 19:
-        #     WINDOW_LENGTH = 19 #odd!
-        #     POLYNOM_GRADE = 3
-        # elif len(observedPoints) > 13:
-        #     WINDOW_LENGTH = 13 #odd!
-        #     POLYNOM_GRADE = 2
-        # elif len(observedPoints) > 7:
-        #     WINDOW_LENGTH = 7 #odd!
-        #     POLYNOM_GRADE = 2
-        # elif len(observedPoints) > 3:
-        #     WINDOW_LENGTH = 3 #odd!
-        #     POLYNOM_GRADE = 1
-        # else:
-        #     xPoints, yPoints = tuplesToArrays(observedPoints)
+        if len(observedPoints) > 19:
+            WINDOW_LENGTH = 19 #odd!
+            POLYNOM_GRADE = 3
+        elif len(observedPoints) > 13:
+            WINDOW_LENGTH = 13 #odd!
+            POLYNOM_GRADE = 2
+        elif len(observedPoints) > 7:
+            WINDOW_LENGTH = 7 #odd!
+            POLYNOM_GRADE = 2
+        elif len(observedPoints) > 3:
+            WINDOW_LENGTH = 3 #odd!
+            POLYNOM_GRADE = 1
+        else:
+            xPoints, yPoints = tuplesToArrays(observedPoints)
 
-        #     try:
-        #         xPoints.extend([xPoints[0] - 1])
+            try:
+                xPoints.extend([xPoints[0] - 1])
 
-        #         yPoints.extend([yPoints[0] - 1])
-        #     except IndexError as identifier:
-        #         print(identifier)
+                yPoints.extend([yPoints[0] - 1])
+            except IndexError as identifier:
+                print(identifier)
 
-        #         # Don't make lange rum, return the points
-        #         return observedPoints
+                # Don't make lange rum, return the points
+                return observedPoints
 
-        #     points = arraysToTuples(xPoints, yPoints)
+            points = arraysToTuples(xPoints, yPoints)
 
-        #     return points
+            return points
 
         xPoints, yPoints = tuplesToArrays(observedPoints)
 
-        # xPointsS = savgol_filter(xPoints, WINDOW_LENGTH, POLYNOM_GRADE)
-        # yPointsS = savgol_filter(yPoints, WINDOW_LENGTH, POLYNOM_GRADE)
+        xPointsS = savgol_filter(xPoints, WINDOW_LENGTH, POLYNOM_GRADE)
+        yPointsS = savgol_filter(yPoints, WINDOW_LENGTH, POLYNOM_GRADE)
 
         points = arraysToTuples(xPoints, yPoints)
-        # points = arraysToTuples(xPointsS, yPointsS)
+        points = arraysToTuples(xPointsS, yPointsS)
 
 
         return points
@@ -252,3 +253,49 @@ class Savgol(object):
 #         B_fit = dot(A,model)
 #         err_per_point = np.sum((B-B_fit)**2,axis=1) # sum squared error per row
 #         return err_per_point
+
+def smoothLine(drawPoints):
+    # Odd window length for Savgol
+    # Use even Polynoms for better results!
+    
+    if len(drawPoints) > 19:
+        WINDOW_LENGTH = 19 #odd!
+        POLYNOM_GRADE = 3
+    elif len(drawPoints) > 13:
+        WINDOW_LENGTH = 13 #odd!
+        POLYNOM_GRADE = 2
+    elif len(drawPoints) > 7:
+        WINDOW_LENGTH = 7 #odd!
+        POLYNOM_GRADE = 2
+    elif len(drawPoints) > 3:
+        WINDOW_LENGTH = 3 #odd!
+        POLYNOM_GRADE = 1
+    else:
+        return drawPoints
+
+        # xPoints, yPoints = tuplesToArrays(drawPoints)
+
+        # try:
+        #     xPoints.extend([xPoints[0] - 1])
+
+        #     yPoints.extend([yPoints[0] - 1])
+        # except IndexError as identifier:
+        #     print(identifier)
+
+        #     # Don't make lange rum, return the points
+        #     return drawPoints
+
+        # points = arraysToTuples(xPoints, yPoints)
+
+        # return points
+
+    xPoints, yPoints = tuplesToArrays(drawPoints)
+
+    xPointsS = savgol_filter(xPoints, WINDOW_LENGTH, POLYNOM_GRADE)
+    yPointsS = savgol_filter(yPoints, WINDOW_LENGTH, POLYNOM_GRADE)
+
+    points = arraysToTuples(xPoints, yPoints)
+    points = arraysToTuples(xPointsS, yPointsS)
+
+
+    return points
