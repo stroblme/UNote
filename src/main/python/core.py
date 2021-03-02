@@ -729,7 +729,7 @@ class QPdfView(QGraphicsPixmapItem):
         # self.drawIndicators = []
 
 
-    def updateDrawPoints(self, qpos, pressure=0):
+    def updateDrawPoints(self, qpos, pressure=1):
         '''
         Called updates the currently ongoing marking to match the latest, provided position
         '''
@@ -1034,7 +1034,6 @@ class QPdfView(QGraphicsPixmapItem):
                     self.stopMarkText(self.toPdfCoordinates(event.pos()))
                 elif editMode == editModes.freehand:
                     self.stopDraw(self.toPdfCoordinates(event.pos()))
-                    self.tempPoints = Queue()
                 elif editMode == editModes.eraser:
                     self.stopEraser(self.toPdfCoordinates(event.pos()))
                 elif editMode == editModes.forms:
@@ -1901,8 +1900,12 @@ class GraphicsViewHandler(QGraphicsView):
                 rect = self.mapToScene(self.viewport().geometry()).boundingRect()
 
                 item.insertContent(event.pos(), self.rendererWorker.absZoomFactor, rect.x(), rect.y())
-
-                self.updateRenderedPages(force=True)
+        else:
+            item = self.itemAt(event.pos())
+            if type(item) == QPdfView:
+                if item.ongoingEdit:
+                    self.updateRenderedPages(item.pageNumber, force=True)
+                    item.RenderingFinished()
 
         # self.rendererWorker.stopBackgroundRenderer()
 
