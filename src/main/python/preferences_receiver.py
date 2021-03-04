@@ -52,8 +52,8 @@ class Receivers(QObject):
         Preferences.updateKeyValue("comboBoxThemeSelect", self.ui.comboBoxThemeSelect.currentIndex())
 
 
-    def setRadioButtonPenDrawOnly(self):
-        Preferences.updateKeyValue("radioButtonPenDrawOnly", str(self.ui.radioButtonPenDrawOnly.isChecked()))
+    def setradioButtonSmoothLines(self):
+        Preferences.updateKeyValue("radioButtonSmoothLines", str(self.ui.radioButtonSmoothLines.isChecked()))
 
     @Slot(int)
     def setComboBoxDrawingMode(self, index):

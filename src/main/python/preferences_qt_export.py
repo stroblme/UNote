@@ -139,16 +139,11 @@ class Ui_PreferencesDialog(object):
 
         self.horizontalLayout_6 = QHBoxLayout()
         self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
-        self.radioButtonPenDrawOnly = QRadioButton(self.horizontalGroupBoxDrawingSettings)
-        self.radioButtonPenDrawOnly.setObjectName(u"radioButtonPenDrawOnly")
-        self.radioButtonPenDrawOnly.setChecked(False)
+        self.radioButtonSmoothLines = QRadioButton(self.horizontalGroupBoxDrawingSettings)
+        self.radioButtonSmoothLines.setObjectName(u"radioButtonSmoothLines")
+        self.radioButtonSmoothLines.setChecked(False)
 
-        self.horizontalLayout_6.addWidget(self.radioButtonPenDrawOnly)
-
-        self.comboBoxDrawingMode = QComboBox(self.horizontalGroupBoxDrawingSettings)
-        self.comboBoxDrawingMode.setObjectName(u"comboBoxDrawingMode")
-
-        self.horizontalLayout_6.addWidget(self.comboBoxDrawingMode)
+        self.horizontalLayout_6.addWidget(self.radioButtonSmoothLines)
 
 
         self.horizontalLayout_4.addLayout(self.horizontalLayout_6)
@@ -174,12 +169,6 @@ class Ui_PreferencesDialog(object):
         self.radioButtonUsePenAsDefault.setChecked(False)
 
         self.horizontalLayout_9.addWidget(self.radioButtonUsePenAsDefault)
-
-        self.radioButtonToolboxFollowsEdit = QRadioButton(self.horizontalGroupBoxToolboxSettings)
-        self.radioButtonToolboxFollowsEdit.setObjectName(u"radioButtonToolboxFollowsEdit")
-        self.radioButtonToolboxFollowsEdit.setChecked(True)
-
-        self.horizontalLayout_9.addWidget(self.radioButtonToolboxFollowsEdit)
 
 
         self.horizontalLayout_8.addLayout(self.horizontalLayout_9)
@@ -241,16 +230,12 @@ class Ui_PreferencesDialog(object):
         self.labelTheme.setText(QCoreApplication.translate("PreferencesDialog", u"Theme", None))
         self.radioButtonAffectsPDF.setText(QCoreApplication.translate("PreferencesDialog", u"Affects PDF", None))
         self.labelPenDraw.setText(QCoreApplication.translate("PreferencesDialog", u"Drawing", None))
-        self.radioButtonPenDrawOnly.setText(QCoreApplication.translate("PreferencesDialog", u"Pen Draw Only", None))
+        self.radioButtonSmoothLines.setText(QCoreApplication.translate("PreferencesDialog", u"Smooth Lines", None))
         self.labelToolBox.setText(QCoreApplication.translate("PreferencesDialog", u"Toolbox", None))
 #if QT_CONFIG(tooltip)
         self.radioButtonUsePenAsDefault.setToolTip(QCoreApplication.translate("PreferencesDialog", u"Show only relevant tools. E.g. in tablet mode, a Text Box is not relevant.", None))
 #endif // QT_CONFIG(tooltip)
         self.radioButtonUsePenAsDefault.setText(QCoreApplication.translate("PreferencesDialog", u"Use Pen As Default", None))
-#if QT_CONFIG(tooltip)
-        self.radioButtonToolboxFollowsEdit.setToolTip(QCoreApplication.translate("PreferencesDialog", u"Show only relevant tools. E.g. in tablet mode, a Text Box is not relevant.", None))
-#endif // QT_CONFIG(tooltip)
-        self.radioButtonToolboxFollowsEdit.setText(QCoreApplication.translate("PreferencesDialog", u"Reduced Toolbar", None))
         self.labelToolBox_2.setText(QCoreApplication.translate("PreferencesDialog", u"Interactuin", None))
 #if QT_CONFIG(tooltip)
         self.radioButtonNoInteractionWhileEditing.setToolTip(QCoreApplication.translate("PreferencesDialog", u"Show only relevant tools. E.g. in tablet mode, a Text Box is not relevant.", None))

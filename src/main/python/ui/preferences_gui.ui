@@ -188,17 +188,14 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_6">
               <item>
-               <widget class="QRadioButton" name="radioButtonPenDrawOnly">
+               <widget class="QRadioButton" name="radioButtonSmoothLines">
                 <property name="text">
-                 <string>Pen Draw Only</string>
+                 <string>Smooth Lines</string>
                 </property>
                 <property name="checked">
                  <bool>false</bool>
                 </property>
                </widget>
-              </item>
-              <item>
-               <widget class="QComboBox" name="comboBoxDrawingMode"/>
               </item>
              </layout>
             </item>
@@ -233,19 +230,6 @@
                 </property>
                 <property name="checked">
                  <bool>false</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QRadioButton" name="radioButtonToolboxFollowsEdit">
-                <property name="toolTip">
-                 <string>Show only relevant tools. E.g. in tablet mode, a Text Box is not relevant.</string>
-                </property>
-                <property name="text">
-                 <string>Reduced Toolbar</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
                 </property>
                </widget>
               </item>

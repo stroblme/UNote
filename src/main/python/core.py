@@ -82,7 +82,6 @@ class QPdfView(QGraphicsPixmapItem):
 
         self.isDraft = False
 
-        self.smooth = False
         self.penDraw = False
         self.avPressure = 1
 
@@ -116,7 +115,7 @@ class QPdfView(QGraphicsPixmapItem):
 
                 tempList = list(zip(*list(self.tempPoints.queue)))
 
-                if toBool(Preferences.data['radioButtonPenDrawOnly']):
+                if toBool(Preferences.data['radioButtonSmoothLines']):
                     segment = smoothLine(tempList[0])
                 else:
                     segment = normalize(tempList[0])
@@ -772,7 +771,7 @@ class QPdfView(QGraphicsPixmapItem):
         
         tempList = list(zip(*list(self.tempPoints.queue)))
 
-        if toBool(Preferences.data['radioButtonPenDrawOnly']):
+        if toBool(Preferences.data['radioButtonSmoothLines']):
             segment = smoothLine(tempList[0], asQPoints=False)
         else:
             segment = normalize(tempList[0], asQPoints=False)
@@ -1202,7 +1201,6 @@ class QPdfView(QGraphicsPixmapItem):
         elif eventType == QEvent.TabletPress:
             self.clearTempPoints()
             self.penDraw = True
-            self.smooth = False
 
             if editMode == editModes.marker:
                 self.startMarkText(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
