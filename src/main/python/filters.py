@@ -254,7 +254,7 @@ class Savgol():
 #         err_per_point = np.sum((B-B_fit)**2,axis=1) # sum squared error per row
 #         return err_per_point
 
-def smoothLine(drawPoints):
+def smoothLine(drawPoints, asQPoints=True):
     # Odd window length for Savgol
     # Use even Polynoms for better results!
     
@@ -273,29 +273,9 @@ def smoothLine(drawPoints):
     else:
         return drawPoints
 
-        # xPoints, yPoints = tuplesToArrays(drawPoints)
-
-        # try:
-        #     xPoints.extend([xPoints[0] - 1])
-
-        #     yPoints.extend([yPoints[0] - 1])
-        # except IndexError as identifier:
-        #     print(identifier)
-
-        #     # Don't make lange rum, return the points
-        #     return drawPoints
-
-        # points = arraysToTuples(xPoints, yPoints)
-
-        # return points
-
     xPoints, yPoints = tuplesToArrays(drawPoints)
 
-    xPointsS = savgol_filter(xPoints, WINDOW_LENGTH, POLYNOM_GRADE)
-    yPointsS = savgol_filter(yPoints, WINDOW_LENGTH, POLYNOM_GRADE)
-
-    points = arraysToTuples(xPoints, yPoints)
-    points = arraysToTuples(xPointsS, yPointsS)
-
-
-    return points
+    if asQPoints:
+        return arraysToTuples(savgol_filter(xPoints, WINDOW_LENGTH, POLYNOM_GRADE), savgol_filter(yPoints, WINDOW_LENGTH, POLYNOM_GRADE))
+    else:
+        return savgol_filter(xPoints, WINDOW_LENGTH, POLYNOM_GRADE), savgol_filter(yPoints, WINDOW_LENGTH, POLYNOM_GRADE)
