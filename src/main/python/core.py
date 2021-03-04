@@ -28,7 +28,7 @@ from markdownHelper import markdownHelper
 
 from util import toBool
 from editHelper import editModes
-from filters import smoothLine, estimateLine
+from filters import smoothLine, estimateLine, normalize
 from historyHandler import History
 
 # sys.path.append('./style')
@@ -116,8 +116,10 @@ class QPdfView(QGraphicsPixmapItem):
 
                 tempList = list(zip(*list(self.tempPoints.queue)))
 
-                segment = smoothLine(tempList[0])
-
+                if toBool(Preferences.data['radioButtonPenDrawOnly']):
+                    segment = smoothLine(tempList[0])
+                else:
+                    segment = normalize(tempList[0])
                 # if self.smooth:
                 #     segment = smoothLine(list(self.tempPoints.queue))
                 # else:
@@ -151,6 +153,10 @@ class QPdfView(QGraphicsPixmapItem):
         self.avPressure += pressure
 
         self.tempPoints.put([qpos,pressure])
+
+    def clearTempPoints(self):
+        with self.tempPoints.mutex:
+            self.tempPoints.queue.clear()
 
     def settingsChangedReceiver(self):
         if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
@@ -766,7 +772,10 @@ class QPdfView(QGraphicsPixmapItem):
         
         tempList = list(zip(*list(self.tempPoints.queue)))
 
-        segment = smoothLine(tempList[0], asQPoints=False)
+        if toBool(Preferences.data['radioButtonPenDrawOnly']):
+            segment = smoothLine(tempList[0], asQPoints=False)
+        else:
+            segment = normalize(tempList[0], asQPoints=False)
 
         # if self.smooth:
         #     segment = smoothLine(list(self.tempPoints.queue))
@@ -1011,11 +1020,12 @@ class QPdfView(QGraphicsPixmapItem):
                 self.eh.addIndicatorPoint.emit(scenePoint.x(), scenePoint.y())
                 self.startNewMarkdownBox(self.toPdfCoordinates(event.pos()))
 
-            if not toBool(Preferences.data['radioButtonPenDrawOnly']) and not self.penDraw:
+            if not self.penDraw:
+                self.clearTempPoints()
+
                 if editMode == editModes.marker:
                     self.startMarkText(self.toPdfCoordinates(event.pos()))
                 elif editMode == editModes.freehand:
-                    self.smooth = True
                     self.startDraw(self.toPdfCoordinates(event.pos()))
                 elif editMode == editModes.eraser:
                     self.startEraser(self.toPdfCoordinates(event.pos()))
@@ -1054,19 +1064,19 @@ class QPdfView(QGraphicsPixmapItem):
 
                 self.stopNewMarkdownBox(self.toPdfCoordinates(event.pos()))
 
-            if not toBool(Preferences.data['radioButtonPenDrawOnly']) and not self.penDraw:
+            if not self.penDraw:
                 if editMode == editModes.marker:
                     self.stopMarkText(self.toPdfCoordinates(event.pos()))
                 elif editMode == editModes.freehand:
                     self.stopDraw(self.toPdfCoordinates(event.pos()))
-                    self.smooth = False
                 elif editMode == editModes.eraser:
                     self.stopEraser(self.toPdfCoordinates(event.pos()))
                 elif editMode == editModes.forms:
                     self.stopForms(self.toPdfCoordinates(event.pos()))
+            else:
+                self.penDraw = False
+                self.smooth = True
 
-                self.RenderingFinished()
-                
 
         elif event.button() == Qt.RightButton:
             #Check if there is currently an ongoing edit (like moving an object)
@@ -1121,7 +1131,7 @@ class QPdfView(QGraphicsPixmapItem):
         '''
         self.blockEdit = False
 
-        if self.ongoingEdit and not toBool(Preferences.data['radioButtonPenDrawOnly']) and not self.penDraw:
+        if self.ongoingEdit and not self.penDraw:
             if editMode == editModes.freehand:
                 # self.addDrawPoint(self.toPdfCoordinates(event.pos()))
                 self.addTempPoint(self.toPdfCoordinates(event.pos()))
@@ -1174,9 +1184,8 @@ class QPdfView(QGraphicsPixmapItem):
 
     def tabletEvent(self, eventType, pressure, highResPos, zoom, xOff, yOff):
         self.blockEdit = False
-        # if toBool(Preferences.data['radioButtonPenDrawOnly']):
+        
         if eventType == QEvent.TabletMove and self.ongoingEdit:
-            self.penDraw = True
             if editMode == editModes.eraser:
                 self.updateEraserPoints(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
             elif editMode == editModes.forms:
@@ -1191,7 +1200,10 @@ class QPdfView(QGraphicsPixmapItem):
                 self.addTempPoint(self.toWidgetCoordinates(highResPos, zoom, xOff, yOff), pressure)
                 self.update()
         elif eventType == QEvent.TabletPress:
+            self.clearTempPoints()
             self.penDraw = True
+            self.smooth = False
+
             if editMode == editModes.marker:
                 self.startMarkText(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
             elif editMode == editModes.eraser:
@@ -1201,7 +1213,6 @@ class QPdfView(QGraphicsPixmapItem):
             elif editMode == editModes.freehand or toBool(Preferences.data['radioButtonUsePenAsDefault']):
                 self.startDraw(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
         elif eventType == QEvent.TabletRelease:
-            self.penDraw = False
             if editMode == editModes.marker:
                 self.stopMarkText(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
             elif editMode == editModes.eraser:
@@ -1218,9 +1229,7 @@ class QPdfView(QGraphicsPixmapItem):
 
             # event.accept()
 
-    def RenderingFinished(self):
-        with self.tempPoints.mutex:
-            self.tempPoints.queue.clear()
+
 
 
     # def paint(self, QPainter, QStyleOptionGraphicsItem, QWidget):
@@ -1924,7 +1933,6 @@ class GraphicsViewHandler(QGraphicsView):
         Overrides the default event
         '''
         self.rendererWorker.stopBackgroundRenderer()
-
         modifiers = QApplication.keyboardModifiers()
 
         Mmodo = QApplication.mouseButtons()
@@ -1939,7 +1947,6 @@ class GraphicsViewHandler(QGraphicsView):
             if type(item) == QPdfView:
                 if item.ongoingEdit:
                     self.updateRenderedPages(item.pageNumber, force=True)
-                    # item.RenderingFinished()
 
         # self.rendererWorker.stopBackgroundRenderer()
 
@@ -2019,8 +2026,6 @@ class GraphicsViewHandler(QGraphicsView):
 
             if event.type() == QEvent.Type.TabletRelease:
                 self.updateRenderedPages(item.pageNumber, force=True)
-                item.RenderingFinished()
-                print("done tablet")
 
             #     if self.colorOverride:
             #         self.colorOverride = False

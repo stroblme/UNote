@@ -145,6 +145,8 @@ class Savgol():
         # Odd window length for Savgol
         # Use even Polynoms for better results!
 
+        xPoints, yPoints = tuplesToArrays(observedPoints)
+
         if len(observedPoints) > 19:
             WINDOW_LENGTH = 19 #odd!
             POLYNOM_GRADE = 3
@@ -158,7 +160,6 @@ class Savgol():
             WINDOW_LENGTH = 3 #odd!
             POLYNOM_GRADE = 1
         else:
-            xPoints, yPoints = tuplesToArrays(observedPoints)
 
             try:
                 xPoints.extend([xPoints[0] - 1])
@@ -174,12 +175,10 @@ class Savgol():
 
             return points
 
-        xPoints, yPoints = tuplesToArrays(observedPoints)
 
         xPointsS = savgol_filter(xPoints, WINDOW_LENGTH, POLYNOM_GRADE)
         yPointsS = savgol_filter(yPoints, WINDOW_LENGTH, POLYNOM_GRADE)
 
-        points = arraysToTuples(xPoints, yPoints)
         points = arraysToTuples(xPointsS, yPointsS)
 
 
@@ -258,7 +257,12 @@ def smoothLine(drawPoints, asQPoints=True):
     # Odd window length for Savgol
     # Use even Polynoms for better results!
     
-    if len(drawPoints) > 19:
+    xPoints, yPoints = tuplesToArrays(drawPoints)
+
+    if len(drawPoints) > 31:
+        WINDOW_LENGTH = 31 #odd!
+        POLYNOM_GRADE = 4
+    elif len(drawPoints) > 19:
         WINDOW_LENGTH = 19 #odd!
         POLYNOM_GRADE = 3
     elif len(drawPoints) > 13:
@@ -271,11 +275,21 @@ def smoothLine(drawPoints, asQPoints=True):
         WINDOW_LENGTH = 3 #odd!
         POLYNOM_GRADE = 1
     else:
-        return drawPoints
+        if asQPoints:
+            return arraysToTuples(xPoints, yPoints)
+        else:
+            return xPoints, yPoints
 
-    xPoints, yPoints = tuplesToArrays(drawPoints)
 
     if asQPoints:
         return arraysToTuples(savgol_filter(xPoints, WINDOW_LENGTH, POLYNOM_GRADE), savgol_filter(yPoints, WINDOW_LENGTH, POLYNOM_GRADE))
     else:
         return savgol_filter(xPoints, WINDOW_LENGTH, POLYNOM_GRADE), savgol_filter(yPoints, WINDOW_LENGTH, POLYNOM_GRADE)
+
+def normalize(drawPoints, asQPoints=True):
+    xPoints, yPoints = tuplesToArrays(drawPoints)
+
+    if asQPoints:
+        return arraysToTuples(xPoints, yPoints)
+    else:
+        return xPoints, yPoints
