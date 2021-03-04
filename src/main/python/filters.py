@@ -30,7 +30,7 @@ class FormEstimator(object):
     def __init__(self):
         super().__init__()
 
-def estimateLine(self, fStart, fStop):
+def estimateLine(fStart, fStop):
     MAXYDELTA = 0.1
     MAXXDELTA = 0.1
 
