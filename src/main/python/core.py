@@ -113,7 +113,10 @@ class QPdfView(QGraphicsPixmapItem):
                 except ZeroDivisionError:
                     penSize = pdf_annots.defaultPenSize
 
-                tempList = list(zip(*list(self.tempPoints.queue)))
+                try:
+                    tempList = list(zip(*list(self.tempPoints.queue)))
+                except TypeError as e:
+                    print(e)
 
                 if toBool(Preferences.data['radioButtonSmoothLines']):
                     segment = smoothLine(tempList[0])
@@ -134,7 +137,7 @@ class QPdfView(QGraphicsPixmapItem):
                 painter.drawPolyline(segment)
 
             elif editMode == editModes.marker:
-
+                
                 painter.setPen(QPen(QColor(*self.markerColor), self.markerSize))
                 painter.setRenderHint(QPainter.SmoothPixmapTransform)
                 painter.drawPolyline(list(self.tempPoints.queue))
@@ -1148,7 +1151,8 @@ class QPdfView(QGraphicsPixmapItem):
                 # self.tempPoints.put(self.toPdfCoordinates(event.pos()))
                 self.update()
             elif editMode == editModes.marker:
-                self.tempPoints.put(self.toPdfCoordinates(event.pos()))
+                self.addTempPoint(self.toPdfCoordinates(event.pos()))
+
                 self.update()
 
         QGraphicsPixmapItem.mouseMoveEvent(self, event)

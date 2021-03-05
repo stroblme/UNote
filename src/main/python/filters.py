@@ -39,7 +39,7 @@ def estimateLine(fStart, fStop):
 
         
     angle = rad_to_deg(atan2(fStop.y - fStart.y, fStop.x - fStart.x))
-    print(angle)
+    
     if abs(angle - 0) < MINANGLE or abs(angle - (180)) < MINANGLE:
         fStop.y = fStart.y
 
