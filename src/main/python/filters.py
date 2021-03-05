@@ -2,7 +2,7 @@
 from scipy.signal import savgol_filter
 # from scipy.linalg import lstsq
 # from scipy import dot
-from math import sqrt, tan, pi
+from math import sqrt, atan2, pi
 from PySide2.QtCore import QPointF
 
 rad_to_deg = lambda x: 180.0/pi * x
@@ -31,24 +31,19 @@ class FormEstimator(object):
         super().__init__()
 
 def estimateLine(fStart, fStop):
-    MAXYDELTA = 0.1
-    MAXXDELTA = 0.1
-
     distance = sqrt(pow(fStart.y - fStop.y, 2) + pow(fStart.x - fStop.x, 2))
+    MINANGLE = min(5,abs(120/distance))
 
-    if abs(fStart.y - fStop.y) != 0 and abs(fStart.x - fStop.x) != 0:
-        angle = rad_to_deg(tan(abs(fStart.y - fStop.y)/abs(fStart.x - fStop.x)))
-    elif abs(fStart.x - fStop.x) == 0:
-        angle = 90
-    else: # abs(fStart.y - fStop.y) == 0:
-        angle = 0
+    if distance == 0:
+        return fStart, fStop
+        
+    angle = rad_to_deg(atan2(fStop.y - fStart.y, fStop.x - fStart.x))
 
-    if abs(fStart.y - fStop.y)/distance < MAXYDELTA:
+    if abs(angle - 0) < MINANGLE or abs(angle - (180)) < MINANGLE:
         fStop.y = fStart.y
-    if abs(fStart.x - fStop.x)/distance < MAXXDELTA:
-        fStop.x = fStart.x
 
-    print(angle)
+    elif abs(angle - 90) < MINANGLE or abs(angle - (-90)) < MINANGLE:
+        fStop.x = fStart.x
 
     return fStart, fStop
 

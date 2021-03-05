@@ -144,7 +144,10 @@ class QPdfView(QGraphicsPixmapItem):
                 painter.setPen(QPen(QColor(*self.formColor), self.formSize))
                 painter.setRenderHint(QPainter.SmoothPixmapTransform)
                 lst = list(self.tempPoints.queue)
-                painter.drawLine(lst[0],lst[-1])
+
+                fStart, fStop = estimateLine(self.qPointToFPoint(lst[0][0]),self.qPointToFPoint(lst[-1][0]))
+
+                painter.drawLine(self.fPointToQPointF(fStart),self.fPointToQPointF(fStop))
 
         return res
 
@@ -1138,6 +1141,8 @@ class QPdfView(QGraphicsPixmapItem):
             elif editMode == editModes.eraser:
                 self.updateEraserPoints(self.toPdfCoordinates(event.pos()))
             elif editMode == editModes.forms:
+                self.updateFormPoints(self.toPdfCoordinates(event.pos()))
+
                 self.addTempPoint(self.toPdfCoordinates(event.pos()))
 
                 # self.tempPoints.put(self.toPdfCoordinates(event.pos()))
@@ -1191,7 +1196,7 @@ class QPdfView(QGraphicsPixmapItem):
                 self.updateEraserPoints(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
             elif editMode == editModes.forms:
                 self.updateFormPoints(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
-                self.tempPoints.put(self.toWidgetCoordinates(highResPos, zoom, xOff, yOff))
+                self.addTempPoint(self.toWidgetCoordinates(highResPos, zoom, xOff, yOff))
                 self.update()
             elif editMode == editModes.marker:
                 self.tempPoints.put(self.toWidgetCoordinates(highResPos, zoom, xOff, yOff))
