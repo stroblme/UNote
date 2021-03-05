@@ -2,7 +2,7 @@
 from scipy.signal import savgol_filter
 # from scipy.linalg import lstsq
 # from scipy import dot
-from math import sqrt, atan2, pi
+from math import sqrt, atan2, pi, cos, sin, radians
 from PySide2.QtCore import QPointF
 
 rad_to_deg = lambda x: 180.0/pi * x
@@ -34,20 +34,44 @@ def estimateLine(fStart, fStop):
     distance = sqrt(pow(fStart.y - fStop.y, 2) + pow(fStart.x - fStop.x, 2))
     if distance == 0:
         return fStart, fStop
-        
+
     MINANGLE = min(5,abs(120/distance))
 
         
     angle = rad_to_deg(atan2(fStop.y - fStart.y, fStop.x - fStart.x))
-
+    print(angle)
     if abs(angle - 0) < MINANGLE or abs(angle - (180)) < MINANGLE:
         fStop.y = fStart.y
 
     elif abs(angle - 90) < MINANGLE or abs(angle - (-90)) < MINANGLE:
         fStop.x = fStart.x
 
+    elif abs(angle - 45) < MINANGLE:
+        fStop.x, fStop.y = rotate((fStart.x, fStart.y), (fStop.x, fStop.y), radians(45-angle))
+        
+    elif abs(angle - (-45)) < MINANGLE:
+        fStop.x, fStop.y = rotate((fStart.x, fStart.y), (fStop.x, fStop.y), radians(-45-angle))
+
+    elif abs(angle - 135) < MINANGLE:
+        fStop.x, fStop.y = rotate((fStart.x, fStart.y), (fStop.x, fStop.y), radians(135-angle))
+    
+    elif abs(angle - (-135)) < MINANGLE:
+        fStop.x, fStop.y = rotate((fStart.x, fStart.y), (fStop.x, fStop.y), radians(-135-angle))
+
     return fStart, fStop
 
+def rotate(origin, point, angle):
+    """
+    Rotate a point counterclockwise by a given angle around a given origin.
+
+    The angle should be given in radians.
+    """
+    ox, oy = origin
+    px, py = point
+
+    qx = ox + cos(angle) * (px - ox) - sin(angle) * (py - oy)
+    qy = oy + sin(angle) * (px - ox) + cos(angle) * (py - oy)
+    return qx, qy
 
 # class Kalman(object):
 
