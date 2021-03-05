@@ -32,10 +32,11 @@ class FormEstimator(object):
 
 def estimateLine(fStart, fStop):
     distance = sqrt(pow(fStart.y - fStop.y, 2) + pow(fStart.x - fStop.x, 2))
-    MINANGLE = min(5,abs(120/distance))
-
     if distance == 0:
         return fStart, fStop
+        
+    MINANGLE = min(5,abs(120/distance))
+
         
     angle = rad_to_deg(atan2(fStop.y - fStart.y, fStop.x - fStart.x))
 
