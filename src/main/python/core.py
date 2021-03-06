@@ -506,15 +506,15 @@ class QPdfView(QGraphicsPixmapItem):
         else:
             ref = newImageEntry[8]
 
-        r = self.page.xref
-        l = self.page.parent.xref_stream_raw(r)
-        self.page.parent[0]._getContents()
-        # xref 274 is the only /Contents object of the page (could be 
-        c = self.page.parent._getXrefStream(274) # read the stream source
-        c.find(b"/Im1 Do") # try find the image display command
-        cnew = c.replace(b"/Im1 Do", b"") # remove it
-        self.page.parent._updateStream(274, cnew) # replace page's /Content object
-        pass
+        # r = self.page.xref
+        # l = self.page.parent.xref_stream_raw(r)
+        # self.page.parent[0]._getContents()
+        # # xref 274 is the only /Contents object of the page (could be 
+        # c = self.page.parent._getXrefStream(274) # read the stream source
+        # c.find(b"/Im1 Do") # try find the image display command
+        # cnew = c.replace(b"/Im1 Do", b"") # remove it
+        # self.page.parent._updateStream(274, cnew) # replace page's /Content object
+        # pass
 
 
     #-----------------------------------------------------------------------
