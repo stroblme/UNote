@@ -496,15 +496,26 @@ class QPdfView(QGraphicsPixmapItem):
 
         self.page.insertImage(rect, pixmap=fPixmap, overlay=True)
 
-        # latestList = self.page.getImageList()
-        # newImageEntry = [value for value in latestList if value not in prevList][0]
+        # History.addToHistory(self.deleteHighlightAnnot, annot, self.addHighlightAnnot, rect)
 
-        # if newImageEntry[8] == '':
-        #     ref = newImageEntry[8]
-        # else:
-        #     ref = newImageEntry[7]
+        latestList = self.page.getImageList()
+        newImageEntry = [value for value in latestList if value not in prevList][0]
 
-        # pass
+        if newImageEntry[8] == '':
+            ref = newImageEntry[7]
+        else:
+            ref = newImageEntry[8]
+
+        r = self.page.xref
+        l = self.page.parent.xref_stream_raw(r)
+        self.page.parent[0]._getContents()
+        # xref 274 is the only /Contents object of the page (could be 
+        c = self.page.parent._getXrefStream(274) # read the stream source
+        c.find(b"/Im1 Do") # try find the image display command
+        cnew = c.replace(b"/Im1 Do", b"") # remove it
+        self.page.parent._updateStream(274, cnew) # replace page's /Content object
+        pass
+
 
     #-----------------------------------------------------------------------
     # Annot Editing
@@ -1231,10 +1242,10 @@ class QPdfView(QGraphicsPixmapItem):
             elif editMode == editModes.freehand or toBool(Preferences.data['radioButtonUsePenAsDefault']):
                 self.stopDraw(self.fromSceneCoordinates(highResPos, zoom, xOff, yOff))
 
-        elif eventType == QEvent.TabletEnterProximity:
-            print('enter prox')
-        elif eventType == QEvent.TabletLeaveProximity:
-            print('leave prox')
+        # elif eventType == QEvent.TabletEnterProximity:
+        #     print('enter prox')
+        # elif eventType == QEvent.TabletLeaveProximity:
+        #     print('leave prox')
 
             # event.accept()
 
