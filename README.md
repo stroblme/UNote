@@ -1,12 +1,8 @@
-<img src="./src/main/icons/base/1024.png"
-     alt="UNote Icon"
-     width="100px" />
-
-# **UNote**
+# ![UNoteLogo](./src/main/icons/base/32.png) [UNote](https://stroblme.de/unote/)
 
 Fills the lack of an open-source PDF Editor with the capability to draw and add notes not only to the PDF pages but, in future, to a virtually unlimited space.
 
-The executable can be downloaded from [here](https://stroblme.de/unote/) or directly in this Github Repository.
+The executable can be downloaded [here](https://stroblme.de/unote/) or directly from this Github Repository.
 
 ## Features
 
@@ -14,13 +10,16 @@ Here a quick demonstration of only a few features:
 
 ![A short demonstration](./unote.gif)
 
-A more detailled (and constantly extended) list of features:
+A more detailed (and constantly extended) list of features:
 
-- PDF Annotating
+- PDF Annotating/ Editing
     - Text Boxes (with and without pointers)
     - Highlighting
-    - Freehand drawing
+    - Freehand drawing (Mouse *and* Pen Support) with *line smoothing*
+    - Different colors available for all marker tools
+    - Forms (only lines by now)
     - Erasing
+    - Insert Images
 - PDF Tools
     - Insert/ Delete Pages
     - Create PDFs
@@ -89,5 +88,4 @@ code .
 
 ## Building
 
-Uses fbs:
-https://github.com/mherrmann/fbs-tutorial
+Uses [fbs](https://github.com/mherrmann/fbs-tutorial) which relies on pyinstaller.
