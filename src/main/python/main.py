@@ -45,8 +45,8 @@ class App(QObject):
     CURVERSION = "2020.01"
 
     DONATEURL   = "https://www.paypal.me/vinstrobl/coffee"
-    UPDATEURL   = "http://unote.stroblme.tech/archives/UNote.zip"
-    ABOUTURL    = "https://unote.stroblme.tech/"
+    UPDATEURL   = "https://stroblme.de/unote/archives/UNote.zip"
+    ABOUTURL    = "https://stroblme.de/unote/"
 
     TOOLBOXWIDTH = 200
     TOOLBOXHEIGHT = 200
