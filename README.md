@@ -50,8 +50,8 @@ See [CHANGELOG.md](https://github.com/stroblme/unote/blob/master/CHANGELOG.md) f
 ## Main Requirements
 
 - Python3.6
-- PySide2
-- PyMuPDF
+- [PySide2](https://www.qt.io/)
+- [PyMuPDF](pymupdf.readthedocs.io/)
 
 # Getting started
 
