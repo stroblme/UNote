@@ -27,7 +27,7 @@ A more detailed (and constantly extended) list of features:
     - Active Pen Support
     - Automatic Form Detection From Freehand Annotations
     - Various Options For Annotation Tools
-    - Dark/ Light Mode
+    - Dark/ Light Mode (Also can *invert pdf colors*)
     - Fast PDF Loading
     - Split View
 
