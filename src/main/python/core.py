@@ -154,6 +154,9 @@ class QPdfView(QGraphicsPixmapItem):
 
         return res
 
+    def renderingFinished(self):
+        self.clearTempPoints()
+
     def addTempPoint(self, qpos, pressure=DEFAULTPRESSURE):
         self.avPressure += pressure
 
@@ -1578,6 +1581,8 @@ class Renderer(QObject):
             self.qp.end()
 
         pdfViewInstance.setQImage(qImg, pdfViewInstance.pageNumber, zoom)
+
+        pdfViewInstance.renderingFinished()
         # else:
         #     if fClip:
         #         qp = QPainter(pdfViewInstance.qImg)
@@ -1761,6 +1766,7 @@ class GraphicsViewHandler(QGraphicsView):
         self.scene.addItem(renderedItem)
         renderedItem.setPos(posX, posY)
         renderedItem.setAsOrigin()
+
 
 
     @Slot()
@@ -1965,9 +1971,9 @@ class GraphicsViewHandler(QGraphicsView):
         else:
             item = self.itemAt(event.pos())
             if type(item) == QPdfView:
-                if item.ongoingEdit:
-                    self.updateRenderedPages(item.pageNumber, force=True)
-
+                # if item.ongoingEdit:
+                self.updateRenderedPages(item.pageNumber, force=True)
+                # item.clearTempPoints()
         # self.rendererWorker.stopBackgroundRenderer()
 
         self.rendererWorker.enableBackgroundRenderer()
