@@ -1,6 +1,6 @@
 src/build/settings/secret.json
 distribute.cmd
-
+*.log
 *.pfx
 
 ### Test Files ###
