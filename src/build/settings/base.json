@@ -3,5 +3,6 @@
     "url": "unote.stroblme.tech",
     "author": "Melvin Strobl",
     "main_module": "src/main/python/main.py",
-    "version": "1.8"
+    "version": "1.8",
+    "hidden_imports": ["scipy"]
 }
