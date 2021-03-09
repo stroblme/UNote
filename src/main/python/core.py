@@ -91,6 +91,7 @@ class QPdfView(QGraphicsPixmapItem):
 
     def paint(self, painter, option, widget):
         res = super().paint(painter, option, widget)
+        # TODO: Fix the colors when changing theme
 
         if self.tempPoints.qsize() > 0:
             if editMode == editModes.freehand or editMode == editModes.none:
@@ -167,7 +168,7 @@ class QPdfView(QGraphicsPixmapItem):
             self.tempPoints.queue.clear()
 
     def settingsChangedReceiver(self):
-        if Preferences.data['comboBoxThemeSelect'] == 0 and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
+        if Preferences.data['comboBoxThemeSelect'] == '0' and toBool(Preferences.data['radioButtonAffectsPDF']) == True:
             try:
                 self.freeHandColor = tuple(map(lambda x: (1-float(x))*255, Preferences.data['freehandColor']))
             except ValueError as identifier:
@@ -1093,7 +1094,7 @@ class QPdfView(QGraphicsPixmapItem):
                 elif editMode == editModes.forms:
                     self.stopForms(self.toPdfCoordinates(event.pos()))
             else:
-                self.penDraw = False
+                # self.penDraw = False
                 self.smooth = True
 
 
