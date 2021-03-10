@@ -4,6 +4,7 @@ distribute.cmd
 *.log
 *.pfx
 
+.vscode
 ### Test Files ###
 *.pdf
 
