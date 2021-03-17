@@ -29,7 +29,7 @@ from unote_receivers import Receivers
 from preferences import Preferences
 from toolbox import ToolBoxWidget
 from preferences_gui import PreferencesGUI
-from widgetContainer import TContainer
+# from widgetContainer import TContainer
 
 from unote_qt_export import Ui_MainWindow
 
