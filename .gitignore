@@ -1,6 +1,6 @@
 src/build/settings/secret.json
 src/main/python/examples
-distribute.cmd
+
 *.log
 *.pfx
 
