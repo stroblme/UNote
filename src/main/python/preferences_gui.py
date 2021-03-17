@@ -216,7 +216,7 @@ class PreferencesGUI(App):
         if Preferences.data['radioButtonAffectsPDF'] == "":
             Preferences.updateKeyValue('radioButtonAffectsPDF', str(True))
         if Preferences.data['comboBoxThemeSelect'] == "":
-            Preferences.updateKeyValue('comboBoxThemeSelect', 0)
+            Preferences.updateKeyValue('comboBoxThemeSelect', 1)
 
         if Preferences.data['radioButtonSmoothLines'] == "":
             Preferences.updateKeyValue('radioButtonSmoothLines', str(True))
@@ -232,6 +232,21 @@ class PreferencesGUI(App):
 
         if Preferences.data['radioButtonNoInteractionWhileEditing'] == "":
             Preferences.updateKeyValue('radioButtonNoInteractionWhileEditing', str(True))
+
+        if Preferences.data['textSize'] == "":
+            Preferences.updateKeyValue('textSize', "('0', '0', '0')")
+        if Preferences.data['markerSize'] == "":
+            Preferences.updateKeyValue('markerSize', "70")
+        if Preferences.data['markerColor'] == "":
+            Preferences.updateKeyValue('markerColor', "('0', '0', '0')")
+        if Preferences.data['freehandSize'] == "":
+            Preferences.updateKeyValue('freehandSize', "70")
+        if Preferences.data['freehandColor'] == "":
+            Preferences.updateKeyValue('freehandColor', "('0', '0', '0')")
+        if Preferences.data['formSize'] == "":
+            Preferences.updateKeyValue('formSize', "70")
+        if Preferences.data['formColor'] == "":
+            Preferences.updateKeyValue('formColor', "('0', '0', '0')")
 
     # def applySettings(self):
     #     '''

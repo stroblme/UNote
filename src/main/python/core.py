@@ -13,9 +13,9 @@ from queue import Queue
 from indexed import IndexedOrderedDict
 from enum import Enum
 
-from PySide2.QtWidgets import QFrame, QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGraphicsLineItem, QGraphicsEllipseItem, QScroller, QScrollerProperties
+from PySide2.QtWidgets import QGraphicsView, QGraphicsScene, QApplication, QGraphicsPixmapItem, QGraphicsLineItem, QGraphicsEllipseItem, QScroller, QScrollerProperties
 from PySide2.QtCore import Qt, QRectF, QEvent, QThread, Signal, Slot, QObject, QPoint, QPointF, QTimer, QByteArray, QBuffer, QIODevice
-from PySide2.QtGui import QPixmap, QBrush, QColor, QImage, QTouchEvent, QPainter, QGuiApplication, QPen, QTabletEvent
+from PySide2.QtGui import QPixmap, QBrush, QColor, QImage, QPainter, QGuiApplication, QPen
 # from PySide2.QtWebEngineWidgets import QWebEngineView
 
 import fitz
@@ -1651,7 +1651,6 @@ class GraphicsViewHandler(QGraphicsView):
 
         self.setMouseTracking(True)
         self.setTabletTracking(True)
-        # self.setFrameShape(QFrame.StyledPanel)
         self.setObjectName("graphicsView")
         self.setRenderHint(QPainter.Antialiasing)
         self.setAttribute(Qt.WA_AcceptTouchEvents)
