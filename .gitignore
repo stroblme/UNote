@@ -4,7 +4,6 @@ src/main/python/examples
 *.log
 *.pfx
 
-.vscode
 ### Test Files ###
 *.pdf
 
