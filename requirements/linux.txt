@@ -28,7 +28,7 @@ PySide2==5.15.2
 python-dateutil==2.8.1
 python-markdown-math==0.8
 s3transfer==0.3.4
-scipy==1.6.1
+scipy==1.11.1
 shiboken2==5.15.2
 sip==6.0.3
 six==1.15.0
